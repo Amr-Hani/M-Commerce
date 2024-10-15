@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">MCommerce</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="your_email">Enter:YourEmail</string>
+    <string name="pssword">Enter:Your Password</string>
+    <string name="confirm_password">Enter:Confirm Password</string>
+    <string name="go_to_login">Go To LogIn</string>
+    <string name="signUp">Sign Up</string>
+    <string name="go_to_signUp">Go To SignUp</string>
+    <string name="logIn">LogIn</string>
+
+    <string name="client_id">109697999853-r204auhj03ft0ba030qsnlhl16ofi673.apps.googleusercontent.com</string>
+    <string name="client_id2">759985624702-0h8mtc96t27oiq54j3q8f1l0j566e327.apps.googleusercontent.com</string>
+    <string name="default_web_client_id">637769902026-kn138mt6f8c080b95qr7k0gc214jsgu4.apps.googleusercontent.com</string>
+    <string name="guest">Skip</string>
+</resources>

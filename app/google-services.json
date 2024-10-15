@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "763046114238",
+    "project_id": "mcommerce-ca7df",
+    "storage_bucket": "mcommerce-ca7df.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:763046114238:android:9d566ecd3424b87dac3fef",
+        "android_client_info": {
+          "package_name": "com.example.mcommerce"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKzsm9UxnwzHUs8oZUoYAX9ZhPX3TYinI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

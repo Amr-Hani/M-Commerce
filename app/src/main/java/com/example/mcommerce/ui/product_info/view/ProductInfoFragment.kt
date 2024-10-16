@@ -57,14 +57,14 @@ class ProductInfoFragment : Fragment() {
         lifecycleScope.launch {
             productInfoViewModel.productDetailsStateFlow.collectLatest {
                 when(it){
-                    ApiState.Loading ->{
+                    is ApiState.Loading ->{
                         Log.e(TAG, "getProductInfoDetails: loading", )
                     }
-                    is ApiState.OnFailed -> {}
-                    is ApiState.OnSuccess<*> -> {
-                        val x = it.data as ProductResponse
-                        Log.d(TAG, "getProductInfoDetails: ${x.products.get(0).title}")
+                    is ApiState.Failure -> {}
+                    is ApiState.Success -> {
+                        Log.d(TAG, "getProductInfoDetails: ${it.data.get(0).title}")
                     }
+                    else ->{}
                 }
             }
         }

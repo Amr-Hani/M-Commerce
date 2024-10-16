@@ -131,6 +131,7 @@ class LogInFragment : Fragment() {
                     .show()
                 sharedPreferences.edit().putString(MyKey.GUEST, "LogIn")
                     .apply()
+                // هنا نافيجيت ي عم منير ع ال home screen اول متعمل login
             } else {
                 Toast.makeText(
                     requireContext(),
@@ -147,8 +148,10 @@ class LogInFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         val user = authenticationViewModel.checkIfEmailVerified()
-        val action = LogInFragmentDirections.actionLogInFragmentToProductInfoFragment()
-        Navigation.findNavController(binding.root).navigate(action)
+        if(user!=null)
+        {
+            // هنا نافيجيت ي عم منير ع ال home screen اول متعمل login
+        }
     }
 
 }

@@ -129,6 +129,8 @@ class LogInFragment : Fragment() {
                 Log.d(TAG, "checkIfEmailVerified: Email is verified")
                 Toast.makeText(requireContext(), "Authentication success.", Toast.LENGTH_SHORT)
                     .show()
+                sharedPreferences.edit().putString(MyKey.GUEST, "LogIn")
+                    .apply()
             } else {
                 Toast.makeText(
                     requireContext(),
@@ -145,15 +147,8 @@ class LogInFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         val user = authenticationViewModel.checkIfEmailVerified()
-        if(user!=null)
-        {
-            Toast.makeText(
-                requireContext(),
-                "هنا المفروض تعمل navigate يا منير ل home screen",
-                Toast.LENGTH_SHORT
-            ).show()
-            // متنساش تعمل navigate يا منير
-        }
+        val action = LogInFragmentDirections.actionLogInFragmentToProductInfoFragment()
+        Navigation.findNavController(binding.root).navigate(action)
     }
 
 }

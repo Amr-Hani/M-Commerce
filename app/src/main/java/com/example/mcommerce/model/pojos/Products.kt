@@ -25,7 +25,7 @@ data class Variant(
     val id: Long,
     val productId: Long,
     val title: String,
-    val price: String,
+    var price: String,
     val position: Int,
     val inventoryPolicy: String,
     val compareAtPrice: String?,

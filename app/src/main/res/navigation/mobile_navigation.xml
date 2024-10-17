@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    android:label="brand"
+    app:startDestination="@+id/navigation_home">
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.example.mcommerce.ui.home.view.HomeFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_navigation_home_to_brandDetails"
+            app:destination="@id/brandDetails" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_category"
+        android:name="com.example.mcommerce.ui.category.view.CategoryFragment"
+        android:label="@string/_category"
+        tools:layout="@layout/fragment_category" >
+        <action
+            android:id="@+id/action_navigation_category_to_categoryDetailsFragment"
+            app:destination="@id/categoryDetailsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="com.example.mcommerce.ui.profile.ProfileFragment"
+        android:label="@string/_profile"
+        tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/brandDetails"
+        android:name="com.example.mcommerce.ui.brandDetails.view.BrandDetails"
+        android:label="Brand"
+        tools:layout="@layout/fragment_brand_details" >
+        <argument
+            android:name="brandId"
+            app:argType="long" />
+    </fragment>
+    <fragment
+        android:id="@+id/categoryDetailsFragment"
+        android:name="com.example.mcommerce.ui.CategoryDetails.view.CategoryDetailsFragment"
+        android:label="fragment_category_details2"
+        tools:layout="@layout/fragment_category_details" >
+        <argument   android:name="categoryId"
+            app:argType="string" />
+    </fragment>
+
+</navigation>

@@ -15,16 +15,16 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
-import com.example.mcommerce.R
 import com.example.mcommerce.databinding.FragmentSignUpBinding
 import com.example.mcommerce.model.firebase.FireBaseDataSource
 import com.example.mcommerce.model.firebase.Repo
+import com.example.mcommerce.model.network.ProductInfoRetrofit
+import com.example.mcommerce.model.network.RemoteDataSource
+import com.example.mcommerce.model.network.Repository
 import com.example.mcommerce.my_key.MyKey
 import com.example.mcommerce.ui.authentication.viewmodel.AuthenticationViewModel
 import com.example.mcommerce.ui.authentication.viewmodel.AuthenticationViewModelFactory
-import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import java.util.regex.Pattern
 
@@ -60,7 +60,7 @@ class SignUpFragment : Fragment() {
         authenticationViewModelFactory = AuthenticationViewModelFactory(
             Repo.getInstance(
                 FireBaseDataSource(mAuth)
-            )
+            ), Repository.getInstance(RemoteDataSource(ProductInfoRetrofit.productService))
         )
         authenticationViewModel = ViewModelProvider(
             this,
@@ -91,6 +91,7 @@ class SignUpFragment : Fragment() {
                 binding.etUserName.error = null
                 binding.etUserName.background.setTint(Color.WHITE)
             }
+
             override fun afterTextChanged(s: Editable?) {}
         })
 
@@ -100,6 +101,7 @@ class SignUpFragment : Fragment() {
                 binding.etPassword.error = null
                 binding.etPassword.background.setTint(Color.WHITE)
             }
+
             override fun afterTextChanged(s: Editable?) {}
         })
 
@@ -109,8 +111,9 @@ class SignUpFragment : Fragment() {
                 binding.etConfirmPassword.error = null
                 binding.etConfirmPassword.background.setTint(Color.WHITE)
             }
-            override fun afterTextChanged(s: Editable?){}
-            })
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
         val email = binding.etUserName.text.toString()
         val password = binding.etPassword.text.toString()
         val confirmPassword = binding.etConfirmPassword.text.toString()
@@ -123,7 +126,8 @@ class SignUpFragment : Fragment() {
                     binding.etConfirmPassword.background.setTint(Color.RED)
                 }
             } else {
-                binding.etPassword.error = "Invalid Password Must Contain !@#\$%^&*()-_=+{}[]|:;\"'<>,.?/~`"
+                binding.etPassword.error =
+                    "Invalid Password Must Contain !@#\$%^&*()-_=+{}[]|:;\"'<>,.?/~`"
                 binding.etPassword.background.setTint(Color.RED)
             }
         } else {
@@ -147,9 +151,11 @@ class SignUpFragment : Fragment() {
                                         "Authentication success.",
                                         Toast.LENGTH_SHORT
                                     ).show()
+
                                     val action =
                                         SignUpFragmentDirections.actionSignUpFragmentToLogInFragment()
                                     Navigation.findNavController(binding.root).navigate(action)
+
                                     authenticationViewModel.sendVerificationEmail(mAuth.currentUser)
                                         ?.addOnCompleteListener { task ->
                                             if (task.isSuccessful) {

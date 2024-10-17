@@ -14,15 +14,24 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
-import com.example.mcommerce.R
 import com.example.mcommerce.databinding.FragmentLogInBinding
 import com.example.mcommerce.model.firebase.FireBaseDataSource
 import com.example.mcommerce.model.firebase.Repo
+import com.example.mcommerce.model.network.ApiState
+import com.example.mcommerce.model.network.ProductInfoRetrofit
+import com.example.mcommerce.model.network.RemoteDataSource
+import com.example.mcommerce.model.network.Repository
+import com.example.mcommerce.model.pojos.Address
+import com.example.mcommerce.model.pojos.CustomerRequest
+import com.example.mcommerce.model.pojos.PostedCustomer
 import com.example.mcommerce.my_key.MyKey
 import com.example.mcommerce.ui.authentication.viewmodel.AuthenticationViewModel
 import com.example.mcommerce.ui.authentication.viewmodel.AuthenticationViewModelFactory
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class LogInFragment : Fragment() {
     lateinit var binding: FragmentLogInBinding
@@ -32,8 +41,36 @@ class LogInFragment : Fragment() {
     lateinit var authenticationViewModelFactory: AuthenticationViewModelFactory
     lateinit var mAuth: FirebaseAuth
     private val TAG = "LogInFragment"
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+
+    val address = Address(
+        address1 = "3 Bank St",
+        city = "Zagazig",
+        province = "CA",
+        phone = "+01008313390",
+        zip = "12345",
+        last_name = "Amr",
+        first_name = "Hani",
+        country = "Egypt"
+    )
+
+    val customer = PostedCustomer(
+        first_name = "Amr",
+        last_name = "Hani",
+        email = "3mrhani@gmail.com",
+        phone = "010083130390",
+        verified_email = true,
+        addresses = listOf(address),
+        password = "Am#123456",
+        password_confirmation = "Am#123456",
+        send_email_welcome = false
+    )
+
+    override fun onStart() {
+        super.onStart()
+        val user = authenticationViewModel.checkIfEmailVerified()
+        if (user != null) {
+            // هنا نافيجيت ي عم منير ع ال home screen اول متعمل login
+        }
     }
 
     override fun onCreateView(
@@ -53,7 +90,7 @@ class LogInFragment : Fragment() {
         authenticationViewModelFactory = AuthenticationViewModelFactory(
             Repo.getInstance(
                 FireBaseDataSource(mAuth)
-            )
+            ), Repository.getInstance(RemoteDataSource(ProductInfoRetrofit.productService))
         )
         authenticationViewModel = ViewModelProvider(
             this,
@@ -82,6 +119,7 @@ class LogInFragment : Fragment() {
                 binding.etUserNameLogin.background.setTint(Color.WHITE)
 
             }
+
             override fun afterTextChanged(s: Editable?) {}
         })
 
@@ -91,6 +129,7 @@ class LogInFragment : Fragment() {
                 binding.etPasswordLogin.error = null
                 binding.etPasswordLogin.background.setTint(Color.WHITE)
             }
+
             override fun afterTextChanged(s: Editable?) {}
         })
         val email = binding.etUserNameLogin.text.toString()
@@ -99,7 +138,7 @@ class LogInFragment : Fragment() {
             authenticationViewModel.logIn(email, password)
                 .addOnCompleteListener(requireActivity()) { task ->
                     if (task.isSuccessful) {
-                        checkIfEmailVerified()
+                        checkIfEmailVerified(email)
                     } else {
                         binding.etPasswordLogin.error = "Maybe Password Is Incorrect"
                         binding.etPasswordLogin.background.setTint(Color.RED)
@@ -115,14 +154,13 @@ class LogInFragment : Fragment() {
                         Log.e("TAG", "signInWithEmailAndPassword: $exceptionMessage")
                     }
                 }
-        }
-        else{
+        } else {
             Toast.makeText(requireContext(), "Please Fill The Required Fields ", Toast.LENGTH_SHORT)
                 .show()
         }
     }
 
-    private fun checkIfEmailVerified() {
+    private fun checkIfEmailVerified(email: String) {
         val user = authenticationViewModel.checkIfEmailVerified()
         if (user != null) {
             if (user.isEmailVerified) {
@@ -131,7 +169,12 @@ class LogInFragment : Fragment() {
                     .show()
                 sharedPreferences.edit().putString(MyKey.GUEST, "LogIn")
                     .apply()
+                val customerRequest = CustomerRequest(customer)
+                customerRequest.postedCustomer.email = email
+                postCustomer(customerRequest)
                 // هنا نافيجيت ي عم منير ع ال home screen اول متعمل login
+                val action = LogInFragmentDirections.actionLogInFragmentToProductInfoFragment()
+                Navigation.findNavController(binding.root).navigate(action)
             } else {
                 Toast.makeText(
                     requireContext(),
@@ -145,12 +188,26 @@ class LogInFragment : Fragment() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        val user = authenticationViewModel.checkIfEmailVerified()
-        if(user!=null)
-        {
-            // هنا نافيجيت ي عم منير ع ال home screen اول متعمل login
+    fun postCustomer(customer: CustomerRequest) {
+        lifecycleScope.launch {
+            authenticationViewModel.postCustomer(customer)
+            authenticationViewModel.customerResponseDetailsStateFlow.collectLatest {
+
+                when (it) {
+                    is ApiState.Failure -> {
+                        Log.d("postCustomer", "Failure: ${it.message}")
+                    }
+
+                    is ApiState.Loading -> {
+                        Log.d(TAG, "postCustomer: Loading")
+                    }
+
+                    is ApiState.Success -> {
+                        Log.d(TAG, "postCustomer:${it.data.customers.get(0).id} ")
+                    }
+                }
+            }
+
         }
     }
 

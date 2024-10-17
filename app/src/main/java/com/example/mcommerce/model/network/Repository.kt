@@ -1,5 +1,7 @@
 package com.example.mcommerce.model.network
 
+import com.example.mcommerce.model.pojos.CustomerRequest
+import com.example.mcommerce.model.responses.CustomerResponse
 import com.example.mcommerce.model.responses.ProductResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -24,4 +26,12 @@ class Repository private constructor(private val remoteDataSource: RemoteDataSou
             emit(ProductDetails)
         }
     }
+
+    fun postCustomer(customer: CustomerRequest): Flow<CustomerResponse> {
+        return flow {
+            val PostCustomer = remoteDataSource.postCustomer(customer)
+            emit(PostCustomer)
+        }
+    }
+
 }

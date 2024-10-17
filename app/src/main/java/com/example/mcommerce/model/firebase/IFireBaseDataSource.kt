@@ -12,4 +12,5 @@ interface IFireBaseDataSource {
     //LogIn
     fun logIn(email: String, password: String): Task<AuthResult>
     fun checkIfEmailVerified(): FirebaseUser?
+
 }

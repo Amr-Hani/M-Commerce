@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.firebase.auth)
+    implementation(libs.androidx.legacy.support.v4)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -72,5 +73,19 @@ dependencies {
     //Glide
     implementation("com.github.bumptech.glide:glide:4.16.0")
 
+    //ImageSlider
+    implementation ("com.github.denzcoskun:ImageSlideshow:0.1.2")
+
+//    // أساسيات Android
+//    implementation ("androidx.appcompat:appcompat:1.6.1")
+//    implementation ("com.google.android.material:material:1.9.0")
+//
+//    // مكتبة ImageSlider
+//    implementation ("com.github.denzcoskun:ImageSlideshow:0.1.2")
+//
+//    // إذا كنت تستخدم Glide لتحميل الصور (اختياري ولكن موصى به)
+//    implementation ("com.github.bumptech.glide:glide:4.15.1")
+//    annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
 
 }
+

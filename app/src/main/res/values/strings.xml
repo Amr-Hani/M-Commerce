@@ -1,4 +1,5 @@
 
+
 <resources>
 <string name="app_name">MCommerce</string>
     <!-- TODO: Remove or change this placeholder text -->
@@ -32,3 +33,5 @@
 <string name="tv_colorOption">Color</string>
 <string name="btn_addToCard">Add To Card</string>
     </resources>
+
+

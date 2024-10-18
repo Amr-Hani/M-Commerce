@@ -16,4 +16,8 @@
     <string name="guest">Skip</string>
     <string name="discriptionProductDetails">Discription</string>
     <string name="reviewProductDetails">Review</string>
+    <string name="tv_size" />
+    <string name="tv_sizeOption">Size</string>
+    <string name="tv_colorOption">Color</string>
+    <string name="btn_addToCard">Add To Card</string>
 </resources>

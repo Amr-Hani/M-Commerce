@@ -3,7 +3,7 @@ package com.example.mcommerce.model.pojos
 data class Products(
     val id: Long,
     val title: String,
-    val bodyHtml: String,
+    val body_html: String,
     val vendor: String,
     val productType: String,
     val createdAt: String,

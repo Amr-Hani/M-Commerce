@@ -178,9 +178,14 @@ class LogInFragment : Fragment() {
 //
 //                val action = LogInFragmentDirections.actionLogInFragmentToProductInfoFragment()
 //                Navigation.findNavController(binding.root).navigate(action)
+
 //                val intent = Intent(activity, MainActivity2::class.java)
 ////                intent.putExtra("dataKey", "someData")// Optional: Passing data
 //                startActivity(intent)
+
+                val intent = Intent(requireActivity(), MainActivity2::class.java)
+                startActivity(intent)
+
             } else {
                 Toast.makeText(
                     requireContext(),

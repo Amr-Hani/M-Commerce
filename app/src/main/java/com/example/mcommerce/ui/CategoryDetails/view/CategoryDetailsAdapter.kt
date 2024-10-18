@@ -14,7 +14,7 @@ import com.example.mcommerce.model.responses.ProductResponse
 
 class CategoryDetailsAdapter(
     private val onItemClick: (ProductResponse) -> Unit
-) : ListAdapter<ProductResponse, CategoryDetailsAdapter.BrandViewHolder>(MyDiffUtil()) {
+) : ListAdapter<ProductResponse, CategoryDetailsAdapter.BrandViewHolder>(BrandViewHolder.MyDiffUtil()) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -40,6 +40,7 @@ class CategoryDetailsAdapter(
 
                 for (product in categoryItem.products) {
 
+
                     pricecategoryDetals.text = product.variants.getOrNull(0)?.price ?: "No Price"
 
 
@@ -52,21 +53,35 @@ class CategoryDetailsAdapter(
                     root.setOnClickListener {
                         onItemClick(categoryItem)
                     }
+
+                    // Handle item click
+                    root.setOnClickListener {
+                        onItemClick(categoryItem)
+                        //هنا انترفيس الى هتديلو ي عم منر ال ProductId
+                        //categoryItem.products.get(0).id
+
+                    }
+
                 }
             }
         }
-    }
 
 
-    class MyDiffUtil : DiffUtil.ItemCallback<ProductResponse>() {
-        override fun areItemsTheSame(oldItem: ProductResponse, newItem: ProductResponse): Boolean {
-            // Compare unique IDs or another unique identifier
-            return oldItem === newItem
+        class MyDiffUtil : DiffUtil.ItemCallback<ProductResponse>() {
+            override fun areItemsTheSame(
+                oldItem: ProductResponse,
+                newItem: ProductResponse
+            ): Boolean {
+                // Compare unique IDs or another unique identifier
+                return oldItem === newItem
+            }
+
+            override fun areContentsTheSame(
+                oldItem: ProductResponse,
+                newItem: ProductResponse
+            ): Boolean {
+                return oldItem == newItem
+            }
         }
-
-        override fun areContentsTheSame(oldItem: ProductResponse, newItem: ProductResponse): Boolean {
-            return oldItem == newItem
-        }
-    }
-}
+    }}
 

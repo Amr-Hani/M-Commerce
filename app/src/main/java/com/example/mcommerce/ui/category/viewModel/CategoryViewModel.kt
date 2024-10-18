@@ -6,10 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mcommerce.model.network.ApiState
 import com.example.mcommerce.model.network.Repository
-import com.example.mcommerce.model.pojos.CategoryItem
-import com.example.mcommerce.model.pojos.CategoryPOJO
 import com.example.mcommerce.model.pojos.CustomCollection
-import com.example.mcommerce.model.responses.ProductResponse
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

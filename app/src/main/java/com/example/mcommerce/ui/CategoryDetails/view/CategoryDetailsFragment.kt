@@ -84,4 +84,5 @@ class CategoryDetailsFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+    // val action -->navigate productId = اليى جاى من الفانكشن
 }

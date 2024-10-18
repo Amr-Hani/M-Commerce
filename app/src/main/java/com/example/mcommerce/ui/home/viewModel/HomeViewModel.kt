@@ -30,6 +30,7 @@ class HomeViewModel(private val repository: Repository) : ViewModel() {
                 }
                 .collectLatest{
                     _productsbrandId.value = ApiState.Success(it)
+                    Log.d("it", "getbrands:$it ")
                 }
         }
     }

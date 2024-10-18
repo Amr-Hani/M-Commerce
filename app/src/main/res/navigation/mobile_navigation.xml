@@ -43,7 +43,7 @@
     <fragment
         android:id="@+id/categoryDetailsFragment"
         android:name="com.example.mcommerce.ui.CategoryDetails.view.CategoryDetailsFragment"
-        android:label="fragment_category_details2"
+        android:label="SubCategory"
         tools:layout="@layout/fragment_category_details" >
         <argument   android:name="categoryId"
             app:argType="string" />

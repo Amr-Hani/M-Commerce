@@ -13,7 +13,7 @@ import com.example.mcommerce.model.pojos.CustomCollection
 import com.example.mcommerce.model.responses.ProductResponse
 
 class CategoryDetailsAdapter(
-    private val onItemClick: (ProductResponse) -> Unit // Changed to CustomCollection
+    private val onItemClick: (ProductResponse) -> Unit
 ) : ListAdapter<ProductResponse, CategoryDetailsAdapter.BrandViewHolder>(MyDiffUtil()) {
 
     override fun onCreateViewHolder(
@@ -26,48 +26,47 @@ class CategoryDetailsAdapter(
     }
 
     override fun onBindViewHolder(holder: BrandViewHolder, position: Int) {
-        val currentItem = getItem(position)
-        holder.bind(currentItem)
+        val currentItem = getItem(position) // Get the correct item at the current position
+        holder.bind(currentItem) // Bind the item at this position
     }
 
     class BrandViewHolder(
         private val binding: ItemCategoryDetailsBinding,
-        private val onItemClick: (ProductResponse) -> Unit // Changed to CustomCollection
+        private val onItemClick: (ProductResponse) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(categoryItem: ProductResponse) {
             binding.apply {
-                // Set brand title
-                pricecategoryDetals.text = categoryItem.products.get(0).variants.get(0).price
 
-                // Load brand image using Glide with options
-                Glide.with(imagcategoryDetals.context)
-                    .load(categoryItem.products.get(0).images.get(0).src) // Assuming `image.src` contains the image URL
-                    .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL)) // Caching options
-                    .into(imagcategoryDetals)
+                for (product in categoryItem.products) {
 
-                // Handle item click
-                root.setOnClickListener {
-                    onItemClick(categoryItem)
+                    pricecategoryDetals.text = product.variants.getOrNull(0)?.price ?: "No Price"
+
+
+                    Glide.with(imagcategoryDetals.context)
+                        .load(product.images.getOrNull(0)?.src)
+                        .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL))
+                        .into(imagcategoryDetals)
+
+                    // Handle item click for the whole category
+                    root.setOnClickListener {
+                        onItemClick(categoryItem)
+                    }
                 }
             }
         }
     }
 
+
     class MyDiffUtil : DiffUtil.ItemCallback<ProductResponse>() {
-        override fun areItemsTheSame(
-            oldItem: ProductResponse,
-            newItem: ProductResponse
-        ): Boolean {
+        override fun areItemsTheSame(oldItem: ProductResponse, newItem: ProductResponse): Boolean {
             // Compare unique IDs or another unique identifier
-            return oldItem === newItem // Ensure you have an 'id' property
+            return oldItem === newItem
         }
 
-        override fun areContentsTheSame(
-            oldItem: ProductResponse,
-            newItem: ProductResponse
-        ): Boolean {
+        override fun areContentsTheSame(oldItem: ProductResponse, newItem: ProductResponse): Boolean {
             return oldItem == newItem
         }
     }
 }
+

@@ -46,14 +46,14 @@ class CategoryDetailsFragment : Fragment() {
         binding.recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
         categoryDetailsAdapter = CategoryDetailsAdapter({})
         binding.recyclerView.adapter = categoryDetailsAdapter
-        // تهيئة ViewModel
+
         viewModelFactory = ViewModelFactory(
             Repository.getInstance(RemoteDataSource(ProductInfoRetrofit.productService))
         )
         viewModelCategoryDetails = ViewModelProvider(this, viewModelFactory)
             .get(com.example.mcommerce.ui.CategoryDetails.viewModel.viewModelCategoryDetails::class.java)
 
-        // جلب تفاصيل الفئة باستخدام categoryId
+
         getCategoryDetails(categoryId.toLong())
     }
 

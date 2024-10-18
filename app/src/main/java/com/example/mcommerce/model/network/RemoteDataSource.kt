@@ -6,42 +6,46 @@ import com.example.mcommerce.model.responses.CustomerResponse
 
 
 import SmartCollectionsItem
-import com.example.mcommerce.model.pojos.CategoryPOJO
 import com.example.mcommerce.model.pojos.CustomCollection
 import com.example.mcommerce.model.pojos.Products
+import com.example.mcommerce.model.responses.AddAddressResponse
 
 
 import com.example.mcommerce.model.responses.ProductResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-class RemoteDataSource(private val productServices: ProductServices) {
+class RemoteDataSource(private val api: ShopifyApi) {
     suspend fun getProductDetails(id: Long): ProductResponse {
-        return productServices.getProductDetails(id)
+        return api.getProductDetails(id)
     }
 
 
     suspend fun postCustomer(customer: CustomerRequest): CustomerResponse {
-        return productServices.createCustomer(customer)
+        return api.createCustomer(customer)
     }
 
     fun getBrands(): Flow<List<SmartCollectionsItem>> = flow {
-        val response = productServices.getvendorBrand().smartCollections
+        val response = api.getvendorBrand().smartCollections
         response?.filterNotNull()?.let { emit(it) }
     }
      fun getProductsByBrandId(id: Long): Flow<List<ProductResponse>> = flow {
-        productServices.getProductsByBrandId(id).let { emit(listOf(it) ) }
+        api.getProductsByBrandId(id).let { emit(listOf(it) ) }
     }
     fun getProductsBySubCategory(category: String): Flow<List<CustomCollection>> = flow {
-        val response = productServices.getProductsBySubCategory(category).customCollections
+        val response = api.getProductsBySubCategory(category).customCollections
         response?.filterNotNull()?.let { emit(it) }
     }
     fun getProducts(): Flow<List<Products>> = flow {
-        productServices.getProducts().let { emit(listOf(it) ) }
+        api.getProducts().let { emit(listOf(it) ) }
     }
      fun getProductById(id: Long): Flow<ProductResponse> = flow {
-        emit(productServices.getProductById(id))
+        emit(api.getProductById(id))
     }
+    suspend fun getAddresses(customerId: Long) = api.getAddresses(customerId)
 
+    suspend fun addAddress(customerId: Long, address: AddAddressResponse) = api.addAddress(customerId, address)
+
+    suspend fun deleteAddress(customerId: Long, addressId: Long) = api.deleteAddress(customerId, addressId)
 
 }

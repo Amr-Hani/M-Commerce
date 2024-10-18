@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.google.gms.google.services)
     id("androidx.navigation.safeargs.kotlin")
     id("kotlin-parcelize")
+    alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
 }
 
 android {
@@ -54,6 +55,7 @@ dependencies {
     implementation(libs.androidx.legacy.support.v4)
 
     implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.play.services.maps)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -91,6 +93,12 @@ dependencies {
 //    // إذا كنت تستخدم Glide لتحميل الصور (اختياري ولكن موصى به)
 //    implementation ("com.github.bumptech.glide:glide:4.15.1")
 //    annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
+    implementation ("com.paypal.sdk:paypal-android-sdk:2.16.0"){exclude(group = "io.card")
+        implementation ("com.squareup.okhttp3:logging-interceptor:4.9.0")
 
-}
+
+        implementation("com.paypal.android:paypal-web-payments:1.5.0")
+
+
+}}
 

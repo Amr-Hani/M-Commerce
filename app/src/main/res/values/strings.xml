@@ -28,5 +28,6 @@
     <string name="_profile">Profile</string>
     <string name="brands">Brands</string>
     <string name="brand">Brands</string>
+    <string name="country">country\n</string>
 
 </resources>

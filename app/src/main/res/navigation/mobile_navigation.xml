@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
     android:label="brand"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@id/settingFragment">
 
     <fragment
         android:id="@+id/navigation_home"
@@ -47,6 +47,54 @@
         tools:layout="@layout/fragment_category_details" >
         <argument   android:name="categoryId"
             app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingFragment"
+        android:name="com.example.mcommerce.ui.setting.view.SettingFragment"
+        android:label="fragment_setting"
+        tools:layout="@layout/fragment_setting" >
+        <action
+            android:id="@+id/action_settingFragment_to_aboutUsFragment"
+            app:destination="@id/aboutUsFragment" />
+        <action
+            android:id="@+id/action_settingFragment_to_contactUsFragment"
+            app:destination="@id/contactUsFragment" />
+        <action
+            android:id="@+id/action_settingFragment_to_addressFragment"
+            app:destination="@id/addressFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/aboutUsFragment"
+        android:name="com.example.mcommerce.AboutUsFragment"
+        android:label="fragment_about_us"
+        tools:layout="@layout/fragment_about_us" />
+    <fragment
+        android:id="@+id/contactUsFragment"
+        android:name="com.example.mcommerce.ContactUsFragment"
+        android:label="fragment_contact_us"
+        tools:layout="@layout/fragment_contact_us" />
+    <fragment
+        android:id="@+id/addressFragment"
+        android:name="com.example.mcommerce.ui.setting.view.adress.AddressFragment"
+        android:label="fragment_address"
+        tools:layout="@layout/fragment_address" >
+        <action
+            android:id="@+id/action_addressFragment_to_addressDetailsFragment"
+            app:destination="@id/addressDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/mapsFragment"
+        android:name="com.example.mcommerce.ui.setting.view.adress.MapsFragment"
+        android:label="fragment_maps"
+        tools:layout="@layout/fragment_maps" />
+    <fragment
+        android:id="@+id/addressDetailsFragment"
+        android:name="com.example.mcommerce.ui.setting.view.adress.AddressDetailsFragment"
+        android:label="fragment_address_details"
+        tools:layout="@layout/fragment_address_details" >
+        <action
+            android:id="@+id/action_addressDetailsFragment_to_mapsFragment"
+            app:destination="@id/mapsFragment" />
     </fragment>
 
 </navigation>

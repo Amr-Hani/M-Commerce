@@ -49,7 +49,10 @@ class CategoryDetailsAdapter(
                 // Handle item click
                 root.setOnClickListener {
                     onItemClick(categoryItem)
+                    //هنا انترفيس الى هتديلو ي عم منر ال ProductId
+                    //categoryItem.products.get(0).id
                 }
+
             }
         }
     }

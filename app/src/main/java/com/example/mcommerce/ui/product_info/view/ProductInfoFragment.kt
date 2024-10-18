@@ -35,6 +35,7 @@ class ProductInfoFragment : Fragment() {
     lateinit var productInfoViewModel: ProductInfoViewModel
     lateinit var productInfoViewModelFactory: ProductInfoViewModelFactory
     private val TAG = "ProductInfoFragment"
+    var productId:Long = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -49,6 +50,7 @@ class ProductInfoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        productId = ProductInfoFragmentArgs.fromBundle(requireArguments()).productId
         productInfoViewModelFactory = ProductInfoViewModelFactory(
             Repository.getInstance(
                 RemoteDataSource(ProductInfoRetrofit.productService)
@@ -62,7 +64,7 @@ class ProductInfoFragment : Fragment() {
     }
 
     fun getProductInfoDetails() {
-        productInfoViewModel.getProductDetails(9728829063467)
+        productInfoViewModel.getProductDetails(productId)
         lifecycleScope.launch {
             productInfoViewModel.productDetailsStateFlow.collectLatest {
                 when (it) {

@@ -1,6 +1,7 @@
 package com.example.mcommerce.ui.authentication.view
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.Paint
@@ -16,6 +17,7 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
+import com.example.mcommerce.MainActivity2
 import com.example.mcommerce.databinding.FragmentLogInBinding
 import com.example.mcommerce.model.firebase.FireBaseDataSource
 import com.example.mcommerce.model.firebase.Repo
@@ -176,7 +178,8 @@ class LogInFragment : Fragment() {
 //
 //                val action = LogInFragmentDirections.actionLogInFragmentToProductInfoFragment()
 //                Navigation.findNavController(binding.root).navigate(action)
-                    
+                val intent = Intent(requireActivity(), MainActivity2::class.java)
+                startActivity(intent)
             } else {
                 Toast.makeText(
                     requireContext(),

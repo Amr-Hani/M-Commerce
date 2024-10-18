@@ -47,6 +47,18 @@
         tools:layout="@layout/fragment_category_details" >
         <argument   android:name="categoryId"
             app:argType="string" />
+        <action
+            android:id="@+id/action_categoryDetailsFragment_to_productInfoFragment"
+            app:destination="@id/productInfoFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/productInfoFragment"
+        android:name="com.example.mcommerce.ui.product_info.view.ProductInfoFragment"
+        android:label="fragment_product_info"
+        tools:layout="@layout/fragment_product_info" >
+        <argument
+            android:name="productId"
+            app:argType="long" />
     </fragment>
 
 </navigation>

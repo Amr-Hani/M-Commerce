@@ -29,7 +29,7 @@ class AddressFragment : Fragment() {
    // private lateinit var sharedPreferences: SharedPreferences
     private lateinit var addressAdapter: AddressAdapter
     private lateinit var settingViewModel: SettingViewModel
-    val customerId =8229253710128
+    val customerId =8246104654123
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

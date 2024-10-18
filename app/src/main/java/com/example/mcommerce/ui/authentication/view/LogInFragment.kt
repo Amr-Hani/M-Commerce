@@ -173,8 +173,10 @@ class LogInFragment : Fragment() {
                 customerRequest.postedCustomer.email = email
                 postCustomer(customerRequest)
                 // هنا نافيجيت ي عم منير ع ال home screen اول متعمل login
-                val action = LogInFragmentDirections.actionLogInFragmentToProductInfoFragment()
-                Navigation.findNavController(binding.root).navigate(action)
+//
+//                val action = LogInFragmentDirections.actionLogInFragmentToProductInfoFragment()
+//                Navigation.findNavController(binding.root).navigate(action)
+                    
             } else {
                 Toast.makeText(
                     requireContext(),

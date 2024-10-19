@@ -6,6 +6,7 @@ plugins {
     id("kotlin-parcelize")
 }
 
+
 android {
     namespace = "com.example.mcommerce"
     compileSdk = 34
@@ -22,6 +23,9 @@ android {
 
     buildFeatures{
         viewBinding = true
+    }
+    buildFeatures {
+        dataBinding = true
     }
 
     buildTypes {
@@ -54,6 +58,7 @@ dependencies {
     implementation(libs.androidx.legacy.support.v4)
 
     implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.fragment.ktx)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

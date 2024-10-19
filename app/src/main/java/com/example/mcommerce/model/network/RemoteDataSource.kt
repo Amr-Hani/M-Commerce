@@ -1,6 +1,8 @@
 package com.example.mcommerce.model.network
 
 
+
+
 import com.example.mcommerce.model.pojos.CustomerRequest
 import com.example.mcommerce.model.responses.CustomerResponse
 
@@ -14,6 +16,7 @@ import com.example.mcommerce.model.pojos.Products
 import com.example.mcommerce.model.responses.ProductResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+
 
 class RemoteDataSource(private val productServices: ProductServices) {
     suspend fun getProductDetails(id: Long): ProductResponse {
@@ -36,12 +39,9 @@ class RemoteDataSource(private val productServices: ProductServices) {
         val response = productServices.getProductsBySubCategory(category).customCollections
         response?.filterNotNull()?.let { emit(it) }
     }
-    fun getProducts(): Flow<List<Products>> = flow {
-        productServices.getProducts().let { emit(listOf(it) ) }
-    }
-     fun getProductById(id: Long): Flow<ProductResponse> = flow {
-        emit(productServices.getProductById(id))
-    }
+
+
+
 
 
 }

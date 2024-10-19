@@ -7,15 +7,20 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import com.example.mcommerce.R
 
 import com.example.mcommerce.databinding.FragmentProfileBinding
+import com.example.mcommerce.ui.category.view.CategoryFragmentDirections
+import com.example.mcommerce.ui.order.view.OrderFragment
 
 class ProfileFragment : Fragment() {
 
     private var _binding: FragmentProfileBinding? = null
+    private lateinit var viewModel: ProfileViewModel
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
+
+
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -23,17 +28,22 @@ class ProfileFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val notificationsViewModel =
-            ViewModelProvider(this).get(ProfileViewModel::class.java)
+
 
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textNotifications
-        notificationsViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
+
+
         return root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.order.setOnClickListener {
+            val action = ProfileFragmentDirections.actionNavigationProfileToOrderFragment()
+            findNavController().navigate(action)
+        }
     }
 
     override fun onDestroyView() {

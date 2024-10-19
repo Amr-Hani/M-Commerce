@@ -30,7 +30,11 @@
         android:id="@+id/navigation_profile"
         android:name="com.example.mcommerce.ui.profile.ProfileFragment"
         android:label="@string/_profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_navigation_profile_to_orderFragment"
+            app:destination="@id/orderFragment" />
+    </fragment>
     <fragment
         android:id="@+id/brandDetails"
         android:name="com.example.mcommerce.ui.brandDetails.view.BrandDetails"
@@ -63,5 +67,15 @@
             android:name="productId"
             app:argType="long" />
     </fragment>
+    <fragment
+        android:id="@+id/navigation_setting"
+        android:name="com.example.mcommerce.Setting"
+        android:label="Setting"
+        tools:layout="@layout/fragment_setting" />
+    <fragment
+        android:id="@+id/orderFragment"
+        android:name="com.example.mcommerce.ui.order.view.OrderFragment"
+        android:label="@string/order"
+        tools:layout="@layout/fragment_order" />
 
 </navigation>

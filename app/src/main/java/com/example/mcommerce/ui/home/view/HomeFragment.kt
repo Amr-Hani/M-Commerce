@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView.Orientation
 import com.example.mcommerce.databinding.FragmentHomeBinding
 import com.example.mcommerce.model.network.ApiState
 import com.example.mcommerce.model.network.ProductInfoRetrofit
@@ -68,6 +69,7 @@ class HomeFragment : Fragment() {
 
         // Collect and observe the API state from the ViewModel
         getBrandProduct()
+        //نا هنا عملت تعديل  brandid = 503034675499
         navigationtoBrandDetails(brandid = 503034675499)
     }
 
@@ -115,7 +117,7 @@ class HomeFragment : Fragment() {
             }
         }
 
-        // ضبط الـ adapter مع OnClickListener
+
         brandAdapter = BrandAdapter(onItemClicked)
         binding.recycleridBrand.adapter = brandAdapter
     }

@@ -1,6 +1,7 @@
 package com.example.mcommerce.model.network
 
 
+
 import com.example.mcommerce.model.pojos.CustomerRequest
 import com.example.mcommerce.model.responses.CustomerResponse
 
@@ -60,6 +61,10 @@ class Repository private constructor(private val remoteDataSource: RemoteDataSou
    fun getProductById(id: Long):Flow<List<ProductResponse>> {
         return remoteDataSource.getProductsByBrandId(id)
     }
+
+
+
+
 }
 
 

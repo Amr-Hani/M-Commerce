@@ -8,10 +8,14 @@ import com.example.mcommerce.model.responses.CustomerResponse
 import SmartCollectionsItem
 import com.example.mcommerce.model.pojos.CategoryPOJO
 import com.example.mcommerce.model.pojos.CustomCollection
+import com.example.mcommerce.model.pojos.DraftOrderRequest
 import com.example.mcommerce.model.pojos.Products
+import com.example.mcommerce.model.pojos.UpdateDraftOrderRequest
 
 
 import com.example.mcommerce.model.responses.ProductResponse
+import com.example.mcommerce.model.responses.ReceivedDraftOrder
+import com.example.mcommerce.model.responses.ReceivedOrdersResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -36,12 +40,23 @@ class RemoteDataSource(private val productServices: ProductServices) {
         val response = productServices.getProductsBySubCategory(category).customCollections
         response?.filterNotNull()?.let { emit(it) }
     }
-    fun getProducts(): Flow<List<Products>> = flow {
-        productServices.getProducts().let { emit(listOf(it) ) }
+    suspend fun getProducts(): ProductResponse {
+        return productServices.getProducts()
     }
      fun getProductById(id: Long): Flow<ProductResponse> = flow {
         emit(productServices.getProductById(id))
     }
 
+    suspend fun createDraftOrder(draftOrderRequest: DraftOrderRequest): ReceivedDraftOrder {
+        return productServices.createDraftOrder(draftOrderRequest)
+    }
+
+    suspend fun updateDraftOrder(customerId: Long, updateDraftOrderRequest: UpdateDraftOrderRequest):UpdateDraftOrderRequest{
+        return productServices.updateDraftOrder(customerId, updateDraftOrderRequest)
+    }
+
+    suspend fun getAllDraftOrders(): ReceivedOrdersResponse {
+        return productServices.getAllDraftOrders()
+    }
 
 }

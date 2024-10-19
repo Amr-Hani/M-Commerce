@@ -11,11 +11,16 @@ import retrofit2.http.POST
 
 import BrandsPOJO
 import com.example.mcommerce.model.pojos.CategoryPOJO
+import com.example.mcommerce.model.pojos.DraftOrderRequest
 
 import com.example.mcommerce.model.pojos.Products
+import com.example.mcommerce.model.pojos.UpdateDraftOrderRequest
+import com.example.mcommerce.model.responses.ReceivedDraftOrder
+import com.example.mcommerce.model.responses.ReceivedOrdersResponse
 
 
 import kotlinx.coroutines.flow.Flow
+import retrofit2.http.PUT
 
 import retrofit2.http.Path
 
@@ -44,11 +49,24 @@ interface ProductServices {
 
     @GET(  "admin/api/2024-10/custom_collections.json")
     suspend fun getProductsBySubCategory(@Query("product_type") subCategory: String):CategoryPOJO
-    @GET("products.json")
-    suspend fun getProducts(): Products
 
+    @GET("admin/api/2024-10/products.json")
+    suspend fun getProducts(): ProductResponse
 
     suspend fun getProductById(@Path("product_id") productId:Long):ProductResponse
 
+    @POST("admin/api/2024-10/draft_orders.json")
+    suspend fun createDraftOrder(
+        @Body draftOrderRequest: DraftOrderRequest
+    ): ReceivedDraftOrder
+
+    @PUT("admin/api/2024-10/draft_orders/{draftOrderId}.json")
+    suspend fun updateDraftOrder(
+        @Path("draftOrderId") draftOrderId: Long,
+        @Body updateDraftOrderRequest: UpdateDraftOrderRequest
+    ): UpdateDraftOrderRequest
+
+    @GET("admin/api/2024-10/draft_orders.json")
+    suspend fun getAllDraftOrders(): ReceivedOrdersResponse
 
 }

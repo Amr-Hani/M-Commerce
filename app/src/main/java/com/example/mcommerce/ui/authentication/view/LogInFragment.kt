@@ -26,8 +26,8 @@ import com.example.mcommerce.model.network.ProductInfoRetrofit
 import com.example.mcommerce.model.network.RemoteDataSource
 import com.example.mcommerce.model.network.Repository
 import com.example.mcommerce.model.pojos.Address
+import com.example.mcommerce.model.pojos.Customer
 import com.example.mcommerce.model.pojos.CustomerRequest
-import com.example.mcommerce.model.pojos.PostedCustomer
 import com.example.mcommerce.my_key.MyKey
 import com.example.mcommerce.ui.authentication.viewmodel.AuthenticationViewModel
 import com.example.mcommerce.ui.authentication.viewmodel.AuthenticationViewModelFactory
@@ -55,7 +55,7 @@ class LogInFragment : Fragment() {
         country = "Egypt"
     )
 
-    val customer = PostedCustomer(
+    val customer = Customer(
         first_name = "Amr",
         last_name = "Hani",
         email = "3mrhani@gmail.com",
@@ -66,13 +66,10 @@ class LogInFragment : Fragment() {
         password_confirmation = "Am#123456",
         send_email_welcome = false
     )
-
+    val customerRequest = CustomerRequest(customer)
     override fun onStart() {
         super.onStart()
-        val user = authenticationViewModel.checkIfEmailVerified()
-        if (user != null) {
-            // هنا نافيجيت ي عم منير ع ال home screen اول متعمل login
-        }
+        checkIfEmailVerified()
     }
 
     override fun onCreateView(
@@ -140,7 +137,8 @@ class LogInFragment : Fragment() {
             authenticationViewModel.logIn(email, password)
                 .addOnCompleteListener(requireActivity()) { task ->
                     if (task.isSuccessful) {
-                        checkIfEmailVerified(email)
+                        customerRequest.customer.email = email
+                        checkIfEmailVerified()
                     } else {
                         binding.etPasswordLogin.error = "Maybe Password Is Incorrect"
                         binding.etPasswordLogin.background.setTint(Color.RED)
@@ -162,7 +160,7 @@ class LogInFragment : Fragment() {
         }
     }
 
-    private fun checkIfEmailVerified(email: String) {
+    private fun checkIfEmailVerified() {
         val user = authenticationViewModel.checkIfEmailVerified()
         if (user != null) {
             if (user.isEmailVerified) {
@@ -171,8 +169,7 @@ class LogInFragment : Fragment() {
                     .show()
                 sharedPreferences.edit().putString(MyKey.GUEST, "LogIn")
                     .apply()
-                val customerRequest = CustomerRequest(customer)
-                customerRequest.postedCustomer.email = email
+
                 postCustomer(customerRequest)
                 // هنا نافيجيت ي عم منير ع ال home screen اول متعمل login
 //

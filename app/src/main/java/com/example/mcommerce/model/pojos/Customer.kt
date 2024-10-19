@@ -1,10 +1,10 @@
 package com.example.mcommerce.model.pojos
 
 data class CustomerRequest(
-	val postedCustomer: PostedCustomer
+	val customer: Customer
 )
 
-data class PostedCustomer(
+data class Customer(
 	val first_name: String,
 	val last_name: String,
 	var email: String,
@@ -15,7 +15,6 @@ data class PostedCustomer(
 	val password_confirmation: String,
 	val send_email_welcome: Boolean
 )
-
 data class Address(
 	val address1: String,
 	val city: String,

@@ -44,7 +44,7 @@ class AuthenticationViewModel(private val repo: IRepo, private val repository: R
 
     fun postCustomer(customer: CustomerRequest) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.postCustomer(customer)
+            try { val response = repository.postCustomer(customer)
                 .catch {
                     mutableCustomerResponseStateFlow.value = ApiState.Failure(it.toString())
                     Log.e("TAG", "getProductDetailsViewModel: ${it.message}")
@@ -52,6 +52,11 @@ class AuthenticationViewModel(private val repo: IRepo, private val repository: R
                 .collectLatest {
                     mutableCustomerResponseStateFlow.value = ApiState.Success(it)
                 }
+                // Handle the response
+            } catch (e: Exception) {
+                Log.d("TAG", "getProductDetailsViewModel: ${e.message}")
+            }
+
         }
     }
 }

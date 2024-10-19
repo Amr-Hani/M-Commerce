@@ -10,7 +10,7 @@ data class Products(
     val handle: String,
     val updatedAt: String,
     val publishedAt: String,
-    val templateSuffix: String?,
+    var templateSuffix: String?,
     val publishedScope: String,
     val tags: String,
     val status: String,

@@ -35,7 +35,7 @@ class ProductInfoFragment : Fragment() {
     lateinit var productInfoViewModel: ProductInfoViewModel
     lateinit var productInfoViewModelFactory: ProductInfoViewModelFactory
     private val TAG = "ProductInfoFragment"
-    var productId:Long = 0
+    var productId:Long = 9728826507563
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }

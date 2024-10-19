@@ -1,6 +1,7 @@
 package com.example.mcommerce.model.network
 
 import android.util.Base64
+import com.google.gson.GsonBuilder
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -17,13 +18,15 @@ object ProductInfoRetrofit {
     private val client: OkHttpClient = OkHttpClient.Builder()
         .addInterceptor(authInterceptor)
     .build()
-
+    private val gson = GsonBuilder()
+        .setLenient() // Allow lenient JSON parsing
+        .create()
     private const val BASE_URL = "https://itp-ism-and1.myshopify.com/"
     private val retrofit: Retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
-        .addConverterFactory(GsonConverterFactory.create())
+        .addConverterFactory(GsonConverterFactory.create(gson))
         .client(client)
         .build()
 
-    val productService = retrofit.create(ProductServices::class.java)
+    val productService = retrofit.create(ShopifyApi::class.java)
 }

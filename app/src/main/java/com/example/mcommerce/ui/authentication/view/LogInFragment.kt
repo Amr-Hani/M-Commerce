@@ -67,12 +67,11 @@ class LogInFragment : Fragment() {
         send_email_welcome = false
     )
 
+    val customerRequest = CustomerRequest(customer)
+
     override fun onStart() {
         super.onStart()
-        val user = authenticationViewModel.checkIfEmailVerified()
-        if (user != null) {
-            // هنا نافيجيت ي عم منير ع ال home screen اول متعمل login
-        }
+        checkIfEmailVerified()
     }
 
     override fun onCreateView(
@@ -140,7 +139,8 @@ class LogInFragment : Fragment() {
             authenticationViewModel.logIn(email, password)
                 .addOnCompleteListener(requireActivity()) { task ->
                     if (task.isSuccessful) {
-                        checkIfEmailVerified(email)
+                        customerRequest.postedCustomer.email = email
+                        checkIfEmailVerified()
                     } else {
                         binding.etPasswordLogin.error = "Maybe Password Is Incorrect"
                         binding.etPasswordLogin.background.setTint(Color.RED)
@@ -162,7 +162,7 @@ class LogInFragment : Fragment() {
         }
     }
 
-    private fun checkIfEmailVerified(email: String) {
+    private fun checkIfEmailVerified() {
         val user = authenticationViewModel.checkIfEmailVerified()
         if (user != null) {
             if (user.isEmailVerified) {
@@ -171,8 +171,6 @@ class LogInFragment : Fragment() {
                     .show()
                 sharedPreferences.edit().putString(MyKey.GUEST, "LogIn")
                     .apply()
-                val customerRequest = CustomerRequest(customer)
-                customerRequest.postedCustomer.email = email
                 postCustomer(customerRequest)
                 // هنا نافيجيت ي عم منير ع ال home screen اول متعمل login
 //

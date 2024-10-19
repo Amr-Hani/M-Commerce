@@ -6,7 +6,6 @@ import com.example.mcommerce.model.responses.CustomerResponse
 import com.example.mcommerce.model.responses.ProductResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.Headers
 import retrofit2.http.POST
 
 import BrandsPOJO
@@ -15,16 +14,18 @@ import BrandsPOJO
 import com.example.mcommerce.model.pojos.CategoryPOJO
 
 import com.example.mcommerce.model.pojos.Products
-
-
-import kotlinx.coroutines.flow.Flow
+import com.example.mcommerce.model.responses.address.AddAddressResponse
+import com.example.mcommerce.model.responses.address.AddressResponse
+import com.example.mcommerce.model.responses.coupons.CouponResponse
+import retrofit2.Response
 import retrofit2.http.DELETE
+
 
 import retrofit2.http.Path
 
 import retrofit2.http.Query
 
-interface ProductServices {
+interface ShopifyApi {
     @GET("admin/api/2024-10/products.json")
     suspend fun getProductDetails(@Query("ids") id: Long): ProductResponse
 
@@ -48,10 +49,33 @@ interface ProductServices {
     @GET(  "admin/api/2024-10/custom_collections.json")
     suspend fun getProductsBySubCategory(@Query("product_type") subCategory: String):CategoryPOJO
 
+
+
+
+
+
+    suspend fun getProductById(@Path("product_id") productId:Long):ProductResponse
+
+
+    @GET("admin/api/2024-10/customers/{customerId}/addresses.json")
+    suspend fun getAddresses(
+        @Path("customerId") customerId: Long
+    ): AddressResponse
+
+
+    @POST("admin/api/2024-10/customers/{customerId}/addresses.json")
+    suspend fun addAddress(
+        @Path("customerId") customerId: Long,
+        @Body address: AddAddressResponse
+    ): Response<AddAddressResponse>
+
+    @DELETE("admin/api/2024-10/customers/{customerId}/addresses/{addressId}.json")
+    suspend fun deleteAddress(
+        @Path("customerId") customerId: Long,
+        @Path("addressId") addressId: Long
+    ): Response<Unit>
+    //coupons
+    @GET("/admin/api/2024-10/price_rules.json")
+    suspend fun getCoupons(): CouponResponse
 }
-
-
-
-
-
 

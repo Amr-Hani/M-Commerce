@@ -11,8 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.mcommerce.R
 
 import com.example.mcommerce.databinding.FragmentProfileBinding
-import com.example.mcommerce.ui.category.view.CategoryFragmentDirections
-import com.example.mcommerce.ui.order.view.OrderFragment
+
 
 class ProfileFragment : Fragment() {
 
@@ -40,10 +39,10 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.order.setOnClickListener {
-            val action = ProfileFragmentDirections.actionNavigationProfileToOrderFragment()
-            findNavController().navigate(action)
-        }
+//        binding.order.setOnClickListener {
+//            val action = ProfileFragmentDirections.actionNavigationProfileToOrderFragment()
+//            findNavController().navigate(action)
+//        }
     }
 
     override fun onDestroyView() {

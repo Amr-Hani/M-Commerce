@@ -8,10 +8,9 @@ import com.example.mcommerce.model.responses.CustomerResponse
 
 
 import SmartCollectionsItem
-import com.example.mcommerce.model.pojos.CategoryPOJO
 import com.example.mcommerce.model.pojos.CustomCollection
 
-import com.example.mcommerce.model.pojos.Products
+import com.example.mcommerce.model.responses.address.AddAddressResponse
 
 import com.example.mcommerce.model.responses.ProductResponse
 import kotlinx.coroutines.flow.Flow
@@ -62,8 +61,14 @@ class Repository private constructor(private val remoteDataSource: RemoteDataSou
         return remoteDataSource.getProductsByBrandId(id)
     }
 
+    suspend fun getAddresses(customerId: Long) = remoteDataSource.getAddresses(customerId)
 
+    suspend fun addAddress(customerId: Long, address: AddAddressResponse) = remoteDataSource.addAddress(customerId, address)
 
+    suspend fun deleteAddress(customerId: Long, addressId: Long) = remoteDataSource.deleteAddress(customerId, addressId)
+
+    // Fetch coupons from RemoteDataSource
+    fun getCoupons() = remoteDataSource.getCoupons()
 
 }
 

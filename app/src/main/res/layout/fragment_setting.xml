@@ -1,14 +1,188 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Setting">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/white"
+    tools:context=".ui.setting.view.SettingFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <!-- Address Section -->
+    <LinearLayout
+        android:id="@+id/addressSection"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingVertical="12dp"
+        android:layout_marginTop="8dp">
 
-</FrameLayout>
+        <TextView
+            android:id="@+id/addressLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Address"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/addressText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Istanbul"
+            android:textColor="@color/gray"
+            android:textSize="14sp" />
+
+        <ImageView
+            android:id="@+id/addressIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow_right"
+            android:contentDescription="Arrow Icon"
+            android:paddingStart="8dp" />
+    </LinearLayout>
+
+    <!-- Divider -->
+    <View
+        android:id="@+id/addressDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/gray_light" />
+
+    <!-- Currency Section -->
+    <LinearLayout
+        android:id="@+id/currencySection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingVertical="12dp"
+        android:layout_marginTop="8dp">
+
+        <TextView
+            android:id="@+id/currencyLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Currency"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/currencyText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="EGP"
+            android:textColor="@color/gray"
+            android:textSize="14sp" />
+
+        <ImageView
+            android:id="@+id/currencyIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow_right"
+            android:contentDescription="Arrow Icon"
+            android:paddingStart="8dp" />
+    </LinearLayout>
+
+    <!-- Divider -->
+    <View
+        android:id="@+id/currencyDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/gray_light" />
+
+    <!-- Contact Us Section -->
+    <LinearLayout
+        android:id="@+id/contactSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingVertical="12dp"
+        android:layout_marginTop="8dp">
+
+        <TextView
+            android:id="@+id/contactLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Contact us"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/contactIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow_right"
+            android:contentDescription="Arrow Icon"
+            android:paddingStart="8dp" />
+    </LinearLayout>
+
+    <!-- Divider -->
+    <View
+        android:id="@+id/contactDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/gray_light" />
+
+    <!-- About Us Section -->
+    <LinearLayout
+        android:id="@+id/aboutSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingVertical="12dp"
+        android:layout_marginTop="8dp">
+
+        <TextView
+            android:id="@+id/aboutLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="About us"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/aboutIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow_right"
+            android:contentDescription="Arrow Icon"
+            android:paddingStart="8dp" />
+    </LinearLayout>
+
+    <com.denzcoskun.imageslider.ImageSlider
+        android:id="@+id/imageSlider"
+        android:layout_width="match_parent"
+        app:iss_auto_cycle="true"
+        android:layout_height="200dp"
+        app:iss_delay="0"
+        app:iss_placeholder="@color/cardview_dark_background"
+        app:iss_error_image="@color/cardview_dark_background"
+        app:iss_corner_radius="5"
+        app:iss_selected_dot="@drawable/default_selected_dot"
+        app:iss_unselected_dot="@drawable/default_unselected_dot"
+        app:iss_period="4000"
+        android:layout_marginTop="16dp" />
+
+    <!-- Logout Button -->
+    <Button
+        android:id="@+id/logoutButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:backgroundTint="@color/purple"
+        android:paddingVertical="12dp"
+        android:text="Logout"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+</LinearLayout>
+

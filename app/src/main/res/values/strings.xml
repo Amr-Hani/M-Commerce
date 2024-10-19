@@ -18,6 +18,7 @@
     <string name="discriptionProductDetails">Discription</string>
     <string name="reviewProductDetails">Review</string>
 
+
     <string name="title_activity_main2">MainActivity2</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
@@ -29,5 +30,11 @@
     <string name="brands">Brands</string>
     <string name="brand">Brands</string>
     <string name="country">country\n</string>
+
+
+    <string name="tv_size" />
+    <string name="tv_sizeOption">Size</string>
+    <string name="tv_colorOption">Color</string>
+    <string name="btn_addToCard">Add To Card</string>
 
 </resources>

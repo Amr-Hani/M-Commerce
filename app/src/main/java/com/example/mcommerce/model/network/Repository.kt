@@ -9,7 +9,7 @@ import com.example.mcommerce.model.responses.CustomerResponse
 import SmartCollectionsItem
 import com.example.mcommerce.model.pojos.CustomCollection
 
-import com.example.mcommerce.model.responses.AddAddressResponse
+import com.example.mcommerce.model.responses.address.AddAddressResponse
 
 import com.example.mcommerce.model.responses.ProductResponse
 import kotlinx.coroutines.flow.Flow

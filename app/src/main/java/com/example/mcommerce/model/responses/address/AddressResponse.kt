@@ -1,4 +1,6 @@
-package com.example.mcommerce.model.responses
+package com.example.mcommerce.model.responses.address
+
+import com.example.mcommerce.model.responses.Address
 
 data class AddressResponse(val addresses: List<Address>)
 data class CustomerAddress(

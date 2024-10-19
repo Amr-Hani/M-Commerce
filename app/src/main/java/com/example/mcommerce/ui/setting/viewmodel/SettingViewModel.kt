@@ -5,25 +5,28 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mcommerce.model.network.ApiState
 import com.example.mcommerce.model.network.Repository
-import com.example.mcommerce.model.responses.AddAddressResponse
+import com.example.mcommerce.model.responses.address.AddAddressResponse
 import com.example.mcommerce.model.responses.Address
-import com.example.mcommerce.model.responses.CustomerAddress
+import com.example.mcommerce.model.responses.address.CustomerAddress
+import com.example.mcommerceapp.model.network.IRepo
+
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
-class SettingViewModel(private val repository: Repository) : ViewModel() {
+class SettingViewModel(private val repository: Repository,private val repo: IRepo) : ViewModel() {
     private val _addressState = MutableStateFlow<ApiState<List<Address>>>(ApiState.Loading())
     val addressState: StateFlow<ApiState<List<Address>>> = _addressState
 //init {
-//    loadAddresses(8229253710128)
+//    fetchLatestRates()
 //}
 
-//    private val _exchangeRatesState = MutableStateFlow<UIState>(UIState.Loading)
-//    val exchangeRatesState: StateFlow<UIState> get() = _exchangeRatesState
-//
+    private val _exchangeRatesState = MutableStateFlow<ApiState<Double>>(ApiState.Loading())
+    val exchangeRatesState: StateFlow<ApiState<Double>> get() = _exchangeRatesState
+
+  /*
 //    private val _addressState = MutableStateFlow<UIState>(UIState.Loading)
 //    val addressState: StateFlow<UIState> get() = _addressState
 //    init {
@@ -101,10 +104,7 @@ class SettingViewModel(private val repository: Repository) : ViewModel() {
 //            _addressState.value = UIState.Success(addresses)
 //        }
 //    }
-
-
-
-
+*/
 
     // Fetch addresses and emit appropriate states
     fun loadAddresses(customerId: Long) {
@@ -113,7 +113,7 @@ class SettingViewModel(private val repository: Repository) : ViewModel() {
             try {
                 Log.d("API Request", "Loading addresses for customerId: $customerId")
                 val response = repository.getAddresses(customerId)
-                Log.d("API Response", "Addresses received: ${response.addresses?.size}")
+                Log.d("API Response", "Addresses received: ${response.addresses.size}")
 
                 // Check for nullability and assign the state
                 _addressState.value = ApiState.Success(response.addresses ?: emptyList())
@@ -179,27 +179,32 @@ class SettingViewModel(private val repository: Repository) : ViewModel() {
         }
     }
 
-//    private fun fetchLatestRates() {
-//        viewModelScope.launch {
-//            repository.getLatestExchangeRates().collect { response ->
-//                try {
-//                    if (response.isSuccessful) {
-//                        response.body()?.let { data ->
-//                            _exchangeRatesState.value = UIState.Success(data.conversion_rates["EGP"])
-//                            val x= data.conversion_rates["EGP"]
-//                            Log.d("Transaction", "fetchLatestRates: ${x?.times(50)}")
-//                        } ?: run {
-//                            _exchangeRatesState.value = UIState.Failure(NullPointerException("No data available"))
-//                        }
-//                    } else {
-//                        _exchangeRatesState.value = UIState.Failure(HttpException(response))
-//                    }
-//                } catch (e: IOException) {
-//                    _exchangeRatesState.value = UIState.Failure(e)
-//                } catch (e: Exception) {
-//                    _exchangeRatesState.value = UIState.Failure(e)
-//                }
-//            }
-//        }
-//    }
+    // Fetch the latest exchange rates and extract EGP rate
+    private fun fetchLatestRates() {
+        viewModelScope.launch {
+            repo.getLatestExchangeRates().collect { response ->
+                try {
+                    if (response.isSuccessful) {
+                        response.body()?.let { data ->
+                            val egpRate = data.conversion_rates["EGP"]
+                            if (egpRate != null) {
+                                _exchangeRatesState.value = ApiState.Success(egpRate)
+                                Log.d("Transaction", "EGP rate: ${egpRate * 50}")
+                            } else {
+                                _exchangeRatesState.value = ApiState.Failure("EGP rate not found")
+                            }
+                        } ?: run {
+                            _exchangeRatesState.value = ApiState.Failure("No data available")
+                        }
+                    } else {
+                        _exchangeRatesState.value = ApiState.Failure("Failed to fetch rates: ${response.message()}")
+                    }
+                } catch (e: IOException) {
+                    _exchangeRatesState.value = ApiState.Failure("Network error: ${e.message}")
+                } catch (e: Exception) {
+                    _exchangeRatesState.value = ApiState.Failure("Error: ${e.localizedMessage}")
+                }
+            }
+        }
+    }
 }

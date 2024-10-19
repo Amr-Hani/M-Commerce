@@ -8,7 +8,7 @@ import com.example.mcommerce.model.responses.CustomerResponse
 import SmartCollectionsItem
 import com.example.mcommerce.model.pojos.CustomCollection
 import com.example.mcommerce.model.pojos.Products
-import com.example.mcommerce.model.responses.AddAddressResponse
+import com.example.mcommerce.model.responses.address.AddAddressResponse
 
 
 import com.example.mcommerce.model.responses.ProductResponse
@@ -34,7 +34,7 @@ class RemoteDataSource(private val api: ShopifyApi) {
     }
     fun getProductsBySubCategory(category: String): Flow<List<CustomCollection>> = flow {
         val response = api.getProductsBySubCategory(category).customCollections
-        response?.filterNotNull()?.let { emit(it) }
+        response.let { emit(it) }
     }
     fun getProducts(): Flow<List<Products>> = flow {
         api.getProducts().let { emit(listOf(it) ) }

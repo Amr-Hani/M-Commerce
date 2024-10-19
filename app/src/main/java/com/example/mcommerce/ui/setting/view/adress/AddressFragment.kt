@@ -18,7 +18,10 @@ import com.example.mcommerce.model.network.ApiState
 import com.example.mcommerce.model.network.ProductInfoRetrofit
 import com.example.mcommerce.model.network.RemoteDataSource
 import com.example.mcommerce.model.network.Repository
+import com.example.mcommerce.model.network.currency.RetrofitInstance
 import com.example.mcommerce.model.responses.Address
+import com.example.mcommerceapp.model.network.RemoteDataSourceForCurrency
+import com.example.mcommerceapp.model.network.Repo
 import com.example.mcommerceapp.ui.setting.veiwmodel.SettingViewModel
 import com.example.mcommerceapp.ui.setting.veiwmodel.SettingViewModelFactory
 import kotlinx.coroutines.launch
@@ -58,7 +61,7 @@ class AddressFragment : Fragment() {
         val factory = SettingViewModelFactory(
             Repository.getInstance(
                 RemoteDataSource(ProductInfoRetrofit.productService)
-            )
+            ), Repo.getInstance(RemoteDataSourceForCurrency(RetrofitInstance.exchangeRateApi))
         )
         settingViewModel = ViewModelProvider(this, factory)[SettingViewModel::class.java]
     }

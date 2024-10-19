@@ -12,8 +12,8 @@ import BrandsPOJO
 import com.example.mcommerce.model.pojos.CategoryPOJO
 
 import com.example.mcommerce.model.pojos.Products
-import com.example.mcommerce.model.responses.AddAddressResponse
-import com.example.mcommerce.model.responses.AddressResponse
+import com.example.mcommerce.model.responses.address.AddAddressResponse
+import com.example.mcommerce.model.responses.address.AddressResponse
 import retrofit2.Response
 import retrofit2.http.DELETE
 
@@ -59,7 +59,7 @@ interface ShopifyApi {
     suspend fun addAddress(
         @Path("customerId") customerId: Long,
         @Body address: AddAddressResponse
-    ): Response<AddAddressResponse> // Updated to match API response structure
+    ): Response<AddAddressResponse>
 
     @DELETE("admin/api/2024-10/customers/{customerId}/addresses/{addressId}.json")
     suspend fun deleteAddress(

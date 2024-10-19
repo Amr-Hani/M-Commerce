@@ -6,10 +6,8 @@ import com.example.mcommerce.model.responses.CustomerResponse
 
 
 import SmartCollectionsItem
-import com.example.mcommerce.model.pojos.CategoryPOJO
 import com.example.mcommerce.model.pojos.CustomCollection
 import com.example.mcommerce.model.pojos.DraftOrderRequest
-import com.example.mcommerce.model.pojos.Products
 import com.example.mcommerce.model.pojos.UpdateDraftOrderRequest
 
 
@@ -47,16 +45,22 @@ class RemoteDataSource(private val productServices: ProductServices) {
         emit(productServices.getProductById(id))
     }
 
-    suspend fun createDraftOrder(draftOrderRequest: DraftOrderRequest): ReceivedDraftOrder {
-        return productServices.createDraftOrder(draftOrderRequest)
+    suspend fun createFavoriteDraftOrder(draftOrderRequest: DraftOrderRequest): ReceivedDraftOrder {
+        return productServices.createFavoriteDraftOrder(draftOrderRequest)
     }
 
-    suspend fun updateDraftOrder(customerId: Long, updateDraftOrderRequest: UpdateDraftOrderRequest):UpdateDraftOrderRequest{
-        return productServices.updateDraftOrder(customerId, updateDraftOrderRequest)
+    suspend fun updateFavoriteDraftOrder(customerId: Long, updateDraftOrderRequest: UpdateDraftOrderRequest):UpdateDraftOrderRequest{
+        return productServices.updateFavoriteDraftOrder(customerId, updateDraftOrderRequest)
     }
 
-    suspend fun getAllDraftOrders(): ReceivedOrdersResponse {
-        return productServices.getAllDraftOrders()
+    suspend fun getAllFavoriteDraftOrders(): ReceivedOrdersResponse {
+        return productServices.getAllFavoriteDraftOrders()
     }
+
+    suspend fun getFavoriteDraftOrder(draftOrderId:Long): DraftOrderRequest {
+        return productServices.getFavoriteDraftOrder(draftOrderId)
+    }
+
+
 
 }

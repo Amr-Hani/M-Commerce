@@ -6,20 +6,17 @@ import com.example.mcommerce.model.responses.CustomerResponse
 import com.example.mcommerce.model.responses.ProductResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.Headers
 import retrofit2.http.POST
 
 import BrandsPOJO
 import com.example.mcommerce.model.pojos.CategoryPOJO
 import com.example.mcommerce.model.pojos.DraftOrderRequest
 
-import com.example.mcommerce.model.pojos.Products
 import com.example.mcommerce.model.pojos.UpdateDraftOrderRequest
 import com.example.mcommerce.model.responses.ReceivedDraftOrder
 import com.example.mcommerce.model.responses.ReceivedOrdersResponse
 
 
-import kotlinx.coroutines.flow.Flow
 import retrofit2.http.PUT
 
 import retrofit2.http.Path
@@ -56,17 +53,22 @@ interface ProductServices {
     suspend fun getProductById(@Path("product_id") productId:Long):ProductResponse
 
     @POST("admin/api/2024-10/draft_orders.json")
-    suspend fun createDraftOrder(
+    suspend fun createFavoriteDraftOrder(
         @Body draftOrderRequest: DraftOrderRequest
     ): ReceivedDraftOrder
 
     @PUT("admin/api/2024-10/draft_orders/{draftOrderId}.json")
-    suspend fun updateDraftOrder(
+    suspend fun updateFavoriteDraftOrder(
         @Path("draftOrderId") draftOrderId: Long,
         @Body updateDraftOrderRequest: UpdateDraftOrderRequest
     ): UpdateDraftOrderRequest
 
     @GET("admin/api/2024-10/draft_orders.json")
-    suspend fun getAllDraftOrders(): ReceivedOrdersResponse
+    suspend fun getAllFavoriteDraftOrders(): ReceivedOrdersResponse
+
+    @GET("admin/api/2024-10/draft_orders/{draftOrderId}.json")
+    suspend fun getFavoriteDraftOrder(
+        @Path("draftOrderId") draftOrderId: Long
+    ): DraftOrderRequest
 
 }

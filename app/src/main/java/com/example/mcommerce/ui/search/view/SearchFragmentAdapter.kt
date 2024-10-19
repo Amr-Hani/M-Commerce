@@ -44,9 +44,7 @@ class SearchFragmentAdapter(private val onClick: OnClick<Products>) :
         }
         holder.binding.ivIconFavorite.setOnClickListener {
             currentProduct.templateSuffix = "FAVORITE"
-
-            //holder.binding.ivIconFavorite.setColorFilter(Color.RED)
-
+            holder.binding.ivIconFavorite.setColorFilter(Color.RED)
             onClick.onClick(currentProduct)
 
         }

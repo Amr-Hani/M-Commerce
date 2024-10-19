@@ -1,6 +1,5 @@
 package com.example.mcommerce.ui.search.view
 
-import android.app.AlertDialog
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -14,8 +13,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.mcommerce.R
 import com.example.mcommerce.databinding.FragmentSearchBinding
 import com.example.mcommerce.model.network.ApiState
 import com.example.mcommerce.model.network.ProductInfoRetrofit
@@ -27,12 +24,14 @@ import com.example.mcommerce.model.pojos.DraftOrder
 import com.example.mcommerce.model.pojos.DraftOrderRequest
 import com.example.mcommerce.model.pojos.LineItem
 import com.example.mcommerce.model.pojos.Products
+import com.example.mcommerce.model.pojos.UpdateDraftOrderRequest
 import com.example.mcommerce.my_key.MyKey
 import com.example.mcommerce.ui.favorite.viewmodel.FavoriteViewModel
 import com.example.mcommerce.ui.favorite.viewmodel.FavoriteViewModelFactory
 import com.example.mcommerce.ui.search.viewmodel.SearchFragmentViewModel
 import com.example.mcommerce.ui.search.viewmodel.SearchFragmentViewModelFactory
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -135,55 +134,98 @@ class SearchFragment : Fragment(), OnClick<Products> {
                 }
             }
         }
+        lifecycleScope.launch {
+
+        }
     }
 
-    override fun onClick(click: Products) {
-        if (click.templateSuffix == "FAVORITE") {
-            favoriteViewModel.getAllDraftOrders()
+    override fun onClick(products: Products) {
+        if (products.templateSuffix == "FAVORITE") {
             lifecycleScope.launch {
                 if (draftOrderID == 0L) {
-                    favoriteViewModel.createOrder(createDraftOrderRequest(click))
-                }else{
+                    favoriteViewModel.createFavoriteDraftOrder(draftOrderRequest(products))
+                    delay(2000)
+                    favoriteViewModel.getAllFavoriteDraftOrders()
+                    favoriteViewModel.allDraftOrdersStateFlow.collectLatest {
+                        when (it) {
+                            is ApiState.Failure -> {}
+                            is ApiState.Loading -> {}
+                            is ApiState.Success -> {
+                                Log.d(
+                                    TAG,
+                                    "onClick: ana defto hala ${it.data.get(it.data.size - 1).id}"
+                                )
+                                sharedPreferences.edit().putString(
+                                    MyKey.DRAFT_ORDER_ID,
+                                    "${it.data.get(it.data.size - 1).id}"
+                                ).apply()
+                            }
+                        }
+                    }
+                } else {
+                    favoriteViewModel.getFavoriteDraftOrder(draftOrderID)
+                    favoriteViewModel.draftOrderStateFlow.collectLatest {
+                        when (it) {
+                            is ApiState.Failure -> {}
+                            is ApiState.Loading -> {}
+                            is ApiState.Success -> {
+                                var oldLineItem: MutableList<LineItem> = mutableListOf()
+                                    it.data.draft_order.line_items.forEach {
+                                        oldLineItem.add(it)
+                                    }
+                                    oldLineItem.add(
+                                        draftOrderRequest(products).draft_order.line_items.get(0)
+                                    )
+
+                                    val draft = draftOrderRequest(products).draft_order
+
+                                    draft.line_items = oldLineItem
+
+                                    favoriteViewModel.updateFavoriteDraftOrder(
+                                        draftOrderID,
+                                        UpdateDraftOrderRequest(draft)
+                                    )
+//                                }
+//                                else{
+//                                    favoriteViewModel.createOrder(draftOrderRequest(products))
+//                                }
+
+                            }
+                        }
+                    }
+
 
                 }
 
             }
+
             //favoriteViewModel.createOrder()
         } else {
             val action =
-                SearchFragmentDirections.actionSearchFragmentToProductInfoFragment(click.id)
+                SearchFragmentDirections.actionSearchFragmentToProductInfoFragment(products.id)
             Navigation.findNavController(binding.root).navigate(action)
         }
 
-
     }
-    fun createDraftOrderRequest(products: Products): DraftOrderRequest {
-        return DraftOrderRequest(
+
+
+    private fun draftOrderRequest(products: Products): DraftOrderRequest {
+
+        val draftOrderRequest = DraftOrderRequest(
             draft_order = DraftOrder(
                 line_items = listOf(
                     LineItem(
                         product_id = products.id,
-                        title = "Sample Product",
-                        price = "50.00"
-                    ),
-                    LineItem(
-                        product_id = 54321L,
-                        title = "Another Product",
-                        price = "30.00"
+                        sku = "${products.id}<+>${products.image?.src}",
+                        title = products.title, price = products.variants[0].price, quantity = 1
                     )
                 ),
-                applied_discount = AppliedDiscount(
-                    description = "10% off",
-                    value_type = "percentage",
-                    value = "10",
-                    amount = "5.00",
-                    title = "Discount"
-                ),
-                customer = Customers(
-                    id = 8246104654123
-                ),
-                use_customer_default_address = true
+                use_customer_default_address = true,
+                applied_discount = AppliedDiscount(),
+                customer = Customers(8246104457515)
             )
+
         )
+        return draftOrderRequest
     }
 }

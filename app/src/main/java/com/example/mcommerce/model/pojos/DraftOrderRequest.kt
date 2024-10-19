@@ -5,7 +5,7 @@ data class DraftOrderRequest(
 )
 
 data class DraftOrder(
-    val line_items: List<LineItem>,
+    var line_items: List<LineItem>,
     val applied_discount: AppliedDiscount?,
     val customer: Customers,
     val use_customer_default_address: Boolean
@@ -13,7 +13,7 @@ data class DraftOrder(
 
 data class LineItem(
     val id: Long?= null,
-    val variant_id: Long?= null,
+    var variant_id: Long?= null,
     val product_id: Long,
     val title: String,
     val variant_title: String?= null,

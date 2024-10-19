@@ -6,11 +6,9 @@ import com.example.mcommerce.model.responses.CustomerResponse
 
 
 import SmartCollectionsItem
-import com.example.mcommerce.model.pojos.CategoryPOJO
 import com.example.mcommerce.model.pojos.CustomCollection
 import com.example.mcommerce.model.pojos.DraftOrderRequest
 
-import com.example.mcommerce.model.pojos.Products
 import com.example.mcommerce.model.pojos.UpdateDraftOrderRequest
 
 import com.example.mcommerce.model.responses.ProductResponse
@@ -71,23 +69,36 @@ class Repository private constructor(private val remoteDataSource: RemoteDataSou
         }
     }
 
-    fun createDraftOrder(draftOrderRequest: DraftOrderRequest):Flow<ReceivedDraftOrder>{
+    fun createFavoriteDraftOrder(draftOrderRequest: DraftOrderRequest): Flow<ReceivedDraftOrder> {
         return flow {
-            emit(remoteDataSource.createDraftOrder(draftOrderRequest))
+            emit(remoteDataSource.createFavoriteDraftOrder(draftOrderRequest))
         }
     }
 
-    fun updateDraftOrderRequest(customerId: Long, updateDraftOrderRequest: UpdateDraftOrderRequest):Flow<UpdateDraftOrderRequest>{
+    fun updateFavoriteDraftOrder(
+        customerId: Long,
+        updateDraftOrderRequest: UpdateDraftOrderRequest
+    ): Flow<UpdateDraftOrderRequest> {
         return flow {
-            emit(remoteDataSource.updateDraftOrder(customerId, updateDraftOrderRequest))
+            emit(remoteDataSource.updateFavoriteDraftOrder(customerId, updateDraftOrderRequest))
         }
     }
 
-    fun getAllDraftOrders():Flow<ReceivedOrdersResponse>{
+    fun getAllFavoriteDraftOrders(): Flow<ReceivedOrdersResponse> {
         return flow {
-            emit(remoteDataSource.getAllDraftOrders())
+            emit(remoteDataSource.getAllFavoriteDraftOrders())
         }
     }
+
+
+    fun getFavoriteDraftOrder(draftOrderId: Long): Flow<DraftOrderRequest> {
+        return flow {
+            emit(
+                remoteDataSource.getFavoriteDraftOrder(draftOrderId)
+            )
+        }
+    }
+
 }
 
 

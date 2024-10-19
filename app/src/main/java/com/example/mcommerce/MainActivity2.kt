@@ -3,6 +3,7 @@ package com.example.mcommerce
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -32,6 +33,17 @@ class MainActivity2 : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        binding.imageView2.setOnClickListener {
+            navController.navigate(R.id.favoriteFragment)
+        }
+        binding.imageView3.setOnClickListener {
+            navController.navigate(R.id.searchFragment)
+        }
+        binding.imageView.setOnClickListener {
+            //navigate here to cardview
+            // navController.navigate(R.id.)
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {

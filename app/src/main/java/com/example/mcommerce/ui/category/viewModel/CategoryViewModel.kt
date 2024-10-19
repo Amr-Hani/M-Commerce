@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlin.math.log
 
 class CategoryViewModel(private val repo: Repository) : ViewModel() {
     private val _category = MutableStateFlow<ApiState<List<CustomCollection>>>(ApiState.Loading())
@@ -29,6 +30,7 @@ class CategoryViewModel(private val repo: Repository) : ViewModel() {
                 }
                 .collect { products ->
                     _category.value = ApiState.Success(products)
+                    Log.d("products", "getCategory: $products")
                 }
         }
     }

@@ -28,6 +28,7 @@ class ViewModelBrand (private val repository: Repository):ViewModel(){
                 }
                 .collect {
                     _brandDetails.value = ApiState.Success(it)
+                    Log.d("it", "getproductBrandById:$it ")
                 }
         }
     }}

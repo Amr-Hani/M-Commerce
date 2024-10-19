@@ -64,7 +64,10 @@ class ProductInfoFragment : Fragment() {
     }
 
     fun getProductInfoDetails() {
+
         productInfoViewModel.getProductDetails(productId)
+
+
         lifecycleScope.launch {
             productInfoViewModel.productDetailsStateFlow.collectLatest {
                 when (it) {

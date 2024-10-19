@@ -66,7 +66,9 @@ class LogInFragment : Fragment() {
         password_confirmation = "Am#123456",
         send_email_welcome = false
     )
+
     val customerRequest = CustomerRequest(customer)
+
     override fun onStart() {
         super.onStart()
         checkIfEmailVerified()
@@ -138,6 +140,7 @@ class LogInFragment : Fragment() {
                 .addOnCompleteListener(requireActivity()) { task ->
                     if (task.isSuccessful) {
                         customerRequest.customer.email = email
+
                         checkIfEmailVerified()
                     } else {
                         binding.etPasswordLogin.error = "Maybe Password Is Incorrect"
@@ -169,14 +172,10 @@ class LogInFragment : Fragment() {
                     .show()
                 sharedPreferences.edit().putString(MyKey.GUEST, "LogIn")
                     .apply()
-
                 postCustomer(customerRequest)
-                // هنا نافيجيت ي عم منير ع ال home screen اول متعمل login
-//
-//                val action = LogInFragmentDirections.actionLogInFragmentToProductInfoFragment()
-//                Navigation.findNavController(binding.root).navigate(action)
                 val intent = Intent(requireActivity(), MainActivity2::class.java)
                 startActivity(intent)
+
             } else {
                 Toast.makeText(
                     requireContext(),

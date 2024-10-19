@@ -37,6 +37,7 @@ class CategoryFragment : Fragment() {
     ): View {
         _binding = FragmentCategoryBinding.inflate(inflater, container, false)
         return binding.root
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -44,6 +45,7 @@ class CategoryFragment : Fragment() {
 
         // إعداد RecyclerView
         binding.recyclerCategory.layoutManager = GridLayoutManager(requireContext(), 2)
+
         categoryAdapter = CategoryAdapter { selectedCategory ->
             // التنقل إلى CategoryDetailsFragment عند الضغط على أي عنصر
             navigateToCategoryDetailsFragment(selectedCategory.id.toString())
@@ -78,7 +80,10 @@ class CategoryFragment : Fragment() {
                     is ApiState.Success<*> -> {
                         val productList = state.data as? List<CustomCollection>
                         if (productList != null) {
-                            categoryAdapter.submitList(productList)
+                            val updatedList = productList.drop(1)
+                            categoryAdapter.submitList(updatedList)
+
+
                             Log.i("CategoryFragment", "Success state: ${productList.size} items")
                         } else {
                             Log.e("CategoryFragment", "Data is not of expected type")

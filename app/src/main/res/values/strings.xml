@@ -14,6 +14,14 @@
     <string name="client_id2">759985624702-0h8mtc96t27oiq54j3q8f1l0j566e327.apps.googleusercontent.com</string>
     <string name="default_web_client_id">637769902026-kn138mt6f8c080b95qr7k0gc214jsgu4.apps.googleusercontent.com</string>
     <string name="guest">Skip</string>
+
+
+
+    <string name="discriptionProductDetails">Discription</string>
+    <string name="reviewProductDetails">Review</string>
+
+
+
     <string name="title_activity_main2">MainActivity2</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
@@ -24,10 +32,33 @@
     <string name="_profile">Profile</string>
     <string name="brands">Brands</string>
     <string name="brand">Brands</string>
-    <string name="discriptionProductDetails">Discription</string>
-    <string name="reviewProductDetails">Review</string>
+
+
+    <string name="country">country\n</string>
+
+
+
     <string name="tv_size" />
     <string name="tv_sizeOption">Size</string>
     <string name="tv_colorOption">Color</string>
     <string name="btn_addToCard">Add To Card</string>
+
+    <string name="orderNo">Order No</string>
+    <string name="noOfItem">No Of Item</string>
+    <string name="address">Adress</string>
+    <string name="paid">Paid</string>
+    <string name="date">Date</string>
+    <string name="order_no">Order No:</string>
+    <string name="no_ofitem">No Of Item :</string>
+    <string name="_adress">Address :</string>
+    <string name="_paid">Paid :</string>
+    <string name="_date">Date :</string>
+    <string name="setting">Setting</string>
+    <string name="order">Order</string>
+    <string name="productInfo">Details</string>
+    <string name="favoritaFradment">Favorita</string>
+    <string name="searchFragment">Search</string>
 </resources>
+
+
+

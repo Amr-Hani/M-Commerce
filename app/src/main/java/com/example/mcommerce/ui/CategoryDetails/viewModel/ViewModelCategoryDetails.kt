@@ -27,6 +27,7 @@ class viewModelCategoryDetails(private val repo: Repository) : ViewModel() {
                 }
                 .collect { products ->
                     _categoryDetails.value = ApiState.Success(products)
+                    Log.d("product", "getProductCategoryById:$products ")
                 }
         }
     }}

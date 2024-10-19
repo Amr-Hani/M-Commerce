@@ -1,6 +1,7 @@
 package com.example.mcommerce.model.network
 
 
+
 import com.example.mcommerce.model.pojos.CustomerRequest
 import com.example.mcommerce.model.responses.CustomerResponse
 
@@ -10,7 +11,7 @@ import com.example.mcommerce.model.pojos.CustomCollection
 import com.example.mcommerce.model.pojos.DraftOrderRequest
 
 import com.example.mcommerce.model.pojos.UpdateDraftOrderRequest
-
+import com.example.mcommerce.model.responses.address.AddAddressResponse
 import com.example.mcommerce.model.responses.ProductResponse
 import com.example.mcommerce.model.responses.ReceivedDraftOrder
 import com.example.mcommerce.model.responses.ReceivedOrdersResponse
@@ -98,6 +99,15 @@ class Repository private constructor(private val remoteDataSource: RemoteDataSou
             )
         }
     }
+
+    suspend fun getAddresses(customerId: Long) = remoteDataSource.getAddresses(customerId)
+
+    suspend fun addAddress(customerId: Long, address: AddAddressResponse) = remoteDataSource.addAddress(customerId, address)
+
+    suspend fun deleteAddress(customerId: Long, addressId: Long) = remoteDataSource.deleteAddress(customerId, addressId)
+
+    // Fetch coupons from RemoteDataSource
+    fun getCoupons() = remoteDataSource.getCoupons()
 
 }
 

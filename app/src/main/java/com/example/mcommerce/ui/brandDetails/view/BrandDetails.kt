@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 
 import com.example.mcommerce.databinding.FragmentBrandDetailsBinding
@@ -15,6 +16,7 @@ import com.example.mcommerce.model.network.ApiState
 import com.example.mcommerce.model.network.ProductInfoRetrofit
 import com.example.mcommerce.model.network.RemoteDataSource
 import com.example.mcommerce.model.network.Repository
+import com.example.mcommerce.model.pojos.Products
 import com.example.mcommerce.model.responses.ProductResponse
 import com.example.mcommerce.ui.brandDetails.viewModel.ViewModelBrand
 import com.example.mcommerce.ui.brandDetails.viewModel.ViewModelFactory
@@ -41,30 +43,32 @@ class BrandDetails : Fragment() {
         return binding.root
     }
 
-    private fun navigateToProductDetails(productItem: ProductResponse) {
-
+    private fun navigateToProductDetails(productId: Long) {
+        val action = BrandDetailsDirections.actionBrandDetailsToProductInfoFragment(productId)
+        findNavController().navigate(action)
     }
-
-    private fun addToFavorite(products: ProductResponse, position: Int) {
+    ///////دي ياعمر عشان تحط الداتا ف fav
+    private fun addToFavorite(products: Products, position: Int) {
 
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // إعداد ViewModel
+
         viewModelFactory = ViewModelFactory(
             Repository.getInstance(RemoteDataSource(ProductInfoRetrofit.productService))
         )
         viewModelBrand = ViewModelProvider(this, viewModelFactory).get(ViewModelBrand::class.java)
 
-        // الحصول على ID العلامة التجارية الممررة
+
         val brandId = arguments?.let { BrandDetailsArgs.fromBundle(it).brandId }
 
         // إعداد RecyclerView
         binding.recyclerBrandDetails.layoutManager = GridLayoutManager(requireContext(), 2)
         brandAdapter = BrandDetailsAdapter(
-            { productItem -> navigateToProductDetails(productItem) },
+            {  productId ->
+                navigateToProductDetails(productId) },
             { productItem, position -> addToFavorite(productItem, position) }
         )
 
@@ -94,7 +98,7 @@ class BrandDetails : Fragment() {
                         // Cast the data to the correct type: List<SmartCollectionsItem>
                         val productList = state.data as? List<ProductResponse>
                         if (productList != null) {
-                            brandAdapter.submitList(productList)
+                            brandAdapter.submitList(productList.get(0).products)
                             Log.i("HomeFragment1", "Success state: ${productList.size}")
                         } else {
                             Log.e("HomeFragment", "Data is not of expected type")

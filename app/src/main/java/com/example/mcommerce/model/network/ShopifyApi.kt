@@ -14,6 +14,7 @@ import com.example.mcommerce.model.pojos.CategoryPOJO
 import com.example.mcommerce.model.pojos.Products
 import com.example.mcommerce.model.responses.address.AddAddressResponse
 import com.example.mcommerce.model.responses.address.AddressResponse
+import com.example.mcommerce.model.responses.coupons.CouponResponse
 import retrofit2.Response
 import retrofit2.http.DELETE
 
@@ -66,4 +67,7 @@ interface ShopifyApi {
         @Path("customerId") customerId: Long,
         @Path("addressId") addressId: Long
     ): Response<Unit>
+    //coupons
+    @GET("/admin/api/2024-10/price_rules.json")
+    suspend fun getCoupons(): CouponResponse
 }

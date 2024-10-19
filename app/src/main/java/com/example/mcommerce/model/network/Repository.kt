@@ -64,6 +64,9 @@ class Repository private constructor(private val remoteDataSource: RemoteDataSou
     suspend fun addAddress(customerId: Long, address: AddAddressResponse) = remoteDataSource.addAddress(customerId, address)
 
     suspend fun deleteAddress(customerId: Long, addressId: Long) = remoteDataSource.deleteAddress(customerId, addressId)
+
+    // Fetch coupons from RemoteDataSource
+    fun getCoupons() = remoteDataSource.getCoupons()
 }
 
 

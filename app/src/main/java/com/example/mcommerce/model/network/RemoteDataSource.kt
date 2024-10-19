@@ -42,10 +42,17 @@ class RemoteDataSource(private val api: ShopifyApi) {
      fun getProductById(id: Long): Flow<ProductResponse> = flow {
         emit(api.getProductById(id))
     }
+    //addresses
     suspend fun getAddresses(customerId: Long) = api.getAddresses(customerId)
 
     suspend fun addAddress(customerId: Long, address: AddAddressResponse) = api.addAddress(customerId, address)
 
     suspend fun deleteAddress(customerId: Long, addressId: Long) = api.deleteAddress(customerId, addressId)
-
+    // Fetch coupons from API
+    fun getCoupons() = flow {
+        val response = api.getCoupons()
+        // Convert the response to a Map for easier usage
+        val couponMap = response.price_rules.associate { it.title to it.value }
+        emit(couponMap)
+    }
 }

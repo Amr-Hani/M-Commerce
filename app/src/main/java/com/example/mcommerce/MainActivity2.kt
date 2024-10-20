@@ -42,7 +42,7 @@ class MainActivity2 : AppCompatActivity() {
         }
         binding.imageView.setOnClickListener {
             //navigate here to cardview
-             navController.navigate(R.id.placedOrderFragment)
+
         }
 
     }

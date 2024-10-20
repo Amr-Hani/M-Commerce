@@ -21,9 +21,6 @@
         <action
             android:id="@+id/action_navigation_home_to_favoriteFragment"
             app:destination="@id/favoriteFragment" />
-        <action
-            android:id="@+id/action_navigation_home_to_placedOrderFragment"
-            app:destination="@id/placedOrderFragment" />
     </fragment>
 
     <fragment

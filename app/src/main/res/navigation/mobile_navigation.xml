@@ -22,8 +22,8 @@
             android:id="@+id/action_navigation_home_to_favoriteFragment"
             app:destination="@id/favoriteFragment" />
         <action
-            android:id="@+id/action_navigation_home_to_settingFragment"
-            app:destination="@id/settingFragment" />
+            android:id="@+id/action_navigation_home_to_placedOrderFragment"
+            app:destination="@id/placedOrderFragment" />
     </fragment>
 
     <fragment
@@ -44,6 +44,9 @@
 <!--        <action-->
 <!--            android:id="@+id/action_navigation_profile_to_orderFragment"-->
 <!--            app:destination="@id/orderFragment" />-->
+        <action
+            android:id="@+id/action_navigation_profile_to_orderFragment"
+            app:destination="@id/orderFragment" />
     </fragment>
     <fragment
         android:id="@+id/brandDetails"
@@ -102,10 +105,10 @@
 <!--        android:label="@string/order"-->
 <!--        tools:layout="@layout/fragment_order" />-->
     <fragment
-        android:id="@+id/settingFragment"
+        android:id="@+id/navigation_setting"
         android:name="com.example.mcommerce.ui.setting.view.SettingFragment"
         android:label="fragment_setting"
-        tools:layout="@layout/fragment_setting" >
+        tools:layout="@layout/fragment_setting">
         <action
             android:id="@+id/action_settingFragment_to_aboutUsFragment"
             app:destination="@id/aboutUsFragment" />
@@ -154,6 +157,16 @@
         android:name="com.example.mcommerce.CartFragment"
         android:label="fragment_cart"
         tools:layout="@layout/fragment_cart" />
+    <fragment
+        android:id="@+id/orderFragment"
+        android:name="com.example.mcommerce.ui.order.view.OrderFragment"
+        android:label="@string/_order"
+        tools:layout="@layout/fragment_order" />
+    <fragment
+        android:id="@+id/placedOrderFragment"
+        android:name="com.example.mcommerce.ui.placedOrder.view.PlacedOrderFragment"
+        android:label="Placed_Order"
+        tools:layout="@layout/fragment_placed_order" />
 
 
 </navigation>

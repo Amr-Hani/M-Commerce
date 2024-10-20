@@ -1,5 +1,7 @@
 package com.example.mcommerce.model.pojos
 
+
+data class PostDraftOrderItemModel(val draft_order : DraftOrder)
 data class DraftOrderRequest(
     val draft_order: DraftOrder
 )

@@ -8,7 +8,10 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import BrandsPOJO
 import com.example.mcommerce.model.pojos.CategoryPOJO
+import com.example.mcommerce.model.pojos.DraftOrder
 import com.example.mcommerce.model.pojos.DraftOrderRequest
+import com.example.mcommerce.model.pojos.Order
+import com.example.mcommerce.model.pojos.PostDraftOrderItemModel
 import com.example.mcommerce.model.pojos.UpdateDraftOrderRequest
 import com.example.mcommerce.model.responses.ReceivedDraftOrder
 import com.example.mcommerce.model.responses.ReceivedOrdersResponse
@@ -43,15 +46,16 @@ interface ShopifyApi {
 
     @GET("admin/api/2022-01/products.json")
     suspend fun getProductsByBrandId(
-        @Query("collection_id") brandId:Long): ProductResponse
+        @Query("collection_id") brandId: Long
+    ): ProductResponse
 
-    @GET(  "admin/api/2024-10/custom_collections.json")
-    suspend fun getProductsBySubCategory(@Query("product_type") subCategory: String):CategoryPOJO
+    @GET("admin/api/2024-10/custom_collections.json")
+    suspend fun getProductsBySubCategory(@Query("product_type") subCategory: String): CategoryPOJO
 
     @GET("admin/api/2024-10/products.json")
     suspend fun getProducts(): ProductResponse
 
-    suspend fun getProductById(@Path("product_id") productId:Long):ProductResponse
+    suspend fun getProductById(@Path("product_id") productId: Long): ProductResponse
 
     @POST("admin/api/2024-10/draft_orders.json")
     suspend fun createFavoriteDraftOrder(
@@ -89,8 +93,18 @@ interface ShopifyApi {
         @Path("customerId") customerId: Long,
         @Path("addressId") addressId: Long
     ): Response<Unit>
+
     //coupons
     @GET("/admin/api/2024-10/price_rules.json")
     suspend fun getCoupons(): CouponResponse
+
+
+
+    @DELETE("admin/api/2024-10/draft_orders/{draft_order_id}.json")
+    suspend fun delCartItem(@Path("id") id: String)
+    @GET("admin/api/2024-10/draft_orders.json")
+    suspend fun getAllDraftOrders() : ReceivedOrdersResponse
+@POST("admin/api/2024-10/orders.json")
+suspend fun confirmOrder(@Body orderResponse:Order): Order
 }
 

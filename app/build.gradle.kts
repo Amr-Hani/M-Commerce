@@ -24,10 +24,9 @@ android {
 
     buildFeatures{
         viewBinding = true
-    }
-    buildFeatures {
         dataBinding = true
     }
+
 
     buildTypes {
         release {

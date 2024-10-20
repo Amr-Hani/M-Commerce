@@ -16,10 +16,8 @@
     <string name="guest">Skip</string>
 
 
-
     <string name="discriptionProductDetails">Discription</string>
     <string name="reviewProductDetails">Review</string>
-
 
 
     <string name="title_activity_main2">MainActivity2</string>
@@ -35,7 +33,6 @@
 
 
     <string name="country">country\n</string>
-
 
 
     <string name="tv_size" />
@@ -58,6 +55,11 @@
     <string name="productInfo">Details</string>
     <string name="favoritaFradment">Favorita</string>
     <string name="searchFragment">Search</string>
+    <string name="_order">Order</string>
+    <string name="sub_total">Sub Total</string>
+    <string name="shiping_fees">Shipping Fees</string>
+    <string name="total">Total</string>
+    <string name="place_order">PLACE ORDER</string>
 </resources>
 
 

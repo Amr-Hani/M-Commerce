@@ -28,7 +28,7 @@ class MainActivity2 : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_activity_main2)
         val appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.navigation_home, R.id.navigation_category, R.id.navigation_profile
+                R.id.navigation_home, R.id.navigation_category, R.id.navigation_profile,R.id.navigation_setting
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -42,8 +42,9 @@ class MainActivity2 : AppCompatActivity() {
         }
         binding.imageView.setOnClickListener {
             //navigate here to cardview
-            // navController.navigate(R.id.)
+             navController.navigate(R.id.placedOrderFragment)
         }
+
     }
 
     override fun onSupportNavigateUp(): Boolean {

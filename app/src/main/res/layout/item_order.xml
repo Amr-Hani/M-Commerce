@@ -8,13 +8,14 @@
     <androidx.cardview.widget.CardView
         android:layout_width="409dp"
         android:layout_height="200dp"
-        android:layout_marginStart="1dp"
-        app:cardElevation="8in"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="91dp"
         app:cardCornerRadius="8dp"
 
-        android:layout_marginTop="91dp"
+        app:cardElevation="8in"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" >
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

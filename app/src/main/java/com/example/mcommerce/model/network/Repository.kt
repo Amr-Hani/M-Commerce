@@ -8,7 +8,10 @@ import com.example.mcommerce.model.responses.CustomerResponse
 
 import SmartCollectionsItem
 import com.example.mcommerce.model.pojos.CustomCollection
+import com.example.mcommerce.model.pojos.DraftOrder
 import com.example.mcommerce.model.pojos.DraftOrderRequest
+import com.example.mcommerce.model.pojos.Order
+import com.example.mcommerce.model.pojos.PostDraftOrderItemModel
 
 import com.example.mcommerce.model.pojos.UpdateDraftOrderRequest
 import com.example.mcommerce.model.responses.address.AddAddressResponse
@@ -108,6 +111,19 @@ class Repository private constructor(private val remoteDataSource: RemoteDataSou
 
     // Fetch coupons from RemoteDataSource
     fun getCoupons() = remoteDataSource.getCoupons()
+
+
+    suspend fun delCartItem(id: String) {
+        return remoteDataSource.delCartItem(id)
+    }
+    suspend fun getAllDraftOrders(): Flow<ReceivedOrdersResponse> {
+        return flow {
+            emit(remoteDataSource.getAllDraftOrders())
+        }
+    }
+    suspend fun confirmOrder(ordersItem: Order):Flow<Order> {
+        return remoteDataSource.confirmOrder(ordersItem)
+    }
 
 }
 

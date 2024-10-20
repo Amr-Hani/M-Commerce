@@ -39,10 +39,10 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        binding.order.setOnClickListener {
-//            val action = ProfileFragmentDirections.actionNavigationProfileToOrderFragment()
-//            findNavController().navigate(action)
-//        }
+        binding.order.setOnClickListener {
+            val action = ProfileFragmentDirections.actionNavigationProfileToOrderFragment()
+            findNavController().navigate(action)
+        }
     }
 
     override fun onDestroyView() {

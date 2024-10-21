@@ -1,6 +1,8 @@
 
 package com.example.mcommerce.ui.product_info.view
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,20 +14,26 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.bumptech.glide.Glide
 import com.denzcoskun.imageslider.constants.ScaleTypes
-import com.denzcoskun.imageslider.interfaces.ItemClickListener
 import com.denzcoskun.imageslider.models.SlideModel
 import com.example.mcommerce.databinding.FragmentProductInfoBinding
 import com.example.mcommerce.model.network.ApiState
 import com.example.mcommerce.model.network.ProductInfoRetrofit
 import com.example.mcommerce.model.network.RemoteDataSource
 import com.example.mcommerce.model.network.Repository
+import com.example.mcommerce.model.pojos.AppliedDiscount
+import com.example.mcommerce.model.pojos.Customers
+import com.example.mcommerce.model.pojos.DraftOrder
+import com.example.mcommerce.model.pojos.DraftOrderRequest
+import com.example.mcommerce.model.pojos.LineItem
 import com.example.mcommerce.model.pojos.Products
-import com.example.mcommerce.model.responses.ProductResponse
+import com.example.mcommerce.model.pojos.UpdateDraftOrderRequest
+import com.example.mcommerce.my_key.MyKey
+import com.example.mcommerce.ui.favorite.viewmodel.FavoriteViewModel
+import com.example.mcommerce.ui.favorite.viewmodel.FavoriteViewModelFactory
 import com.example.mcommerce.ui.product_info.viewmodel.ProductInfoViewModel
 import com.example.mcommerce.ui.product_info.viewmodel.ProductInfoViewModelFactory
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlin.random.Random
@@ -34,8 +42,12 @@ class ProductInfoFragment : Fragment() {
     lateinit var binding: FragmentProductInfoBinding
     lateinit var productInfoViewModel: ProductInfoViewModel
     lateinit var productInfoViewModelFactory: ProductInfoViewModelFactory
+    lateinit var sharedPreferences: SharedPreferences
+    var draftOrderID: Long = 1172999471403
     private val TAG = "ProductInfoFragment"
     var productId:Long = 9728826507563
+    lateinit var favoriteViewModel: FavoriteViewModel
+    lateinit var favoriteViewModelFactory: FavoriteViewModelFactory
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -61,6 +73,18 @@ class ProductInfoFragment : Fragment() {
             productInfoViewModelFactory
         ).get(ProductInfoViewModel::class.java)
         getProductInfoDetails()
+//        sharedPreferences =
+//            requireContext().getSharedPreferences(MyKey.MY_SHARED_PREFERENCES, Context.MODE_PRIVATE)
+//
+//        draftOrderID = (sharedPreferences.getString(MyKey.DRAFT_ORDER_CART_ID, "1")
+//            ?: "1").toLong()
+        favoriteViewModelFactory = FavoriteViewModelFactory(
+            Repository.getInstance(
+                RemoteDataSource(ProductInfoRetrofit.productService)
+            )
+        )
+        favoriteViewModel =
+            ViewModelProvider(this, favoriteViewModelFactory).get(FavoriteViewModel::class.java)
     }
 
     fun getProductInfoDetails() {
@@ -212,9 +236,64 @@ class ProductInfoFragment : Fragment() {
         binding.btnAddToCard.setOnClickListener {
             if (!size.isNullOrBlank()) {
                 if (!color.isNullOrBlank()) {
-                    // هنا معاك المقاس واللون اعمل الى انت عاوزه
-                    // لو عاوز بقا id المنتج كل حاجه عندك as you like
-                    Log.d(TAG, "showProductInfoDetails: size = $size  color = $color  price = $price")
+                //    productInfoViewModel.insertItemToDraftOrder( draftOrderID,draftOrderRequest(products))
+                    lifecycleScope.launch {
+                        if (draftOrderID != 1172999471403) {
+                            favoriteViewModel.createFavoriteDraftOrder(draftOrderRequest(products))
+                            delay(2000)
+                            favoriteViewModel.getAllFavoriteDraftOrders()
+                            favoriteViewModel.allDraftOrdersStateFlow.collectLatest {
+                                when (it) {
+                                    is ApiState.Failure -> {}
+                                    is ApiState.Loading -> {}
+                                    is ApiState.Success -> {
+                                        Log.d(
+                                            TAG,
+                                            "onClick: ana defto hala ${it.data.get(it.data.size - 1).id}"
+                                        )
+                                        sharedPreferences.edit().putString(
+                                            MyKey.DRAFT_ORDER_CART_ID,
+                                            "${it.data.get(it.data.size - 1).id}"
+                                        ).apply()
+                                    }
+                                }
+                            }
+                        } else {
+                            favoriteViewModel.getFavoriteDraftOrder(draftOrderID)
+                            favoriteViewModel.draftOrderStateFlow.collectLatest {
+                                when (it) {
+                                    is ApiState.Failure -> {}
+                                    is ApiState.Loading -> {}
+                                    is ApiState.Success -> {
+                                        var oldLineItem: MutableList<LineItem> = mutableListOf()
+                                        it.data.draft_order.line_items.forEach {
+                                            oldLineItem.add(it)
+                                        }
+                                        oldLineItem.add(
+                                            draftOrderRequest(products).draft_order.line_items.get(0)
+                                        )
+
+                                        val draft = draftOrderRequest(products).draft_order
+
+                                        draft.line_items = oldLineItem
+
+                                        favoriteViewModel.updateFavoriteDraftOrder(
+                                            draftOrderID,
+                                            UpdateDraftOrderRequest(draft)
+                                        )
+//                                }
+//                                else{
+//                                    favoriteViewModel.createOrder(draftOrderRequest(products))
+//                                }
+
+                                    }
+                                }
+                            }
+
+
+                        }
+
+                    }
                 } else {
                     Toast.makeText(requireContext(), "Please Select Color", Toast.LENGTH_SHORT)
                         .show()
@@ -227,6 +306,25 @@ class ProductInfoFragment : Fragment() {
             // هنا هضيف ف الفيفوريت
         }
 
+    }
+    private fun draftOrderRequest(products: Products): DraftOrderRequest {
+
+        val draftOrderRequest = DraftOrderRequest(
+            draft_order = DraftOrder(
+                line_items = listOf(
+                    LineItem(
+                        product_id = products.id,
+                        sku = "${products.id}<+>${products.image?.src}",
+                        title = products.title, price = products.variants[0].price, quantity = 1
+                    )
+                ),
+                use_customer_default_address = true,
+                applied_discount = AppliedDiscount(),
+                customer = Customers(8246104457515)
+            )
+
+        )
+        return draftOrderRequest
     }
 }
 

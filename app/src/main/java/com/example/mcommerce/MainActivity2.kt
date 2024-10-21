@@ -41,8 +41,12 @@ class MainActivity2 : AppCompatActivity() {
             navController.navigate(R.id.searchFragment)
         }
         binding.imageView.setOnClickListener {
-            //navigate here to cardview
-            // navController.navigate(R.id.)
+
+             navController.navigate(R.id.cartFragment)
+        }
+        binding.imageView.setOnClickListener {
+
+            navController.navigate(R.id.cartFragment)
         }
     }
 

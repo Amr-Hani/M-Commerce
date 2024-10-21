@@ -106,6 +106,9 @@ dependencies {
 
 
         implementation("com.paypal.android:paypal-web-payments:1.5.0")
+//stripe for online payment
+        implementation ("com.stripe:stripe-android:20.52.1")
+        implementation("com.android.volley:volley:1.2.1")
 
 
 }}

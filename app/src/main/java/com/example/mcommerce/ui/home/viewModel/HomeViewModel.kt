@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mcommerce.model.network.ApiState
 import com.example.mcommerce.model.network.Repository
+import com.example.mcommerce.model.pojos.PriceRule
 import com.example.mcommerce.model.pojos.Products
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -22,8 +23,8 @@ class HomeViewModel(private val repository: Repository) : ViewModel() {
     val productsbrandId = _productsbrandId.asStateFlow()
 
     // StateFlow for coupons
-    private val _coupons = MutableStateFlow<Map<String, String>>(emptyMap())
-    val coupons: StateFlow<Map<String, String>> get() = _coupons
+    private val _coupons = MutableStateFlow<Map<String, PriceRule>>(emptyMap())
+    val coupons: StateFlow<Map<String, PriceRule>> get() = _coupons
 
     fun getbrands() {
         viewModelScope.launch(Dispatchers.IO) {

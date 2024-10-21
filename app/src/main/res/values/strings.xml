@@ -16,10 +16,8 @@
     <string name="guest">Skip</string>
 
 
-
     <string name="discriptionProductDetails">Discription</string>
     <string name="reviewProductDetails">Review</string>
-
 
 
     <string name="title_activity_main2">MainActivity2</string>
@@ -35,7 +33,6 @@
 
 
     <string name="country">country\n</string>
-
 
 
     <string name="tv_size" />

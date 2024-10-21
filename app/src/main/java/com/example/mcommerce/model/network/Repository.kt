@@ -9,6 +9,7 @@ import com.example.mcommerce.model.responses.CustomerResponse
 import SmartCollectionsItem
 import com.example.mcommerce.model.pojos.CustomCollection
 import com.example.mcommerce.model.pojos.DraftOrderRequest
+import com.example.mcommerce.model.pojos.PriceRule
 
 import com.example.mcommerce.model.pojos.UpdateDraftOrderRequest
 import com.example.mcommerce.model.responses.address.AddAddressResponse
@@ -107,7 +108,42 @@ class Repository private constructor(private val remoteDataSource: RemoteDataSou
     suspend fun deleteAddress(customerId: Long, addressId: Long) = remoteDataSource.deleteAddress(customerId, addressId)
 
     // Fetch coupons from RemoteDataSource
-    fun getCoupons() = remoteDataSource.getCoupons()
+    fun getCoupons(): Flow<Map<String, PriceRule>> {
+        return remoteDataSource.getCoupons()
+    }
+
+    // Create or get a draft order
+    suspend fun getOrCreateDraftOrder(draftOrderRequest: DraftOrderRequest): ReceivedDraftOrder {
+        // Check if the draft order already exists
+        val existingOrders = remoteDataSource.getAllDraftOrders()
+        val existingOrder = existingOrders.find { it.equals(draftOrderRequest.draft_order) }
+
+        return if (existingOrder != null) {
+            existingOrder // Return existing order
+        } else {
+            remoteDataSource.createDraftOrder(draftOrderRequest) // Create new order
+        }
+    }
+
+    // Insert item into a draft order
+    suspend fun insertItemToDraftOrder(draftOrderId: Long, lineItem: DraftOrderRequest): ReceivedDraftOrder {
+        return remoteDataSource.insertItemToDraftOrder(draftOrderId, lineItem)
+    }
+
+    // Delete item from a draft order
+    suspend fun deleteItemFromDraftOrder(draftOrderId: Long, lineItemId: Long): ReceivedDraftOrder {
+        return remoteDataSource.deleteItemFromDraftOrder(draftOrderId, lineItemId)
+    }
+
+    // Get draft order by ID
+    suspend fun getDraftOrder(draftOrderId: Long): DraftOrderRequest {
+        return remoteDataSource.getDraftOrder(draftOrderId)
+    }
+
+    // Get all draft orders
+    suspend fun getAllDraftOrders(): List<ReceivedDraftOrder> {
+        return remoteDataSource.getAllDraftOrders()
+    }
 
 }
 

@@ -180,7 +180,7 @@ class SettingViewModel(private val repository: Repository,private val repo: IRep
     }
 
     // Fetch the latest exchange rates and extract EGP rate
-    private fun fetchLatestRates() {
+     fun fetchLatestRates() {
         viewModelScope.launch {
             repo.getLatestExchangeRates().collect { response ->
                 try {

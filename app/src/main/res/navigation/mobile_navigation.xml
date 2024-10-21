@@ -23,7 +23,7 @@
             app:destination="@id/favoriteFragment" />
         <action
             android:id="@+id/action_navigation_home_to_settingFragment"
-            app:destination="@id/settingFragment" />
+            app:destination="@id/navigation_setting" />
     </fragment>
 
     <fragment
@@ -102,7 +102,7 @@
 <!--        android:label="@string/order"-->
 <!--        tools:layout="@layout/fragment_order" />-->
     <fragment
-        android:id="@+id/settingFragment"
+        android:id="@+id/navigation_setting"
         android:name="com.example.mcommerce.ui.setting.view.SettingFragment"
         android:label="fragment_setting"
         tools:layout="@layout/fragment_setting" >
@@ -153,7 +153,21 @@
         android:id="@+id/cartFragment"
         android:name="com.example.mcommerce.CartFragment"
         android:label="fragment_cart"
-        tools:layout="@layout/fragment_cart" />
+        tools:layout="@layout/fragment_cart" >
+        <action
+            android:id="@+id/action_cartFragment_to_paymentFragment"
+            app:destination="@id/paymentFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/dummyFragment"
+        android:name="com.example.mcommerce.DummyFragment"
+        android:label="fragment_dummy"
+        tools:layout="@layout/fragment_dummy" />
+    <fragment
+        android:id="@+id/paymentFragment"
+        android:name="com.example.mcommerce.PaymentFragment"
+        android:label="fragment_payment"
+        tools:layout="@layout/fragment_payment" />
 
 
 </navigation>

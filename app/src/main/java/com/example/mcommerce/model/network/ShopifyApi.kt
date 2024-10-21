@@ -92,5 +92,11 @@ interface ShopifyApi {
     //coupons
     @GET("/admin/api/2024-10/price_rules.json")
     suspend fun getCoupons(): CouponResponse
+    @PUT("admin/api/2024-10/draft_orders/{draftOrderId}.json")
+
+    suspend fun updateDraftOrder(
+        @Path("draftOrderId") draftOrderId: Long,
+        @Body updateDraftOrderRequest: UpdateDraftOrderRequest
+    ):  ReceivedDraftOrder
 }
 

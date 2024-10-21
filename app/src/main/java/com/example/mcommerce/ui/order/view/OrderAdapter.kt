@@ -11,26 +11,27 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
 import com.example.mcommerce.databinding.ItemOrderBinding
+import com.example.mcommerce.model.responses.ReceivedDraftOrder
 import com.example.mcommerce.model.responses.orders.OrderElement
 
-class OrderAdapter():ListAdapter<OrderElement,OrderAdapter.ViewModel>(MyDiffUtil()) {
+class OrderAdapter():ListAdapter<ReceivedDraftOrder,OrderAdapter.ViewModel>(MyDiffUtil()) {
 
 
 
     class ViewModel( private var binding: ItemOrderBinding):RecyclerView.ViewHolder(binding.root){
 
-        fun bind(order: OrderElement) {
+        fun bind(order: ReceivedDraftOrder) {
             binding.apply {
                 // Set brand title
                 orderid.text = order.id.toString()
-                noOFitemid.text=order.lineItems.get(0).quantity.toString()
-                monyPaidid.text=order.totalPrice
-                val price = order.totalPrice ?: "0.00"
+                noOFitemid.text=order.line_items?.get(0)?.quantity.toString()
+                monyPaidid.text=order.total_price
+                val price = order.total_price ?: "0.00"
 
                 val currency = "USD"
                 monyPaidid.text = "$price $currency"
-                addressid.text=order.shippingAddress.city
-                dateid.text=order.createdAt
+                addressid.text=order.shipping_address?.city
+                dateid.text=order.created_at
 
 
     }}}
@@ -45,12 +46,12 @@ class OrderAdapter():ListAdapter<OrderElement,OrderAdapter.ViewModel>(MyDiffUtil
         val currentItem = getItem(position)
         holder.bind(currentItem)
     }
-    class MyDiffUtil():DiffUtil.ItemCallback<OrderElement>() {
-        override fun areItemsTheSame(oldItem: OrderElement, newItem: OrderElement): Boolean {
+    class MyDiffUtil():DiffUtil.ItemCallback<ReceivedDraftOrder>() {
+        override fun areItemsTheSame(oldItem: ReceivedDraftOrder, newItem: ReceivedDraftOrder): Boolean {
             return oldItem === newItem
         }
 
-        override fun areContentsTheSame(oldItem: OrderElement, newItem: OrderElement): Boolean {
+        override fun areContentsTheSame(oldItem: ReceivedDraftOrder, newItem: ReceivedDraftOrder): Boolean {
                     return oldItem == newItem
         }
     }

@@ -32,8 +32,7 @@
     <string name="brand">Brands</string>
 
 
-    <string name="country">country\n</string>
-
+    <string name="country">Country</string>
 
     <string name="tv_size" />
     <string name="tv_sizeOption">Size</string>
@@ -42,7 +41,7 @@
 
     <string name="orderNo">Order No</string>
     <string name="noOfItem">No Of Item</string>
-    <string name="address">Adress</string>
+    <string name="address">Address</string>
     <string name="paid">Paid</string>
     <string name="date">Date</string>
     <string name="order_no">Order No:</string>
@@ -53,13 +52,14 @@
     <string name="setting">Setting</string>
     <string name="order">Order</string>
     <string name="productInfo">Details</string>
-    <string name="favoritaFradment">Favorita</string>
+    <string name="favoritaFradment">Favorite</string>
     <string name="searchFragment">Search</string>
     <string name="_order">Order</string>
     <string name="sub_total">Sub Total</string>
     <string name="shiping_fees">Shipping Fees</string>
     <string name="total">Total</string>
     <string name="place_order">PLACE ORDER</string>
+    <string name="oorder">Order</string>
 </resources>
 
 

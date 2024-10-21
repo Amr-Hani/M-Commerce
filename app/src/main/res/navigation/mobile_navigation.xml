@@ -21,6 +21,12 @@
         <action
             android:id="@+id/action_navigation_home_to_favoriteFragment"
             app:destination="@id/favoriteFragment" />
+
+
+        <action
+            android:id="@+id/action_navigation_home_to_settingFragment"
+            app:destination="@id/navigation_setting" />
+
     </fragment>
 
     <fragment
@@ -33,18 +39,6 @@
             app:destination="@id/categoryDetailsFragment" />
     </fragment>
 
-    <fragment
-        android:id="@+id/navigation_profile"
-        android:name="com.example.mcommerce.ui.profile.ProfileFragment"
-        android:label="@string/_profile"
-        tools:layout="@layout/fragment_profile" >
-<!--        <action-->
-<!--            android:id="@+id/action_navigation_profile_to_orderFragment"-->
-<!--            app:destination="@id/orderFragment" />-->
-        <action
-            android:id="@+id/action_navigation_profile_to_orderFragment"
-            app:destination="@id/orderFragment" />
-    </fragment>
     <fragment
         android:id="@+id/brandDetails"
         android:name="com.example.mcommerce.ui.brandDetails.view.BrandDetails"
@@ -94,7 +88,11 @@
         android:id="@+id/favoriteFragment"
         android:name="com.example.mcommerce.ui.favorite.view.FavoriteFragment"
         android:label="@string/favoritaFradment"
-        tools:layout="@layout/fragment_favorite" />
+        tools:layout="@layout/fragment_favorite" >
+        <action
+            android:id="@+id/action_favoriteFragment_to_productInfoFragment"
+            app:destination="@id/productInfoFragment" />
+    </fragment>
 
 <!--    <fragment-->
 <!--        android:id="@+id/orderFragment"-->
@@ -115,6 +113,9 @@
         <action
             android:id="@+id/action_settingFragment_to_addressFragment"
             app:destination="@id/addressFragment" />
+        <action
+            android:id="@+id/action_navigation_setting_to_orderFragment"
+            app:destination="@id/orderFragment" />
     </fragment>
     <fragment
         android:id="@+id/aboutUsFragment"
@@ -153,6 +154,7 @@
         android:id="@+id/cartFragment"
         android:name="com.example.mcommerce.CartFragment"
         android:label="fragment_cart"
+
         tools:layout="@layout/fragment_cart" />
     <fragment
         android:id="@+id/orderFragment"
@@ -164,6 +166,23 @@
         android:name="com.example.mcommerce.ui.placedOrder.view.PlacedOrderFragment"
         android:label="Placed_Order"
         tools:layout="@layout/fragment_placed_order" />
+
+
+        <action
+            android:id="@+id/action_cartFragment_to_paymentFragment"
+            app:destination="@id/paymentFragment" />
+
+    <fragment
+        android:id="@+id/dummyFragment"
+        android:name="com.example.mcommerce.ui.dummy.view.DummyFragment"
+        android:label="fragment_dummy"
+        tools:layout="@layout/fragment_dummy" />
+    <fragment
+        android:id="@+id/paymentFragment"
+        android:name="com.example.mcommerce.PaymentFragment"
+        android:label="fragment_payment"
+        tools:layout="@layout/fragment_payment" />
+
 
 
 </navigation>

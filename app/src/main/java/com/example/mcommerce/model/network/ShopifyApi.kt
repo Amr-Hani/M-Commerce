@@ -9,8 +9,13 @@ import retrofit2.http.POST
 import BrandsPOJO
 import com.example.mcommerce.model.pojos.CategoryPOJO
 import com.example.mcommerce.model.pojos.DraftOrderRequest
+
 import com.example.mcommerce.model.responses.orders.Order
+
+import com.example.mcommerce.model.pojos.UpdateCustomerRequest
+
 import com.example.mcommerce.model.pojos.UpdateDraftOrderRequest
+import com.example.mcommerce.model.responses.CustomersByEmailResponse
 import com.example.mcommerce.model.responses.ReceivedDraftOrder
 import com.example.mcommerce.model.responses.ReceivedOrdersResponse
 import retrofit2.http.PUT
@@ -98,6 +103,7 @@ interface ShopifyApi {
 
 
 
+
     @DELETE("admin/api/2024-10/draft_orders/{draft_order_id}.json")
     suspend fun delCartItem(@Path("id") id: String)
     @GET("admin/api/2024-10/draft_orders.json")
@@ -111,8 +117,37 @@ suspend fun confirmOrder(@Body orderResponse: Order): Order
     ): ReceivedDraftOrder
 
 
-    @GET("admin/api/2024-10/orders/{order_id}.json")
-    suspend fun getOrderById(@Path("order_id") orderOid:String): Order
+    @GET("admin/api/2024-10/orders/{orderId}.json")
+    suspend fun getOrderById(@Path("orderId") orderId: String): Order
+
+    @PUT("admin/api/2024-10/draft_orders/{draftOrderId}.json")
+  suspend fun updateDraftOrder(
+        @Path("draftOrderId") draftOrderId: Long,
+        @Body updateDraftOrderRequest: UpdateDraftOrderRequest
+    ):  ReceivedDraftOrder
+
+
+    @DELETE("admin/api/2024-10/draft_orders/{draftOrderId}.json")
+    suspend fun deleteFavoriteDraftOrder(
+        @Path("draftOrderId") draftOrderId: Long,
+    )
+
+    @GET("admin/api/2024-10/customers/search.json")
+    suspend fun getCustomerByEmail(
+        @Query("query") emailQuery: String
+    ): CustomersByEmailResponse
+
+    @PUT("admin/api/2024-10/customers/{customer_id}.json")
+    suspend fun updateCustomerById(
+        @Path("customer_id") customerId: Long,
+        @Body updateCustomerRequest: UpdateCustomerRequest
+    ): CustomerResponse
+
+    @GET("admin/api/2024-10/customers/{customer_id}.json")
+    suspend fun getCustomerById(
+        @Path("customer_id") customerId: Long
+    ): CustomerResponse
+
 
 
 }

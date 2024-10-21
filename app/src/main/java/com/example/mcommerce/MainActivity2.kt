@@ -28,7 +28,7 @@ class MainActivity2 : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_activity_main2)
         val appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.navigation_home, R.id.navigation_category, R.id.navigation_profile,R.id.navigation_setting
+                R.id.navigation_home, R.id.navigation_category,R.id.navigation_setting
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -41,7 +41,16 @@ class MainActivity2 : AppCompatActivity() {
             navController.navigate(R.id.searchFragment)
         }
         binding.imageView.setOnClickListener {
+
             //navigate here to cardview
+
+
+
+             navController.navigate(R.id.cartFragment)
+        }
+        binding.imageView.setOnClickListener {
+
+            navController.navigate(R.id.cartFragment)
 
         }
 

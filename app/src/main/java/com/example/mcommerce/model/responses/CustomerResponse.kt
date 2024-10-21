@@ -1,16 +1,18 @@
 package com.example.mcommerce.model.responses
-
 data class CustomerResponse(
-    val customers: List<Customer>
+    val customer: Customers
 )
 
-data class Customer(
+data class CustomersByEmailResponse(
+    val customers: List<Customers>
+)
+data class Customers(
     val id: Long,
     val email: String,
     val created_at: String,
     val updated_at: String,
-    val first_name: String?,
-    val last_name: String?,
+    val first_name: String,
+    val last_name: String,
     val orders_count: Int,
     val state: String,
     val total_spent: String,
@@ -19,80 +21,51 @@ data class Customer(
     val verified_email: Boolean,
     val multipass_identifier: String?,
     val tax_exempt: Boolean,
-    val tags: String?,
+    val tags: String,
     val last_order_name: String?,
     val currency: String,
-    val phone: String?,
-
+    val phone: String,
     val addresses: List<Address>,
-    val tax_exemptions: List<Any>,
+    val tax_exemptions: List<String>,
     val email_marketing_consent: EmailMarketingConsent,
     val sms_marketing_consent: SmsMarketingConsent,
     val admin_graphql_api_id: String,
     val default_address: Address
 )
 
-
-
-
-
-
-
-
-
-
-
 data class Address(
-    val id: Long = 0L,  // Default ID to 0 (if not assigned yet)
-
-
-    val customer_id: Long,  // Required: Customer ID, should be provided when creating the instance
-
-
-    val first_name: String? = null,  // Optional first name
-
-
-    val last_name: String? = null,  // Optional last name
-
-
-    val company: String? = null,  // Optional company name
-
-
-    val address1: String,  // Required primary address line (no default value)
-
-
-    val address2: String? = null,  // Optional secondary address line
-
-
-    val city: String,  // Required city name (no default value)
-
-
-    val province: String,  // Required province/state name (no default value)
-
-
-    val country: String,  // Required country name (no default value)
-
-
-    val zip: String,  // Required postal/zip code (no default value)
-
-
-    val phone: String? = null,  // Optional phone number
-
-
-    val name: String? = null,  // Optional full name
-
-
-    val province_code: String? = null,  // Optional province code
-
-
-    val country_code: String? = null,  // Optional country code
-
-
-    val country_name: String? = null,  // Optional country name
-
-
-    val default: Boolean = false  // Default to false, can be true if needed
+    val id: Long,
+    val customer_id: Long,
+    val first_name: String,
+    val last_name: String,
+    val company: String?,
+    val address1: String,
+    val address2: String?,
+    val city: String,
+    val province: String,
+    val country: String,
+    val zip: String,
+    val phone: String,
+    val name: String,
+    val province_code: String,
+    val country_code: String,
+    val country_name: String,
+    val default: Boolean
 )
+
+data class EmailMarketingConsent(
+    val state: String,
+    val opt_in_level: String,
+    val consent_updated_at: String?
+)
+
+data class SmsMarketingConsent(
+    val state: String,
+    val opt_in_level: String,
+    val consent_updated_at: String?,
+    val consent_collected_from: String
+)
+
 //data class Address(
 //    val id: Long,
 //    val customer_id: Long,
@@ -112,19 +85,19 @@ data class Address(
 //    val country_name: String,
 //    val default: Boolean
 //)
-
-data class EmailMarketingConsent(
-    val state: String,
-    val opt_in_level: String?,
-    val consent_updated_at: String?
-)
-
-data class SmsMarketingConsent(
-    val state: String,
-    val opt_in_level: String?,
-    val consent_updated_at: String?,
-    val consent_collected_from: String
-)
+//
+//data class EmailMarketingConsent(
+//    val state: String,
+//    val opt_in_level: String?,
+//    val consent_updated_at: String?
+//)
+//
+//data class SmsMarketingConsent(
+//    val state: String,
+//    val opt_in_level: String?,
+//    val consent_updated_at: String?,
+//    val consent_collected_from: String
+//)
 
 
 //

@@ -2,6 +2,8 @@ package com.example.mcommerce.ui.order.view
 
 
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -20,6 +22,7 @@ import com.example.mcommerce.model.network.Repository
 import com.example.mcommerce.model.pojos.DraftOrderRequest
 import com.example.mcommerce.model.responses.ReceivedDraftOrder
 import com.example.mcommerce.model.responses.orders.OrderElement
+import com.example.mcommerce.my_key.MyKey
 import com.example.mcommerce.ui.order.viewModel.OrderViewModel
 import com.example.mcommerce.ui.order.viewModel.ViewModelFactory
 import kotlinx.coroutines.Dispatchers
@@ -32,6 +35,8 @@ private lateinit var viewModel: OrderViewModel
 private lateinit var viewModelFactory: ViewModelFactory
     private var _binding: FragmentOrderBinding? = null
     private val binding get() = _binding!!
+    private lateinit var sharedPreferences: SharedPreferences
+    private var draftOrderID: Long = 0
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,9 +63,13 @@ private lateinit var viewModelFactory: ViewModelFactory
         ))
         viewModel=ViewModelProvider(this,viewModelFactory)
             .get(OrderViewModel::class.java)
+        sharedPreferences =
+            requireContext().getSharedPreferences(MyKey.MY_SHARED_PREFERENCES, Context.MODE_PRIVATE)
+        draftOrderID = (sharedPreferences.getString(MyKey.MY_CARD_DRAFT_ID, "1")
+            ?: "1").toLong()
 
        //محتاج id من احمد علاء
-        viewModel.getCustomerOrders( "2345678")
+        viewModel.getCustomerOrders( draftOrderID.toString())
         getCustomerOrder()
     }
 
@@ -72,7 +81,7 @@ private lateinit var viewModelFactory: ViewModelFactory
                        Log.d("Apistate", "getCustomerOrder:${state.message} ")
                    }
                    is ApiState.Success->{
-                       val customer = state.data as? List<OrderElement>
+                       val customer = state.data as? List<ReceivedDraftOrder>
                        if (customer != null) {
                            orderAdapter.submitList(customer)
                            Log.i("Apistate", "Success state: $customer")

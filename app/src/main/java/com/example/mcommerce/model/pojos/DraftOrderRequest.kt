@@ -1,9 +1,7 @@
 package com.example.mcommerce.model.pojos
 
-
-data class PostDraftOrderItemModel(val draft_order : DraftOrder)
 data class DraftOrderRequest(
-    val draft_order: DraftOrder
+    var draft_order: DraftOrder
 )
 
 data class DraftOrder(
@@ -19,9 +17,9 @@ data class LineItem(
     val product_id: Long,
     val title: String,
     val variant_title: String?= null,
-    val sku: String?= null,
+    var sku: String?= null,
     val vendor: String?= null,
-    val quantity: Int?= null,
+    var quantity: Int?= null,
     val requires_shipping: Boolean?= null,
     val taxable: Boolean?= null,
     val gift_card: Boolean?= null,

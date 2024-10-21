@@ -1,7 +1,6 @@
 package com.example.mcommerce.model.network
 
 
-
 import com.example.mcommerce.model.pojos.CustomerRequest
 import com.example.mcommerce.model.responses.CustomerResponse
 
@@ -11,13 +10,20 @@ import com.example.mcommerce.model.pojos.CustomCollection
 import com.example.mcommerce.model.pojos.DraftOrderRequest
 import com.example.mcommerce.model.responses.orders.Order
 
+import com.example.mcommerce.model.pojos.PriceRule
+
+import com.example.mcommerce.model.pojos.UpdateCustomerRequest
+
+
 import com.example.mcommerce.model.pojos.UpdateDraftOrderRequest
+import com.example.mcommerce.model.responses.CustomersByEmailResponse
 import com.example.mcommerce.model.responses.address.AddAddressResponse
 import com.example.mcommerce.model.responses.ProductResponse
 import com.example.mcommerce.model.responses.ReceivedDraftOrder
 import com.example.mcommerce.model.responses.ReceivedOrdersResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import retrofit2.Response
 
 class Repository private constructor(private val remoteDataSource: RemoteDataSource) {
     companion object {
@@ -103,22 +109,83 @@ class Repository private constructor(private val remoteDataSource: RemoteDataSou
 
     suspend fun getAddresses(customerId: Long) = remoteDataSource.getAddresses(customerId)
 
-    suspend fun addAddress(customerId: Long, address: AddAddressResponse) = remoteDataSource.addAddress(customerId, address)
+    suspend fun addAddress(customerId: Long, address: AddAddressResponse) =
+        remoteDataSource.addAddress(customerId, address)
 
-    suspend fun deleteAddress(customerId: Long, addressId: Long) = remoteDataSource.deleteAddress(customerId, addressId)
+    suspend fun deleteAddress(customerId: Long, addressId: Long) =
+        remoteDataSource.deleteAddress(customerId, addressId)
 
     // Fetch coupons from RemoteDataSource
-    fun getCoupons() = remoteDataSource.getCoupons()
+    fun getCoupons(): Flow<Map<String, PriceRule>> {
+        return remoteDataSource.getCoupons()
+    }
+
+    // Create or get a draft order
+    suspend fun getOrCreateDraftOrder(draftOrderRequest: DraftOrderRequest): ReceivedDraftOrder {
+        // Check if the draft order already exists
+        val existingOrders = remoteDataSource.getAllDraftOrders()
+        val existingOrder = existingOrders.find { it.equals(draftOrderRequest.draft_order) }
+
+        return if (existingOrder != null) {
+            existingOrder // Return existing order
+        } else {
+            remoteDataSource.createDraftOrder(draftOrderRequest) // Create new order
+        }
+    }
+
+    // Insert item into a draft order
+    suspend fun insertItemToDraftOrder(draftOrderId: Long, lineItem: DraftOrderRequest): ReceivedDraftOrder {
+        return remoteDataSource.insertItemToDraftOrder(draftOrderId, lineItem)
+    }
+
+    // Delete item from a draft order
+    suspend fun deleteItemFromDraftOrder(draftOrderId: Long, lineItemId: Long): ReceivedDraftOrder {
+        return remoteDataSource.deleteItemFromDraftOrder(draftOrderId, lineItemId)
+    }
+
+    // Get draft order by ID
+    suspend fun getDraftOrder(draftOrderId: Long): DraftOrderRequest {
+        return remoteDataSource.getDraftOrder(draftOrderId)
+    }
+
+    // Get all draft orders
+    suspend fun getAllDraftOrders(): List<ReceivedDraftOrder> {
+        return remoteDataSource.getAllDraftOrders()
+    }
+
+    suspend fun deleteFavoriteDraftOrder(customerId: Long) {
+        remoteDataSource.deleteFavoriteDraftOrder(customerId)
+    }
+
+    fun getCustomerByEmail(customerEmail: String): Flow<CustomersByEmailResponse> {
+        return flow {
+            emit(
+                remoteDataSource.getCustomerByEmail(customerEmail)
+            )
+        }
+    }
+
+    fun updateCustomerById(updateCustomerById: Long,updateCustomerRequest: UpdateCustomerRequest): Flow<CustomerResponse> {
+        return flow {
+            emit(
+                remoteDataSource.updateCustomerById(updateCustomerById,updateCustomerRequest)
+            )
+        }
+    }
+
+    fun getCustomerById(customerId: Long): Flow<CustomerResponse> {
+        return flow {
+            emit(
+                remoteDataSource.getCustomerById(customerId)
+            )
+        }
+    }
 
 
     suspend fun delCartItem(id: String) {
         return remoteDataSource.delCartItem(id)
     }
-    suspend fun getAllDraftOrders(): Flow<ReceivedOrdersResponse> {
-        return flow {
-            emit(remoteDataSource.getAllDraftOrders())
-        }
-    }
+
     suspend fun confirmOrder(ordersItem: Order):Flow<Order> {
         return remoteDataSource.confirmOrder(ordersItem)
     }

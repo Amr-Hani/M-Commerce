@@ -158,6 +158,38 @@
             android:contentDescription="Arrow Icon"
             android:paddingStart="8dp" />
     </LinearLayout>
+    <View
+        android:id="@+id/aboutDriver"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/gray_light" />
+
+    <LinearLayout
+        android:id="@+id/aboutorder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingVertical="12dp"
+        android:layout_marginTop="8dp">
+
+        <TextView
+            android:id="@+id/order"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/oorder"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/ordericon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow_right"
+            android:contentDescription="Arrow Icon"
+            android:paddingStart="8dp" />
+    </LinearLayout>
 
     <com.denzcoskun.imageslider.ImageSlider
         android:id="@+id/imageSlider"

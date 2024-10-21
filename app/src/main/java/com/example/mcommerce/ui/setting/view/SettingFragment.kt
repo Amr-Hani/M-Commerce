@@ -1,8 +1,11 @@
 package com.example.mcommerce.ui.setting.view
 
+import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -10,15 +13,20 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.denzcoskun.imageslider.models.SlideModel
+import com.example.mcommerce.MainActivity
 import com.example.mcommerce.R
 import com.example.mcommerce.databinding.FragmentSettingBinding
+
 import com.example.mcommerce.ui.setting.view.currency.CurrencyDialogFragment
+import com.google.android.gms.auth.api.Auth
+import com.google.firebase.auth.FirebaseAuth
 
 class SettingFragment : Fragment(), CurrencyDialogFragment.CurrencySelectionListener {
 
     private lateinit var binding: FragmentSettingBinding
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var imageList: List<SlideModel>
+    lateinit var mAuth: FirebaseAuth
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,7 +42,17 @@ class SettingFragment : Fragment(), CurrencyDialogFragment.CurrencySelectionList
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupOnClickListeners()
-       // setupImageSlider()
+        mAuth = FirebaseAuth.getInstance()
+        mAuth.addAuthStateListener { firebaseAuth ->
+            if (mAuth.currentUser == null) {
+                context?.let {
+                    val intent = Intent(it, MainActivity::class.java)
+                    startActivity(intent)
+                    activity?.finish()
+                } ?: Log.e("AccountFragment", "Context is null")
+            }
+        }
+        // setupImageSlider()
     }
 
 //    private fun setupImageSlider() {
@@ -69,6 +87,22 @@ class SettingFragment : Fragment(), CurrencyDialogFragment.CurrencySelectionList
         binding.currencySection.setOnClickListener {
             showCurrencyDialog()
         }
+        binding.ordericon.setOnClickListener {
+            val action = SettingFragmentDirections.actionNavigationSettingToOrderFragment()
+            findNavController().navigate(action)
+        }
+        binding.logoutButton.setOnClickListener {
+            AlertDialog.Builder(requireContext())
+                .setTitle("Logout")
+                .setMessage("Do You Want Logout")
+                .setPositiveButton("Yes") { dialog, _ ->
+                    mAuth.signOut()
+                }
+                .setNegativeButton("No") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
+        }
     }
 
     private fun navigateTo(actionId: Int) {
@@ -96,6 +130,7 @@ class SettingFragment : Fragment(), CurrencyDialogFragment.CurrencySelectionList
         val savedCurrency = sharedPreferences.getString("currency", "EGP") ?: "EGP"
         binding.currencyText.text = savedCurrency
     }
+
 
 //    private fun copyToClipboard(title: String) {
 //        val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager

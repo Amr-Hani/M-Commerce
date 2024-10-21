@@ -81,8 +81,9 @@ class CartFragment : Fragment(), PaymentDialogFragment.CurrencySelectionListener
         sharedPreferences = requireActivity().getSharedPreferences("user_settings", Context.MODE_PRIVATE)
         sharedPreferences2 =
             requireContext().getSharedPreferences(MyKey.MY_SHARED_PREFERENCES, Context.MODE_PRIVATE)
-        draftOrderID = (sharedPreferences.getString(MyKey.MY_CARD_DRAFT_ID, "1")
-            ?: "1").toLong()
+        Log.d("draftOrderID", "draftOrderID before  creation : $draftOrderID")
+        draftOrderID = sharedPreferences2.getString(MyKey.MY_CARD_DRAFT_ID, "1")?.toLongOrNull() ?: 1L
+        Log.d("draftOrderID", "draftOrderID after  creation : $draftOrderID")
         setupRecyclerView()
         observeDraftOrder()
         observeExchangeRates() // Start observing exchange rates
@@ -107,6 +108,7 @@ class CartFragment : Fragment(), PaymentDialogFragment.CurrencySelectionListener
     private fun observeDraftOrder() {
         viewLifecycleOwner.lifecycleScope.launch {
             productInfoViewModel.getDraftOrder(draftOrderID)
+            Log.d("draftOrderID", "draftOrderID after  use getDraft : $draftOrderID")
             productInfoViewModel.draftOrderStateFlow.collectLatest { state ->
                 when (state) {
                     is ApiState.Loading -> { }
@@ -115,6 +117,8 @@ class CartFragment : Fragment(), PaymentDialogFragment.CurrencySelectionListener
                         draftOrderRequest = state.data
                         cartAdapter.submitList(productList)
                         updateSubtotal()
+                        Log.d("draftOrderID", "productListl : $productList")
+                        Log.d("draftOrderID", "draftOrderID after  updateSubtotal : $draftOrderID")
                     }
                     is ApiState.Failure -> {
 
@@ -198,14 +202,19 @@ class CartFragment : Fragment(), PaymentDialogFragment.CurrencySelectionListener
             val updatedList = draftOrderRequest.draft_order.line_items.toMutableList().apply {
                 remove(lineItem)
             }
-            draftOrderRequest.draft_order = draftOrderRequest.draft_order.copy(line_items = updatedList)
 
-            favoriteViewModel.updateFavoriteDraftOrder(
-                draftOrderID, UpdateDraftOrderRequest(draftOrderRequest.draft_order)
-            )
+            // Only update if the list has changed
+            if (updatedList.size != draftOrderRequest.draft_order.line_items.size) {
+                draftOrderRequest.draft_order = draftOrderRequest.draft_order.copy(line_items = updatedList)
 
-            cartAdapter.submitList(updatedList)
-            updateSubtotal()
+                try {
+                    favoriteViewModel.updateFavoriteDraftOrder(draftOrderID, UpdateDraftOrderRequest(draftOrderRequest.draft_order))
+                    cartAdapter.submitList(updatedList)
+                    updateSubtotal()
+                } catch (e: Exception) {
+                    Log.e("CartFragment", "Failed to update draft order: ${e.message}")
+                }
+            }
         }
     }
 

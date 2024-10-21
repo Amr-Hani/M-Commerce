@@ -41,6 +41,7 @@ import com.example.mcommerce.ui.favorite.viewmodel.FavoriteViewModelFactory
 
 import com.example.mcommerce.ui.product_info.viewmodel.ProductInfoViewModel
 import com.example.mcommerce.ui.product_info.viewmodel.ProductInfoViewModelFactory
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -61,11 +62,13 @@ class ProductInfoFragment : Fragment() {
     lateinit var favoriteViewModelFactory: FavoriteViewModelFactory
 
     lateinit var draftOrderRequest: DraftOrderRequest
+    lateinit var draftOrderRequestForCart: DraftOrderRequest
     lateinit var products: Products
     var customerId: Long = 0
     var isFavorite = false
     var productId: Long = 0
     var favoriteDraftOrderId: Long = 0
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -97,8 +100,7 @@ class ProductInfoFragment : Fragment() {
         sharedPreferences =
             requireContext().getSharedPreferences(MyKey.MY_SHARED_PREFERENCES, Context.MODE_PRIVATE)
 
-        draftOrderID = (sharedPreferences.getString(MyKey.MY_CARD_DRAFT_ID, "1")
-            ?: "1").toLong()
+
         favoriteViewModelFactory = FavoriteViewModelFactory(
             Repository.getInstance(
                 RemoteDataSource(ProductInfoRetrofit.productService)
@@ -108,8 +110,11 @@ class ProductInfoFragment : Fragment() {
             ViewModelProvider(this, favoriteViewModelFactory).get(FavoriteViewModel::class.java)
         favoriteDraftOrderId =
             (sharedPreferences.getString(MyKey.MY_FAVORITE_DRAFT_ID, "0") ?: "0").toLong()
+        draftOrderID =( sharedPreferences.getString(MyKey.MY_CARD_DRAFT_ID, "1")?: "1").toLong()
         Log.d(TAG, "onViewCreated: $favoriteDraftOrderId")
+        Log.d("draftOrderID", "draftOrderID: $draftOrderID")
         getDraftOrderById(favoriteDraftOrderId)
+        getDraftOrderByIdForCart(draftOrderID)
 
         binding.btnAddToFavorite.setOnClickListener {
             if (isFavorite) {
@@ -172,8 +177,50 @@ class ProductInfoFragment : Fragment() {
                 }
             }
         }
-    }
+        binding.btnAddToCard.setOnClickListener {
+                    lifecycleScope.launch(Dispatchers.IO) {
+                                    var oldLineItem: MutableList<LineItem> = mutableListOf()
 
+                                    draftOrderRequestForCart.draft_order.line_items.forEach {
+                                        oldLineItem.add(it)
+                                    }
+                                    val draftOrder =  draftOrderRequest(products).draft_order.line_items.get(0)
+                                    oldLineItem.add(
+                                        draftOrder
+                                    )
+                                    Log.d(TAG, "showProductInfoDetails: $draftOrder")
+                                    Log.d(TAG, "onViewCreated: $oldLineItem")
+                                    val draft = draftOrderRequest.draft_order
+
+                                    draft.line_items = oldLineItem
+
+                                    favoriteViewModel.updateFavoriteDraftOrder(
+                                        draftOrderID,
+                                        UpdateDraftOrderRequest(draft)
+                                    )
+                                }
+                            }
+                        }
+
+
+    fun getDraftOrderByIdForCart(draftOrderId: Long){
+        lifecycleScope.launch {
+            productInfoViewModel.getFavoriteDraftOrder(draftOrderId)
+            productInfoViewModel.draftOrderStateFlow.collectLatest {
+                when (it) {
+                    is ApiState.Failure -> {
+                        Log.d(TAG, "showProductInfoDetails: btnAddToCard ${it.message}")
+                    }
+
+                    is ApiState.Loading -> {}
+                    is ApiState.Success -> {
+                        draftOrderRequestForCart = DraftOrderRequest( it.data.draft_order)
+
+                    }
+                }
+            }
+        }
+    }
     fun getDraftOrderById(favoriteDraftOrderId: Long) {
         lifecycleScope.launch {
             productInfoViewModel.getFavoriteDraftOrder(favoriteDraftOrderId)
@@ -353,12 +400,16 @@ class ProductInfoFragment : Fragment() {
             }
         }
 
-        binding.btnAddToCard.setOnClickListener {
+    }
+      /*  binding.btnAddToCard.setOnClickListener {
+            Log.d("draftOrderID", "draftOrderID after click: $draftOrderID")
             if (!size.isNullOrBlank()) {
                 if (!color.isNullOrBlank()) {
-
+                    favoriteViewModel.getFavoriteDraftOrder(draftOrderID)
+                    Log.d("draftOrderID", "draftOrderID after gir favorite: $draftOrderID")
                 //    productInfoViewModel.insertItemToDraftOrder( draftOrderID,draftOrderRequest(products))
                     lifecycleScope.launch {
+                        Log.d("draftOrderID", "draftOrderID at launch: $draftOrderID")
                        /* if (draftOrderID != 1172999471403) {
                             favoriteViewModel.createFavoriteDraftOrder(draftOrderRequest(products))
                             delay(2000)
@@ -380,7 +431,7 @@ class ProductInfoFragment : Fragment() {
                                 }
                             }
                         }*/
-                            favoriteViewModel.getFavoriteDraftOrder(draftOrderID)
+
                             favoriteViewModel.draftOrderStateFlow.collectLatest {
                                 when (it) {
                                     is ApiState.Failure -> {}
@@ -389,11 +440,16 @@ class ProductInfoFragment : Fragment() {
                                         var oldLineItem: MutableList<LineItem> = mutableListOf()
                                         it.data.draft_order.line_items.forEach {
                                             oldLineItem.add(it)
+                                            Log.d("draftOrderID", "oldLineItem: $oldLineItem")
+                                            Log.d("draftOrderID", "draftOrderID when add: $draftOrderID")
                                         }
                                         oldLineItem.add(
-                                            draftOrderRequest(products).draft_order.line_items.get(0)
-                                        )
 
+                                            draftOrderRequest(products).draft_order.line_items.get(0)
+
+
+                                        )
+                                        Log.d("draftOrderID", "oldLineItem after add: $oldLineItem")
                                         val draft = draftOrderRequest(products).draft_order
 
                                         draft.line_items = oldLineItem
@@ -402,6 +458,7 @@ class ProductInfoFragment : Fragment() {
                                             draftOrderID,
                                             UpdateDraftOrderRequest(draft)
                                         )
+                                        Log.d("draftOrderID", "draftOrderID after update : $draftOrderID")
 //                                }
 //                                else{
 //                                    favoriteViewModel.createOrder(draftOrderRequest(products))
@@ -428,8 +485,8 @@ class ProductInfoFragment : Fragment() {
             } else {
                 Toast.makeText(requireContext(), "Please Select Size", Toast.LENGTH_SHORT).show()
             }
-        }
-    }
+        }*/
+   // }
 
     private fun draftOrderRequest(products: Products): DraftOrderRequest {
 

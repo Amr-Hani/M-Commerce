@@ -23,7 +23,7 @@
             app:destination="@id/favoriteFragment" />
         <action
             android:id="@+id/action_navigation_home_to_settingFragment"
-            app:destination="@id/navigation_setting" />
+            app:destination="@id/settingFragment" />
     </fragment>
 
     <fragment
@@ -106,7 +106,7 @@
 <!--        android:label="@string/order"-->
 <!--        tools:layout="@layout/fragment_order" />-->
     <fragment
-        android:id="@+id/navigation_setting"
+        android:id="@+id/settingFragment"
         android:name="com.example.mcommerce.ui.setting.view.SettingFragment"
         android:label="fragment_setting"
         tools:layout="@layout/fragment_setting" >

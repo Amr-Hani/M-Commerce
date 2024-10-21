@@ -14,18 +14,25 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import com.example.mcommerce.databinding.FragmentSignUpBinding
 import com.example.mcommerce.model.firebase.FireBaseDataSource
 import com.example.mcommerce.model.firebase.Repo
+import com.example.mcommerce.model.network.ApiState
 import com.example.mcommerce.model.network.ProductInfoRetrofit
 import com.example.mcommerce.model.network.RemoteDataSource
 import com.example.mcommerce.model.network.Repository
+import com.example.mcommerce.model.pojos.Address
+import com.example.mcommerce.model.pojos.Customer
+import com.example.mcommerce.model.pojos.CustomerRequest
 import com.example.mcommerce.my_key.MyKey
 import com.example.mcommerce.ui.authentication.viewmodel.AuthenticationViewModel
 import com.example.mcommerce.ui.authentication.viewmodel.AuthenticationViewModelFactory
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.util.regex.Pattern
 
 class SignUpFragment : Fragment() {
@@ -35,6 +42,30 @@ class SignUpFragment : Fragment() {
     lateinit var authenticationViewModelFactory: AuthenticationViewModelFactory
     lateinit var mAuth: FirebaseAuth
     private val TAG = "SignUpFragment"
+
+    val customer = Customer(
+        first_name = "",
+        last_name = "",
+        email = "",
+        phone = "",
+        verified_email = true,
+        addresses = listOf(
+            Address(
+            address1 = "",
+            city = "",
+            province = "",
+            phone = "",
+            zip = "",
+            last_name = "",
+            first_name = "",
+            country = ""
+        )
+        ),
+        password = "",
+        password_confirmation = "",
+        send_email_welcome = false
+    )
+    val customerRequest = CustomerRequest(customer)
 
     lateinit var googleSignInClient: GoogleSignInClient
 
@@ -152,6 +183,11 @@ class SignUpFragment : Fragment() {
                                         Toast.LENGTH_SHORT
                                     ).show()
 
+                                    customerRequest.customer.email = email
+                                    customerRequest.customer.password = password
+                                    customerRequest.customer.password_confirmation = password
+
+                                    postCustomer(customerRequest)
                                     val action =
                                         SignUpFragmentDirections.actionSignUpFragmentToLogInFragment()
                                     Navigation.findNavController(binding.root).navigate(action)
@@ -212,6 +248,31 @@ class SignUpFragment : Fragment() {
 
     fun isPasswordMatching(password: String, confirmPassword: String): Boolean {
         return password == confirmPassword
+    }
+
+
+    fun postCustomer(customer: CustomerRequest) {
+        lifecycleScope.launch {
+            authenticationViewModel.postCustomer(customer)
+            authenticationViewModel.customerResponseDetailsStateFlow.collectLatest {
+                when (it) {
+                    is ApiState.Failure -> {
+                        Log.d("postCustomer", "Failure: ${it.message}")
+                    }
+
+                    is ApiState.Loading -> {
+                        Log.d(TAG, "postCustomer: Loading")
+                    }
+
+                    is ApiState.Success -> {
+                        Log.d(TAG, "postCustomer: ya hlawa ya wlaaaaaaaaaaaaaaaaa")
+                        Log.d(TAG, "postCustomer:${it.data.customer.id} ")
+                        sharedPreferences.edit().putString(MyKey.MY_CUSTOMER_ID,"${it.data.customer.id}").apply()
+                    }
+                }
+            }
+
+        }
     }
 
 }

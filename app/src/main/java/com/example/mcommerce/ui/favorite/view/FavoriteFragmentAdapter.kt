@@ -1,6 +1,7 @@
 package com.example.mcommerce.ui.favorite.view
 
 import android.content.Context
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -17,7 +18,7 @@ import com.example.mcommerce.model.pojos.LineItem
 import com.example.mcommerce.ui.favorite.viewmodel.FavoriteViewModel
 import com.example.mcommerce.ui.favorite.viewmodel.FavoriteViewModelFactory
 
-class FavoriteFragmentAdapter :
+class FavoriteFragmentAdapter (val onClick: OnClick):
     ListAdapter<LineItem, FavoriteFragmentAdapter.FavoriteFragmentViewHolder>(
         FavoriteFragmentDiffUtil()
     ) {
@@ -40,6 +41,15 @@ class FavoriteFragmentAdapter :
     
             Glide.with(holder.itemView.context).load(split?.get(1))
             .into(holder.binding.ivCurrentIconFavorite)
+
+        holder.binding.root.setOnClickListener {
+
+        }
+        holder.binding.ivIconFavorite.setColorFilter(Color.RED)
+
+        holder.binding.ivIconFavorite.setOnClickListener {
+            onClick.onClick(currentDraftOrderRequest)
+        }
     }
 
     class FavoriteFragmentViewHolder(val binding: ShowFavoritePorductsBinding) :
@@ -49,4 +59,6 @@ class FavoriteFragmentAdapter :
         val split = productName.split("|")
         return if (split.size > 1) split[1].trim() else productName
     }
+
+
 }

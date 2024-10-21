@@ -4,15 +4,13 @@ import android.content.Context
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.mcommerce.databinding.FragmentSearchBinding
 import com.example.mcommerce.databinding.SearchViewBinding
 import com.example.mcommerce.model.pojos.Products
 
-class SearchFragmentAdapter(private val onClick: OnClick<Products>) :
+class SearchFragmentAdapter(private val onFavoriteClick: OnFavoriteClick<Products> , private val onDetailsClick: OnDetailsClick<Products> ) :
     ListAdapter<Products, SearchFragmentAdapter.SearchFragmentAdapterViewHolder>(
         SearchFragmentDiffUtil()
     ) {
@@ -40,13 +38,12 @@ class SearchFragmentAdapter(private val onClick: OnClick<Products>) :
         }
 
         binding.root.setOnClickListener {
-            onClick.onClick(currentProduct)
+            onDetailsClick.onDetailsClick(currentProduct)
         }
-        holder.binding.ivIconFavorite.setOnClickListener {
-            currentProduct.templateSuffix = "FAVORITE"
-            holder.binding.ivIconFavorite.setColorFilter(Color.RED)
-            onClick.onClick(currentProduct)
 
+        holder.binding.ivIconFavorite.setOnClickListener {
+            holder.binding.ivIconFavorite.setColorFilter(Color.RED)
+            onFavoriteClick.onFavoriteClick(currentProduct)
         }
     }
 

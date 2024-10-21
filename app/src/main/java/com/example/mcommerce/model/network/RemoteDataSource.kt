@@ -10,7 +10,9 @@ import com.example.mcommerce.model.responses.CustomerResponse
 import SmartCollectionsItem
 import com.example.mcommerce.model.pojos.CustomCollection
 import com.example.mcommerce.model.pojos.DraftOrderRequest
+import com.example.mcommerce.model.pojos.UpdateCustomerRequest
 import com.example.mcommerce.model.pojos.UpdateDraftOrderRequest
+import com.example.mcommerce.model.responses.CustomersByEmailResponse
 import com.example.mcommerce.model.responses.address.AddAddressResponse
 
 
@@ -19,6 +21,7 @@ import com.example.mcommerce.model.responses.ReceivedDraftOrder
 import com.example.mcommerce.model.responses.ReceivedOrdersResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import retrofit2.Response
 
 
 class RemoteDataSource(private val api: ShopifyApi) {
@@ -69,15 +72,8 @@ class RemoteDataSource(private val api: ShopifyApi) {
         return api.getFavoriteDraftOrder(draftOrderId)
     }
 
-
-
-
-
-
-
     //addresses
     suspend fun getAddresses(customerId: Long) = api.getAddresses(customerId)
-
 
     suspend fun addAddress(customerId: Long, address: AddAddressResponse) = api.addAddress(customerId, address)
 
@@ -89,4 +85,25 @@ class RemoteDataSource(private val api: ShopifyApi) {
         val couponMap = response.price_rules.associate { it.title to it.value }
         emit(couponMap)
     }
+
+    suspend fun deleteFavoriteDraftOrder(customerId: Long){
+        api.deleteFavoriteDraftOrder(customerId)
+    }
+
+    suspend fun getCustomerByEmail(customerEmail: String): CustomersByEmailResponse {
+       return api.getCustomerByEmail(customerEmail)
+    }
+
+    suspend fun updateCustomerById(updateCustomerById: Long,updateCustomerRequest: UpdateCustomerRequest):CustomerResponse {
+       return api.updateCustomerById(updateCustomerById,updateCustomerRequest)
+    }
+
+    suspend fun getCustomerById(customerId: Long):CustomerResponse {
+       return api.getCustomerById(customerId)
+    }
+
+
+
+
+
 }

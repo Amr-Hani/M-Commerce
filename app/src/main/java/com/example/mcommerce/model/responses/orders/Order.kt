@@ -1,7 +1,10 @@
-package com.example.mcommerce.model.pojos
+package com.example.mcommerce.model.responses.orders
+
+
 
 data class Order (
-    val orders: List<OrderElement>
+    val orders: OrderElement
+
 )
 
     data class OrderElement(
@@ -88,18 +91,18 @@ data class Order (
         val totalWeight: Long,
         val updatedAt: String,
         val userID: Any? = null,
-        val billingAddress: Addresss,
-        val customer: Customerr,
+        val billingAddress: Address,
+        val customer: Customer,
         val discountApplications: List<Any?>,
         val fulfillments: List<Any?>,
-        val lineItems: List<LineItemm>,
+        val lineItems: MutableList<LineItem>,
         val paymentTerms: Any? = null,
         val refunds: List<Any?>,
         val shippingAddress: Address,
         val shippingLines: List<Any?>
     )
 
-    data class Addresss(
+    data class Address(
         val firstName: String,
         val address1: String,
         val phone: String,
@@ -135,7 +138,7 @@ data class Order (
         val currencyCode: Currency
     )
 
-    data class Customerr(
+    data class Customer(
         val id: Long,
         val email: String,
         val createdAt: String,
@@ -192,7 +195,7 @@ data class Order (
         Refunded
     }
 
-    data class LineItemm(
+    data class LineItem(
         val id: Long,
         val adminGraphqlAPIID: String,
         val attributedStaffs: List<Any?>,

@@ -8,10 +8,8 @@ import com.example.mcommerce.model.responses.CustomerResponse
 
 import SmartCollectionsItem
 import com.example.mcommerce.model.pojos.CustomCollection
-import com.example.mcommerce.model.pojos.DraftOrder
 import com.example.mcommerce.model.pojos.DraftOrderRequest
-import com.example.mcommerce.model.pojos.Order
-import com.example.mcommerce.model.pojos.PostDraftOrderItemModel
+import com.example.mcommerce.model.responses.orders.Order
 
 import com.example.mcommerce.model.pojos.UpdateDraftOrderRequest
 import com.example.mcommerce.model.responses.address.AddAddressResponse
@@ -124,7 +122,13 @@ class Repository private constructor(private val remoteDataSource: RemoteDataSou
     suspend fun confirmOrder(ordersItem: Order):Flow<Order> {
         return remoteDataSource.confirmOrder(ordersItem)
     }
+    suspend fun getDraftOrderById(id: String): Flow<ReceivedDraftOrder> {
+        return remoteDataSource.getDrafrOrderById(id)
+    }
 
+    suspend fun getOrderById(id:String):Flow<Order>{
+        return remoteDataSource.getOrderById(id)
+    }
 }
 
 

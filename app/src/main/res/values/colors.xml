@@ -7,4 +7,6 @@
     <color name="gray">#FF888888</color>
     <color name="gray_light">#FFDDDDDD</color>
     <color name="purple">#FF6200EE</color>
+    <color name="blue">#007BFF</color> <!-- الأزرق -->
+
 </resources>

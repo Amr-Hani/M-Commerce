@@ -7,6 +7,7 @@
     android:layout_margin="16dp"
     app:cardCornerRadius="24dp"
     app:cardElevation="16dp"
+
     app:layoutDescription="@xml/search_view_scene">
 
     <androidx.constraintlayout.widget.ConstraintLayout

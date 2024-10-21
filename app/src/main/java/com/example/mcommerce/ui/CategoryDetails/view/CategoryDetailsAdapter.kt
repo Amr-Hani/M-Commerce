@@ -40,8 +40,11 @@ class CategoryDetailsAdapter(
         fun bind(product: Products) {
             binding.apply {
                 // Bind the product price
-                pricecategoryDetals.text = product.variants.getOrNull(0)?.price ?: "No Price"
+                val price = product.variants.getOrNull(0)?.price ?: "0.00"
 
+                val currency = "USD"
+                pricecategoryDetals.text = "$price $currency"
+                titlid.text=product.title
                 // Load product image, if available
                 Glide.with(imagcategoryDetals.context)
                     .load(product.images.get(0).src) // Load the first image if available

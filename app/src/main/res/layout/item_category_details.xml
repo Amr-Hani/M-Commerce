@@ -27,8 +27,8 @@
         android:id="@+id/pricecategoryDetals"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="41dp"
-        android:layout_marginTop="11dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardView3Detals" />
@@ -37,9 +37,19 @@
         android:id="@+id/favBrandDetailsidDetals"
         android:layout_width="39dp"
         android:layout_height="32dp"
-        android:layout_marginStart="135dp"
-        android:layout_marginTop="11dp"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardView3Detals"
         app:srcCompat="@drawable/fav" />
+
+    <TextView
+        android:id="@+id/titlid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="12dp"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pricecategoryDetals" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -19,6 +19,7 @@ import com.example.mcommerce.model.network.RemoteDataSource
 import com.example.mcommerce.model.network.Repository
 import com.example.mcommerce.model.pojos.DraftOrderRequest
 import com.example.mcommerce.model.responses.ReceivedDraftOrder
+import com.example.mcommerce.model.responses.orders.OrderElement
 import com.example.mcommerce.ui.order.viewModel.OrderViewModel
 import com.example.mcommerce.ui.order.viewModel.ViewModelFactory
 import kotlinx.coroutines.Dispatchers
@@ -58,8 +59,8 @@ private lateinit var viewModelFactory: ViewModelFactory
         viewModel=ViewModelProvider(this,viewModelFactory)
             .get(OrderViewModel::class.java)
 
-       //ا
-        viewModel.getCustomerOrders( )
+       //محتاج id من احمد علاء
+        viewModel.getCustomerOrders( "2345678")
         getCustomerOrder()
     }
 
@@ -71,7 +72,7 @@ private lateinit var viewModelFactory: ViewModelFactory
                        Log.d("Apistate", "getCustomerOrder:${state.message} ")
                    }
                    is ApiState.Success->{
-                       val customer = state.data as? List<ReceivedDraftOrder>
+                       val customer = state.data as? List<OrderElement>
                        if (customer != null) {
                            orderAdapter.submitList(customer)
                            Log.i("Apistate", "Success state: $customer")

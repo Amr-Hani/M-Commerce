@@ -8,10 +8,8 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import BrandsPOJO
 import com.example.mcommerce.model.pojos.CategoryPOJO
-import com.example.mcommerce.model.pojos.DraftOrder
 import com.example.mcommerce.model.pojos.DraftOrderRequest
-import com.example.mcommerce.model.pojos.Order
-import com.example.mcommerce.model.pojos.PostDraftOrderItemModel
+import com.example.mcommerce.model.responses.orders.Order
 import com.example.mcommerce.model.pojos.UpdateDraftOrderRequest
 import com.example.mcommerce.model.responses.ReceivedDraftOrder
 import com.example.mcommerce.model.responses.ReceivedOrdersResponse
@@ -105,6 +103,17 @@ interface ShopifyApi {
     @GET("admin/api/2024-10/draft_orders.json")
     suspend fun getAllDraftOrders() : ReceivedOrdersResponse
 @POST("admin/api/2024-10/orders.json")
-suspend fun confirmOrder(@Body orderResponse:Order): Order
+suspend fun confirmOrder(@Body orderResponse: Order): Order
+
+    @GET("admin/api/2024-10/draft_orders/{draftOrderId}.json")
+    suspend fun getDrafrOrderById(
+        @Path("draftOrderId") draftOrderId: String
+    ): ReceivedDraftOrder
+
+
+    @GET("admin/api/2024-10/orders/{order_id}.json")
+    suspend fun getOrderById(@Path("order_id") orderOid:String): Order
+
+
 }
 

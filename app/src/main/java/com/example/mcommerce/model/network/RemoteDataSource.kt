@@ -8,12 +8,9 @@ import com.example.mcommerce.model.responses.CustomerResponse
 
 
 import SmartCollectionsItem
-import android.util.Log
 import com.example.mcommerce.model.pojos.CustomCollection
-import com.example.mcommerce.model.pojos.DraftOrder
 import com.example.mcommerce.model.pojos.DraftOrderRequest
-import com.example.mcommerce.model.pojos.Order
-import com.example.mcommerce.model.pojos.PostDraftOrderItemModel
+import com.example.mcommerce.model.responses.orders.Order
 import com.example.mcommerce.model.pojos.UpdateDraftOrderRequest
 import com.example.mcommerce.model.responses.address.AddAddressResponse
 
@@ -23,7 +20,6 @@ import com.example.mcommerce.model.responses.ReceivedDraftOrder
 import com.example.mcommerce.model.responses.ReceivedOrdersResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import retrofit2.http.GET
 
 
 class RemoteDataSource(private val api: ShopifyApi) {
@@ -80,6 +76,12 @@ class RemoteDataSource(private val api: ShopifyApi) {
     }
     suspend fun confirmOrder(ordersItem: Order):Flow<Order> = flow {
         emit(api.confirmOrder(ordersItem))
+    }
+    suspend fun getDrafrOrderById(id: String): Flow<ReceivedDraftOrder> = flow {
+        emit(api.getDrafrOrderById(id))
+    }
+    suspend fun getOrderById(id:String):Flow<Order> = flow {
+        emit(api.getOrderById(id))
     }
 
 

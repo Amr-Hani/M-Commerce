@@ -7,7 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mcommerce.model.network.ApiState
 import com.example.mcommerce.model.network.Repository
-import com.example.mcommerce.model.pojos.Order
+import com.example.mcommerce.model.responses.orders.Order
+import com.example.mcommerce.model.responses.ReceivedDraftOrder
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -15,19 +17,18 @@ import kotlinx.coroutines.launch
 
 class ViewModelPlaceOrder(private val repo:Repository):ViewModel() {
 
-    lateinit var totalPrice: String
-    lateinit var payPalTotalPrice: String
-    lateinit var shippingFees: String
-    lateinit var subTotal: String
-    lateinit var discount: String
-    lateinit var  maximumCashAmount:String
+
     var isPayPalChoose=false
     var isPaymentApproved=false
     var orderResponse: Order?=null
     private val _uiState = MutableStateFlow<ApiState<Order>>(ApiState.Loading())
     var uiState: StateFlow<ApiState<Order>> = _uiState
     private val _isLoading= MutableLiveData(false)
+    private val _cart : MutableStateFlow<ApiState<ReceivedDraftOrder>> = MutableStateFlow(
+        ApiState.Loading())
+    val cart : StateFlow<ApiState<ReceivedDraftOrder>> = _cart
     var isLoading: LiveData<Boolean> =_isLoading
+//    var lineItemsList:MutableList<ReceivedDraftOrder> = mutableListOf()
 
     //دي فانكشن انا هستخدمخا لما يجي الكلاينت يدوس ع زرار الدفع سواء كاش او فيزا
     fun confirmOrder() {
@@ -56,4 +57,19 @@ class ViewModelPlaceOrder(private val repo:Repository):ViewModel() {
 
         }
     }
+    fun getCart(id: String)
+    {
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.getDraftOrderById(id)
+                .catch {
+                    _cart.value = ApiState.Failure(it.message ?: "Error")
+                }
+                .collect{
+//                    lineItemsList.clear()
+//                    lineItemsList.addAll(listOf(it))
+                    _cart.value = ApiState.Success(it)
+                }
+        }
+    }
+
 }

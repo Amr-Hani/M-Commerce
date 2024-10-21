@@ -36,7 +36,11 @@ class BrandDetailsAdapter(
         ) {
             binding.apply {
                 // Bind the product price
-                pricetextbrand.text = product.variants.getOrNull(0)?.price ?: "No Price"
+                val price = product.variants.getOrNull(0)?.price ?: "0.00"
+                titleeid.text=product.title
+
+                val currency = "USD"
+                pricetextbrand.text = "$price $currency"
 
                 // Load product image using Glide, if available
                 Glide.with(imagbrandDetailid.context)

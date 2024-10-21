@@ -149,11 +149,15 @@ class SearchFragment : Fragment(), OnFavoriteClick<Products>, OnDetailsClick<Pro
                     is ApiState.Loading -> {}
                     is ApiState.Success -> {
                         var oldLineItem: MutableList<LineItem> = mutableListOf()
+                        val draftOrderRequest =
+                            draftOrderRequest(products).draft_order.line_items.get(0)
                         it.data.draft_order.line_items.forEach {
-                            oldLineItem.add(it)
+                            if (draftOrderRequest.title != it.title) {
+                                oldLineItem.add(it)
+                            }
                         }
                         oldLineItem.add(
-                            draftOrderRequest(products).draft_order.line_items.get(0)
+                            draftOrderRequest
                         )
 
                         val draft = draftOrderRequest(products).draft_order

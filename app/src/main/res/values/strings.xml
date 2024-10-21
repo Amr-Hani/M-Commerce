@@ -34,7 +34,7 @@
     <string name="brand">Brands</string>
 
 
-    <string name="country">country\n</string>
+    <string name="country">Country</string>
 
 
 
@@ -45,7 +45,7 @@
 
     <string name="orderNo">Order No</string>
     <string name="noOfItem">No Of Item</string>
-    <string name="address">Adress</string>
+    <string name="address">Address</string>
     <string name="paid">Paid</string>
     <string name="date">Date</string>
     <string name="order_no">Order No:</string>
@@ -56,7 +56,7 @@
     <string name="setting">Setting</string>
     <string name="order">Order</string>
     <string name="productInfo">Details</string>
-    <string name="favoritaFradment">Favorita</string>
+    <string name="favoritaFradment">Favorite</string>
     <string name="searchFragment">Search</string>
 </resources>
 

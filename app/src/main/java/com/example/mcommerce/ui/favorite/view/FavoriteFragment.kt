@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.mcommerce.databinding.FragmentFavoriteBinding
 import com.example.mcommerce.model.network.ApiState
@@ -28,7 +29,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 
-class FavoriteFragment : Fragment(), OnClick {
+class FavoriteFragment : Fragment(), OnFavoriteClick,OnProductDetails {
     lateinit var binding: FragmentFavoriteBinding
     lateinit var favoriteFragmentAdapter: FavoriteFragmentAdapter
     lateinit var favoriteViewModel: FavoriteViewModel
@@ -69,7 +70,7 @@ class FavoriteFragment : Fragment(), OnClick {
         favoriteViewModel =
             ViewModelProvider(this, favoriteViewModelFactory).get(FavoriteViewModel::class.java)
 
-        favoriteFragmentAdapter = FavoriteFragmentAdapter(this)
+        favoriteFragmentAdapter = FavoriteFragmentAdapter(this,this)
         binding.rvFavorite.apply {
             layoutManager = GridLayoutManager(requireContext(), 2)
             adapter = favoriteFragmentAdapter
@@ -97,11 +98,15 @@ class FavoriteFragment : Fragment(), OnClick {
             }
         }
     }
+    override fun onProductDetails(productId: Long) {
+        val action = FavoriteFragmentDirections.actionFavoriteFragmentToProductInfoFragment(productId)
+        Navigation.findNavController(binding.root).navigate(action)
+    }
 
-    override fun onClick(lineItem: LineItem) {
+    override fun onFavoriteClick(lineItem: LineItem) {
         AlertDialog.Builder(requireContext())
             .setTitle("Deletion")
-            .setMessage("Do You Want Remove This Place From Favorite")
+            .setMessage("Do You Want Remove This Item From Favorite")
             .setPositiveButton("Yes") { dialog, _ ->
                 lifecycleScope.launch {
                     if (draftOrderRequest.draft_order.line_items.size > 1) {
@@ -135,4 +140,6 @@ class FavoriteFragment : Fragment(), OnClick {
             .show()
 
     }
+
+
 }

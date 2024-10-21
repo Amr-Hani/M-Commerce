@@ -57,11 +57,13 @@ class LogInFragment : Fragment() {
     var favoriteDraftOrderId: Long = 0
     var cardDraftOrderId: Long = 0
     private val TAG = "LogInFragment"
+    var email: String? = null
+    var password: String? = null
 
 
     override fun onStart() {
         super.onStart()
-        //checkIfEmailVerified()
+        checkIfEmailVerified()
     }
 
     override fun onCreateView(
@@ -123,15 +125,15 @@ class LogInFragment : Fragment() {
 
             override fun afterTextChanged(s: Editable?) {}
         })
-        val email = binding.etUserNameLogin.text.toString()
-        val password = binding.etPasswordLogin.text.toString()
+        email = binding.etUserNameLogin.text.toString()
+        password = binding.etPasswordLogin.text.toString()
         if (!email.isNullOrEmpty() || !password.isNullOrBlank()) {
-            authenticationViewModel.logIn(email, password)
+            authenticationViewModel.logIn(email!!, password!!)
                 .addOnCompleteListener(requireActivity()) { task ->
                     if (task.isSuccessful) {
                         //customerRequest.customer.email = email
 
-                        checkIfEmailVerified(email)
+                        checkIfEmailVerified()
                     } else {
                         binding.etPasswordLogin.error = "Maybe Password Is Incorrect"
                         binding.etPasswordLogin.background.setTint(Color.RED)
@@ -153,14 +155,14 @@ class LogInFragment : Fragment() {
         }
     }
 
-    private fun checkIfEmailVerified(email: String) {
+    private fun checkIfEmailVerified() {
         val user = authenticationViewModel.checkIfEmailVerified()
         if (user != null) {
             if (user.isEmailVerified) {
                 Log.d(TAG, "checkIfEmailVerified: Email is verified")
                 Toast.makeText(requireContext(), "Authentication success.", Toast.LENGTH_SHORT)
                     .show()
-                getCustomerByEmail(email)
+                email?.let { getCustomerByEmail(it) }
                 sharedPreferences.edit().putString(MyKey.GUEST, "LogIn")
                     .apply()
 
@@ -199,7 +201,10 @@ class LogInFragment : Fragment() {
                                     it.data.customers.get(0).id
                                 }"
                             )
-                            if (it.data.customers.get(0).first_name.isNullOrBlank()&& it.data.customers.get(0).last_name.isNullOrBlank()) {
+                            if (it.data.customers.get(0).first_name.isNullOrBlank() && it.data.customers.get(
+                                    0
+                                ).last_name.isNullOrBlank()
+                            ) {
 
                                 createdFavoriteDraftOrder()
                                 delay(2000)
@@ -210,15 +215,22 @@ class LogInFragment : Fragment() {
                                 updateCustomer()
                             } else {
                                 favoriteDraftOrderId = it.data.customers.get(0).first_name.toLong()
+                                Log.d(
+                                    TAG,
+                                    "getCustomerByEmail: favoriteDraftOrderId $favoriteDraftOrderId"
+                                )
                                 sharedPreferences.edit().putString(
                                     MyKey.MY_FAVORITE_DRAFT_ID,
                                     "${favoriteDraftOrderId}"
                                 ).apply()
                                 cardDraftOrderId = it.data.customers.get(0).last_name.toLong()
+                                Log.d(TAG, "getCustomerByEmail: cardDraftOrderId $cardDraftOrderId")
+
                                 sharedPreferences.edit().putString(
                                     MyKey.MY_CARD_DRAFT_ID,
                                     "${cardDraftOrderId}"
-                                ).apply()}
+                                ).apply()
+                            }
 
                         } else {
                             Log.d(TAG, "getCustomerByEmail: this list is null")
@@ -267,10 +279,10 @@ class LogInFragment : Fragment() {
 //                                    }
 //                                }
 //                            }
-                        }
                     }
                 }
             }
+        }
     }
 //    private fun draftOrderRequest(products: Products): DraftOrderRequest {
 //

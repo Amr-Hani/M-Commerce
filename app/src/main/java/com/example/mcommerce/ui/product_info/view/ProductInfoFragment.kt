@@ -1,6 +1,9 @@
-
 package com.example.mcommerce.ui.product_info.view
 
+import android.app.AlertDialog
+import android.content.Context
+import android.content.SharedPreferences
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -21,8 +24,15 @@ import com.example.mcommerce.model.network.ApiState
 import com.example.mcommerce.model.network.ProductInfoRetrofit
 import com.example.mcommerce.model.network.RemoteDataSource
 import com.example.mcommerce.model.network.Repository
+import com.example.mcommerce.model.pojos.AppliedDiscount
+import com.example.mcommerce.model.pojos.Customers
+import com.example.mcommerce.model.pojos.DraftOrder
+import com.example.mcommerce.model.pojos.DraftOrderRequest
+import com.example.mcommerce.model.pojos.LineItem
 import com.example.mcommerce.model.pojos.Products
+import com.example.mcommerce.model.pojos.UpdateDraftOrderRequest
 import com.example.mcommerce.model.responses.ProductResponse
+import com.example.mcommerce.my_key.MyKey
 import com.example.mcommerce.ui.product_info.viewmodel.ProductInfoViewModel
 import com.example.mcommerce.ui.product_info.viewmodel.ProductInfoViewModelFactory
 import kotlinx.coroutines.Dispatchers
@@ -31,11 +41,19 @@ import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 class ProductInfoFragment : Fragment() {
+    private val TAG = "ProductInfoFragment"
+
     lateinit var binding: FragmentProductInfoBinding
+    lateinit var sharedPreferences: SharedPreferences
     lateinit var productInfoViewModel: ProductInfoViewModel
     lateinit var productInfoViewModelFactory: ProductInfoViewModelFactory
-    private val TAG = "ProductInfoFragment"
-    var productId:Long = 9728826507563
+    lateinit var draftOrderRequest: DraftOrderRequest
+    lateinit var products: Products
+    var customerId: Long = 0
+    var isFavorite = false
+    var productId: Long = 0
+    var favoriteDraftOrderId: Long = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -61,13 +79,113 @@ class ProductInfoFragment : Fragment() {
             productInfoViewModelFactory
         ).get(ProductInfoViewModel::class.java)
         getProductInfoDetails()
+        sharedPreferences = requireActivity().getSharedPreferences(
+            MyKey.MY_SHARED_PREFERENCES,
+            Context.MODE_PRIVATE
+        )
+        favoriteDraftOrderId =
+            (sharedPreferences.getString(MyKey.MY_FAVORITE_DRAFT_ID, "0") ?: "0").toLong()
+        Log.d(TAG, "onViewCreated: $favoriteDraftOrderId")
+        getDraftOrderById(favoriteDraftOrderId)
+
+        binding.btnAddToFavorite.setOnClickListener {
+            if (isFavorite) {
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Deletion")
+                    .setMessage("Do You Want Remove This Item From Favorite")
+                    .setPositiveButton("Yes") { dialog, _ ->
+
+                        isFavorite = !isFavorite
+                        lifecycleScope.launch {
+
+                            Log.d(TAG, "onViewCreated: ana not favorite ")
+
+                            var oldLineItem: MutableList<LineItem> = mutableListOf()
+
+                            draftOrderRequest.draft_order.line_items.forEach {
+                                if (products.title != it.title) {
+                                    oldLineItem.add(it)
+                                }
+                            }
+                            //oldLineItem.remove(draftOrderRequest(products).draft_order.line_items.get(0))
+                            Log.d(TAG, "onViewCreated: $oldLineItem")
+                            val draft = draftOrderRequest.draft_order
+
+                            draft.line_items = oldLineItem
+                            binding.btnAddToFavorite.setColorFilter(Color.RED)
+                            productInfoViewModel.updateFavoriteDraftOrder(
+                                favoriteDraftOrderId,
+                                UpdateDraftOrderRequest(draft)
+                            )
+                            binding.btnAddToFavorite.setColorFilter(Color.BLACK)
+                        }
+                    }
+                    .setNegativeButton("No") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+
+            } else {
+                isFavorite = !isFavorite
+                lifecycleScope.launch {
+
+                    Log.d(TAG, "onViewCreated: ana not favorite ")
+
+                    var oldLineItem: MutableList<LineItem> = mutableListOf()
+
+                    draftOrderRequest.draft_order.line_items.forEach {
+                        oldLineItem.add(it)
+                    }
+                    oldLineItem.add(draftOrderRequest(products).draft_order.line_items.get(0))
+                    Log.d(TAG, "onViewCreated: $oldLineItem")
+                    val draft = draftOrderRequest.draft_order
+
+                    draft.line_items = oldLineItem
+                    productInfoViewModel.updateFavoriteDraftOrder(
+                        favoriteDraftOrderId,
+                        UpdateDraftOrderRequest(draft)
+                    )
+                    binding.btnAddToFavorite.setColorFilter(Color.RED)
+                }
+            }
+        }
+    }
+
+    fun getDraftOrderById(favoriteDraftOrderId: Long) {
+        lifecycleScope.launch {
+            productInfoViewModel.getFavoriteDraftOrder(favoriteDraftOrderId)
+            productInfoViewModel.draftOrderStateFlow.collectLatest {
+                when (it) {
+                    is ApiState.Failure -> {
+                        Log.d(TAG, "getDraftOrderById: ${it.message}")
+                    }
+
+                    is ApiState.Loading -> {}
+                    is ApiState.Success -> {
+                        draftOrderRequest = DraftOrderRequest(it.data.draft_order)
+                        Log.d(TAG, "getDraftOrderById: $draftOrderRequest")
+
+                        it.data.draft_order.line_items.forEach {
+                            if (it.title == products.title) {
+                                isFavorite = true
+                            }
+                        }
+                        Log.d(TAG, "getDraftOrderById: $isFavorite")
+                        if (isFavorite) {
+                            binding.btnAddToFavorite.setColorFilter(Color.RED)
+                        } else {
+                            binding.btnAddToFavorite.setColorFilter(Color.BLACK)
+                        }
+                    }
+                }
+            }
+        }
+
+
     }
 
     fun getProductInfoDetails() {
-
         productInfoViewModel.getProductDetails(productId)
-
-
         lifecycleScope.launch {
             productInfoViewModel.productDetailsStateFlow.collectLatest {
                 when (it) {
@@ -81,12 +199,14 @@ class ProductInfoFragment : Fragment() {
 
                     is ApiState.Success -> {
                         Log.d(TAG, "getProductInfoDetails: Successssssssssssssssss")
+                        products = it.data.get(0)
                         showProductInfoDetails(it.data.get(0))
                     }
                 }
             }
         }
     }
+
 
     fun showProductInfoDetails(products: Products) {
         var color: String? = null
@@ -137,7 +257,7 @@ class ProductInfoFragment : Fragment() {
         binding.rbReview.rating = randomRatingBarList.get(randomNumber)
         binding.tvReviewDesc.text = randomReviewList.get(randomNumber)
         binding.tvReviewName.text = randomArabicNamesList.get(randomNumber)
-        val randomNumber2 = Random.nextInt(0,10)
+        val randomNumber2 = Random.nextInt(0, 10)
         binding.rbReview2.rating = randomRatingBarList.get(randomNumber2)
         binding.tvReviewDesc2.text = randomReviewList.get(randomNumber2)
         binding.tvReviewName2.text = randomArabicNamesList.get(randomNumber2)
@@ -212,9 +332,10 @@ class ProductInfoFragment : Fragment() {
         binding.btnAddToCard.setOnClickListener {
             if (!size.isNullOrBlank()) {
                 if (!color.isNullOrBlank()) {
-                    // هنا معاك المقاس واللون اعمل الى انت عاوزه
-                    // لو عاوز بقا id المنتج كل حاجه عندك as you like
-                    Log.d(TAG, "showProductInfoDetails: size = $size  color = $color  price = $price")
+                    Log.d(
+                        TAG,
+                        "showProductInfoDetails: size = $size  color = $color  price = $price"
+                    )
                 } else {
                     Toast.makeText(requireContext(), "Please Select Color", Toast.LENGTH_SHORT)
                         .show()
@@ -223,83 +344,26 @@ class ProductInfoFragment : Fragment() {
                 Toast.makeText(requireContext(), "Please Select Size", Toast.LENGTH_SHORT).show()
             }
         }
-        binding.btnAddToFavorite.setOnClickListener {
-            // هنا هضيف ف الفيفوريت
-        }
+    }
 
+    private fun draftOrderRequest(products: Products): DraftOrderRequest {
+
+        val draftOrderRequest = DraftOrderRequest(
+            draft_order = DraftOrder(
+                line_items = listOf(
+                    LineItem(
+                        product_id = products.id,
+                        sku = "${products.id}<+>${products.image?.src}",
+                        title = products.title, price = products.variants[0].price, quantity = 1
+                    )
+                ),
+                use_customer_default_address = true,
+                applied_discount = AppliedDiscount(),
+                customer = Customers(customerId)
+            )
+
+        )
+        return draftOrderRequest
     }
 }
-
-//package com.example.mcommerce.ui.product_info.view
-//
-//import android.os.Bundle
-//import android.util.Log
-//import android.view.LayoutInflater
-//import android.view.View
-//import android.view.ViewGroup
-//import androidx.fragment.app.Fragment
-//import androidx.lifecycle.ViewModelProvider
-//import androidx.lifecycle.lifecycleScope
-//import com.example.mcommerce.databinding.FragmentProductInfoBinding
-//import com.example.mcommerce.model.network.ApiState
-//import com.example.mcommerce.model.network.ProductInfoRetrofit
-//import com.example.mcommerce.model.network.RemoteDataSource
-//import com.example.mcommerce.model.network.Repository
-//import com.example.mcommerce.model.responses.ProductResponse
-//import com.example.mcommerce.ui.product_info.viewmodel.ProductInfoViewModel
-//import com.example.mcommerce.ui.product_info.viewmodel.ProductInfoViewModelFactory
-//import kotlinx.coroutines.flow.collectLatest
-//import kotlinx.coroutines.launch
-//
-//class ProductInfoFragment : Fragment() {
-//    lateinit var binding: FragmentProductInfoBinding
-//    lateinit var productInfoViewModel: ProductInfoViewModel
-//    lateinit var productInfoViewModelFactory: ProductInfoViewModelFactory
-//    private val TAG = "ProductInfoFragment"
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//
-//    }
-//
-//    override fun onCreateView(
-//        inflater: LayoutInflater, container: ViewGroup?,
-//        savedInstanceState: Bundle?
-//    ): View? {
-//        binding = FragmentProductInfoBinding.inflate(inflater, container, false)
-//        return binding.root
-//    }
-//
-//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-//        super.onViewCreated(view, savedInstanceState)
-//        productInfoViewModelFactory = ProductInfoViewModelFactory(
-//            Repository.getInstance(
-//                RemoteDataSource(ProductInfoRetrofit.productService)
-//            )
-//        )
-//        productInfoViewModel = ViewModelProvider(
-//            this,
-//            productInfoViewModelFactory
-//        ).get(ProductInfoViewModel::class.java)
-//
-//        getProductInfoDetails()
-//    }
-//
-//    fun getProductInfoDetails() {
-//        productInfoViewModel.getProductDetails(9728829948203)
-//        lifecycleScope.launch {
-//            productInfoViewModel.productDetailsStateFlow.collectLatest {
-//                when(it){
-//                    ApiState.Loading ->{
-//                        Log.e(TAG, "getProductInfoDetails: loading", )
-//                    }
-//                    is ApiState.OnFailed -> {}
-//                    is ApiState.OnSuccess<*> -> {
-//                        val x = it.data as ProductResponse
-//                        Log.d(TAG, "getProductInfoDetails: ${x.products.get(0).title}")
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
 

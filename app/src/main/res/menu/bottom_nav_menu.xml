@@ -16,7 +16,7 @@
         android:icon="@drawable/profile"
         android:title="@string/profile" />
     <item
-        android:id="@+id/navigation_setting"
+        android:id="@+id/settingFragment"
         android:icon="@drawable/setting"
         android:title="@string/setting" />
 

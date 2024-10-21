@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mcommerce.databinding.FragmentCartBinding
@@ -21,6 +22,7 @@ import com.example.mcommerce.model.network.currency.RetrofitInstance
 import com.example.mcommerce.model.pojos.DraftOrderRequest
 import com.example.mcommerce.model.pojos.LineItem
 import com.example.mcommerce.model.pojos.UpdateDraftOrderRequest
+import com.example.mcommerce.my_key.MyKey
 import com.example.mcommerce.ui.cart.view.CartAdapter
 import com.example.mcommerce.ui.cart.view.payment.PaymentDialogFragment
 import com.example.mcommerce.ui.favorite.viewmodel.FavoriteViewModel
@@ -60,8 +62,9 @@ class CartFragment : Fragment(), PaymentDialogFragment.CurrencySelectionListener
 
     private lateinit var cartAdapter: CartAdapter
     private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var sharedPreferences2: SharedPreferences
     private lateinit var draftOrderRequest: DraftOrderRequest
-    private var draftOrderID: Long = 1172999471403
+    private var draftOrderID: Long = 0
     private lateinit var productList: List<LineItem>
 
     override fun onCreateView(
@@ -76,7 +79,10 @@ class CartFragment : Fragment(), PaymentDialogFragment.CurrencySelectionListener
         super.onViewCreated(view, savedInstanceState)
 
         sharedPreferences = requireActivity().getSharedPreferences("user_settings", Context.MODE_PRIVATE)
-
+        sharedPreferences2 =
+            requireContext().getSharedPreferences(MyKey.MY_SHARED_PREFERENCES, Context.MODE_PRIVATE)
+        draftOrderID = (sharedPreferences.getString(MyKey.MY_CARD_DRAFT_ID, "1")
+            ?: "1").toLong()
         setupRecyclerView()
         observeDraftOrder()
         observeExchangeRates() // Start observing exchange rates

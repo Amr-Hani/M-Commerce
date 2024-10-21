@@ -11,10 +11,11 @@ data class Customer(
 	val phone: String,
 	val verified_email: Boolean,
 	val addresses: List<Address>,
-	val password: String,
-	val password_confirmation: String,
+	var password: String,
+	var password_confirmation: String,
 	val send_email_welcome: Boolean
 )
+
 data class Address(
 	val address1: String,
 	val city: String,
@@ -25,6 +26,19 @@ data class Address(
 	val first_name: String,
 	val country: String
 )
+
+data class UpdateCustomerRequest(
+	val customer: CustomerUpdate
+)
+
+data class CustomerUpdate(
+	val id: Long,
+	val first_name: String? = null,
+	val last_name: String? = null,
+	val email: String? = null,
+)
+
+
 
 
 

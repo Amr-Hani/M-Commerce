@@ -9,7 +9,9 @@ import retrofit2.http.POST
 import BrandsPOJO
 import com.example.mcommerce.model.pojos.CategoryPOJO
 import com.example.mcommerce.model.pojos.DraftOrderRequest
+import com.example.mcommerce.model.pojos.UpdateCustomerRequest
 import com.example.mcommerce.model.pojos.UpdateDraftOrderRequest
+import com.example.mcommerce.model.responses.CustomersByEmailResponse
 import com.example.mcommerce.model.responses.ReceivedDraftOrder
 import com.example.mcommerce.model.responses.ReceivedOrdersResponse
 import retrofit2.http.PUT
@@ -43,15 +45,16 @@ interface ShopifyApi {
 
     @GET("admin/api/2022-01/products.json")
     suspend fun getProductsByBrandId(
-        @Query("collection_id") brandId:Long): ProductResponse
+        @Query("collection_id") brandId: Long
+    ): ProductResponse
 
-    @GET(  "admin/api/2024-10/custom_collections.json")
-    suspend fun getProductsBySubCategory(@Query("product_type") subCategory: String):CategoryPOJO
+    @GET("admin/api/2024-10/custom_collections.json")
+    suspend fun getProductsBySubCategory(@Query("product_type") subCategory: String): CategoryPOJO
 
     @GET("admin/api/2024-10/products.json")
     suspend fun getProducts(): ProductResponse
 
-    suspend fun getProductById(@Path("product_id") productId:Long):ProductResponse
+    suspend fun getProductById(@Path("product_id") productId: Long): ProductResponse
 
     @POST("admin/api/2024-10/draft_orders.json")
     suspend fun createFavoriteDraftOrder(
@@ -89,14 +92,40 @@ interface ShopifyApi {
         @Path("customerId") customerId: Long,
         @Path("addressId") addressId: Long
     ): Response<Unit>
+
     //coupons
     @GET("/admin/api/2024-10/price_rules.json")
     suspend fun getCoupons(): CouponResponse
+
     @PUT("admin/api/2024-10/draft_orders/{draftOrderId}.json")
 
     suspend fun updateDraftOrder(
         @Path("draftOrderId") draftOrderId: Long,
         @Body updateDraftOrderRequest: UpdateDraftOrderRequest
     ):  ReceivedDraftOrder
+
+
+    @DELETE("admin/api/2024-10/draft_orders/{draftOrderId}.json")
+    suspend fun deleteFavoriteDraftOrder(
+        @Path("draftOrderId") draftOrderId: Long,
+    )
+
+    @GET("admin/api/2024-10/customers/search.json")
+    suspend fun getCustomerByEmail(
+        @Query("query") emailQuery: String
+    ): CustomersByEmailResponse
+
+    @PUT("admin/api/2024-10/customers/{customer_id}.json")
+    suspend fun updateCustomerById(
+        @Path("customer_id") customerId: Long,
+        @Body updateCustomerRequest: UpdateCustomerRequest
+    ): CustomerResponse
+
+    @GET("admin/api/2024-10/customers/{customer_id}.json")
+    suspend fun getCustomerById(
+        @Path("customer_id") customerId: Long
+    ): CustomerResponse
+
+
 }
 

@@ -39,9 +39,7 @@ class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
-
     private lateinit var imageList: List<SlideModel>
-
     private lateinit var brandAdapter: BrandAdapter
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var homeViewFactory: HomeViewFactory

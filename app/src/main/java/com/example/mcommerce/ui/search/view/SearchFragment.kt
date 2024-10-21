@@ -31,19 +31,19 @@ import com.example.mcommerce.ui.favorite.viewmodel.FavoriteViewModelFactory
 import com.example.mcommerce.ui.search.viewmodel.SearchFragmentViewModel
 import com.example.mcommerce.ui.search.viewmodel.SearchFragmentViewModelFactory
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class SearchFragment : Fragment(), OnClick<Products> {
+class SearchFragment : Fragment(), OnFavoriteClick<Products>, OnDetailsClick<Products> {
     lateinit var binding: FragmentSearchBinding
     lateinit var searchFragmentViewModelFactory: SearchFragmentViewModelFactory
     lateinit var searchFragmentViewModel: SearchFragmentViewModel
     lateinit var searchFragmentAdapter: SearchFragmentAdapter
     private val TAG = "SearchFragment"
     lateinit var sharedPreferences: SharedPreferences
-    var draftOrderID: Long = 0
+    var favoriteDraftOrderId: Long = 0
+    var customerID: Long = 0
 
     //////////////////////////////////
     lateinit var favoriteViewModel: FavoriteViewModel
@@ -78,7 +78,10 @@ class SearchFragment : Fragment(), OnClick<Products> {
         sharedPreferences =
             requireContext().getSharedPreferences(MyKey.MY_SHARED_PREFERENCES, Context.MODE_PRIVATE)
 
-        draftOrderID = (sharedPreferences.getString(MyKey.DRAFT_ORDER_ID, "0")
+        favoriteDraftOrderId = (sharedPreferences.getString(MyKey.MY_FAVORITE_DRAFT_ID, "0")
+            ?: "0").toLong()
+
+        customerID = (sharedPreferences.getString(MyKey.MY_CUSTOMER_ID, "0")
             ?: "0").toLong()
 
 
@@ -94,7 +97,7 @@ class SearchFragment : Fragment(), OnClick<Products> {
             this,
             searchFragmentViewModelFactory
         ).get(SearchFragmentViewModel::class.java)
-        searchFragmentAdapter = SearchFragmentAdapter(this)
+        searchFragmentAdapter = SearchFragmentAdapter(this, this)
         binding.recyclerView2.apply {
             adapter = searchFragmentAdapter
             layoutManager = GridLayoutManager(requireContext(), 2)
@@ -128,8 +131,6 @@ class SearchFragment : Fragment(), OnClick<Products> {
                                 return true
                             }
                         })
-
-                        // searchFragmentAdapter.submitList(it.data)
                     }
                 }
             }
@@ -139,73 +140,45 @@ class SearchFragment : Fragment(), OnClick<Products> {
         }
     }
 
-    override fun onClick(products: Products) {
-        if (products.templateSuffix == "FAVORITE") {
-            lifecycleScope.launch {
-                if (draftOrderID == 0L) {
-                    favoriteViewModel.createFavoriteDraftOrder(draftOrderRequest(products))
-                    delay(2000)
-                    favoriteViewModel.getAllFavoriteDraftOrders()
-                    favoriteViewModel.allDraftOrdersStateFlow.collectLatest {
-                        when (it) {
-                            is ApiState.Failure -> {}
-                            is ApiState.Loading -> {}
-                            is ApiState.Success -> {
-                                Log.d(
-                                    TAG,
-                                    "onClick: ana defto hala ${it.data.get(it.data.size - 1).id}"
-                                )
-                                sharedPreferences.edit().putString(
-                                    MyKey.DRAFT_ORDER_ID,
-                                    "${it.data.get(it.data.size - 1).id}"
-                                ).apply()
+    override fun onFavoriteClick(products: Products) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            favoriteViewModel.getFavoriteDraftOrder(favoriteDraftOrderId)
+            favoriteViewModel.draftOrderStateFlow.collectLatest {
+                when (it) {
+                    is ApiState.Failure -> {}
+                    is ApiState.Loading -> {}
+                    is ApiState.Success -> {
+                        var oldLineItem: MutableList<LineItem> = mutableListOf()
+                        val draftOrderRequest =
+                            draftOrderRequest(products).draft_order.line_items.get(0)
+                        it.data.draft_order.line_items.forEach {
+                            if (draftOrderRequest.title != it.title) {
+                                oldLineItem.add(it)
                             }
                         }
+                        oldLineItem.add(
+                            draftOrderRequest
+                        )
+
+                        val draft = draftOrderRequest(products).draft_order
+
+                        draft.line_items = oldLineItem
+
+                        favoriteViewModel.updateFavoriteDraftOrder(
+                            favoriteDraftOrderId,
+                            UpdateDraftOrderRequest(draft)
+                        )
                     }
-                } else {
-                    favoriteViewModel.getFavoriteDraftOrder(draftOrderID)
-                    favoriteViewModel.draftOrderStateFlow.collectLatest {
-                        when (it) {
-                            is ApiState.Failure -> {}
-                            is ApiState.Loading -> {}
-                            is ApiState.Success -> {
-                                var oldLineItem: MutableList<LineItem> = mutableListOf()
-                                    it.data.draft_order.line_items.forEach {
-                                        oldLineItem.add(it)
-                                    }
-                                    oldLineItem.add(
-                                        draftOrderRequest(products).draft_order.line_items.get(0)
-                                    )
-
-                                    val draft = draftOrderRequest(products).draft_order
-
-                                    draft.line_items = oldLineItem
-
-                                    favoriteViewModel.updateFavoriteDraftOrder(
-                                        draftOrderID,
-                                        UpdateDraftOrderRequest(draft)
-                                    )
-//                                }
-//                                else{
-//                                    favoriteViewModel.createOrder(draftOrderRequest(products))
-//                                }
-
-                            }
-                        }
-                    }
-
-
                 }
-
             }
-
-            //favoriteViewModel.createOrder()
-        } else {
-            val action =
-                SearchFragmentDirections.actionSearchFragmentToProductInfoFragment(products.id)
-            Navigation.findNavController(binding.root).navigate(action)
         }
 
+    }
+
+    override fun onDetailsClick(details: Products) {
+        val action =
+            SearchFragmentDirections.actionSearchFragmentToProductInfoFragment(details.id)
+        Navigation.findNavController(binding.root).navigate(action)
     }
 
 
@@ -222,10 +195,12 @@ class SearchFragment : Fragment(), OnClick<Products> {
                 ),
                 use_customer_default_address = true,
                 applied_discount = AppliedDiscount(),
-                customer = Customers(8246104457515)
+                customer = Customers(customerID)
             )
 
         )
         return draftOrderRequest
     }
+
+
 }

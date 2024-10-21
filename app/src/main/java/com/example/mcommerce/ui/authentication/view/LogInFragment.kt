@@ -26,12 +26,23 @@ import com.example.mcommerce.model.network.ProductInfoRetrofit
 import com.example.mcommerce.model.network.RemoteDataSource
 import com.example.mcommerce.model.network.Repository
 import com.example.mcommerce.model.pojos.Address
+import com.example.mcommerce.model.pojos.AppliedDiscount
 import com.example.mcommerce.model.pojos.Customer
 import com.example.mcommerce.model.pojos.CustomerRequest
+import com.example.mcommerce.model.pojos.CustomerUpdate
+import com.example.mcommerce.model.pojos.Customers
+import com.example.mcommerce.model.pojos.DraftOrder
+import com.example.mcommerce.model.pojos.DraftOrderRequest
+import com.example.mcommerce.model.pojos.LineItem
+import com.example.mcommerce.model.pojos.Products
+import com.example.mcommerce.model.pojos.UpdateCustomerRequest
+import com.example.mcommerce.model.pojos.UpdateDraftOrderRequest
 import com.example.mcommerce.my_key.MyKey
 import com.example.mcommerce.ui.authentication.viewmodel.AuthenticationViewModel
 import com.example.mcommerce.ui.authentication.viewmodel.AuthenticationViewModelFactory
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -42,32 +53,13 @@ class LogInFragment : Fragment() {
     lateinit var authenticationViewModel: AuthenticationViewModel
     lateinit var authenticationViewModelFactory: AuthenticationViewModelFactory
     lateinit var mAuth: FirebaseAuth
+    var customerId: Long = 0
+    var favoriteDraftOrderId: Long = 0
+    var cardDraftOrderId: Long = 0
     private val TAG = "LogInFragment"
+    var email: String? = null
+    var password: String? = null
 
-    val address = Address(
-        address1 = "3 Bank St",
-        city = "Zagazig",
-        province = "CA",
-        phone = "+01008313390",
-        zip = "12345",
-        last_name = "Amr",
-        first_name = "Hani",
-        country = "Egypt"
-    )
-
-    val customer = Customer(
-        first_name = "Amr",
-        last_name = "Hani",
-        email = "3mrhani@gmail.com",
-        phone = "010083130390",
-        verified_email = true,
-        addresses = listOf(address),
-        password = "Am#123456",
-        password_confirmation = "Am#123456",
-        send_email_welcome = false
-    )
-
-    val customerRequest = CustomerRequest(customer)
 
     override fun onStart() {
         super.onStart()
@@ -133,13 +125,13 @@ class LogInFragment : Fragment() {
 
             override fun afterTextChanged(s: Editable?) {}
         })
-        val email = binding.etUserNameLogin.text.toString()
-        val password = binding.etPasswordLogin.text.toString()
+        email = binding.etUserNameLogin.text.toString()
+        password = binding.etPasswordLogin.text.toString()
         if (!email.isNullOrEmpty() || !password.isNullOrBlank()) {
-            authenticationViewModel.logIn(email, password)
+            authenticationViewModel.logIn(email!!, password!!)
                 .addOnCompleteListener(requireActivity()) { task ->
                     if (task.isSuccessful) {
-                        customerRequest.customer.email = email
+                        //customerRequest.customer.email = email
 
                         checkIfEmailVerified()
                     } else {
@@ -170,9 +162,10 @@ class LogInFragment : Fragment() {
                 Log.d(TAG, "checkIfEmailVerified: Email is verified")
                 Toast.makeText(requireContext(), "Authentication success.", Toast.LENGTH_SHORT)
                     .show()
+                email?.let { getCustomerByEmail(it) }
                 sharedPreferences.edit().putString(MyKey.GUEST, "LogIn")
                     .apply()
-                postCustomer(customerRequest)
+
                 val intent = Intent(requireActivity(), MainActivity2::class.java)
                 startActivity(intent)
 
@@ -189,27 +182,211 @@ class LogInFragment : Fragment() {
         }
     }
 
-    fun postCustomer(customer: CustomerRequest) {
+    fun getCustomerByEmail(customerEmail: String) {
         lifecycleScope.launch {
-            authenticationViewModel.postCustomer(customer)
-            authenticationViewModel.customerResponseDetailsStateFlow.collectLatest {
-
+            authenticationViewModel.getCustomerByEmail(customerEmail)
+            authenticationViewModel.customerEmailResponseDetailsStateFlow.collectLatest {
                 when (it) {
-                    is ApiState.Failure -> {
-                        Log.d("postCustomer", "Failure: ${it.message}")
-                    }
-
-                    is ApiState.Loading -> {
-                        Log.d(TAG, "postCustomer: Loading")
-                    }
-
+                    is ApiState.Failure -> {}
+                    is ApiState.Loading -> {}
                     is ApiState.Success -> {
-                        Log.d(TAG, "postCustomer:${it.data.customers.get(0).id} ")
+                        if (!it.data.customers.isNullOrEmpty()) {
+                            customerId = it.data.customers.get(0).id
+                            sharedPreferences.edit()
+                                .putString(MyKey.MY_CUSTOMER_ID, "${it.data.customers.get(0).id}")
+                                .apply()
+                            Log.d(
+                                TAG,
+                                "getCustomerByEmail: email ${it.data.customers.get(0).email} id = ${
+                                    it.data.customers.get(0).id
+                                }"
+                            )
+                            if (it.data.customers.get(0).first_name.isNullOrBlank() && it.data.customers.get(
+                                    0
+                                ).last_name.isNullOrBlank()
+                            ) {
+
+                                createdFavoriteDraftOrder()
+                                delay(2000)
+
+                                createdCardDraftOrder()
+                                delay(3000)
+
+                                updateCustomer()
+                            } else {
+                                favoriteDraftOrderId = it.data.customers.get(0).first_name.toLong()
+                                Log.d(
+                                    TAG,
+                                    "getCustomerByEmail: favoriteDraftOrderId $favoriteDraftOrderId"
+                                )
+                                sharedPreferences.edit().putString(
+                                    MyKey.MY_FAVORITE_DRAFT_ID,
+                                    "${favoriteDraftOrderId}"
+                                ).apply()
+                                cardDraftOrderId = it.data.customers.get(0).last_name.toLong()
+                                Log.d(TAG, "getCustomerByEmail: cardDraftOrderId $cardDraftOrderId")
+
+                                sharedPreferences.edit().putString(
+                                    MyKey.MY_CARD_DRAFT_ID,
+                                    "${cardDraftOrderId}"
+                                ).apply()
+                            }
+
+                        } else {
+                            Log.d(TAG, "getCustomerByEmail: this list is null")
+
+                        }
+
                     }
                 }
             }
-
         }
+    }
+
+
+    fun amr() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            authenticationViewModel.getCustomerById(customerId)
+            authenticationViewModel.getCustomerByIdStateFlow.collectLatest { result ->
+                when (result) {
+                    is ApiState.Failure -> {}
+                    is ApiState.Loading -> {}
+                    is ApiState.Success -> {
+
+//                            favoriteDraftOrderId = result.data.customer.first_name.toLong()
+//                            authenticationViewModel.getFavoriteDraftOrder(favoriteDraftOrderId)
+//                            authenticationViewModel.draftOrderStateFlow.collectLatest {
+//                                when (it) {
+//                                    is ApiState.Failure -> {}
+//                                    is ApiState.Loading -> {}
+//                                    is ApiState.Success -> {
+//                                        var oldLineItem: MutableList<LineItem> = mutableListOf()
+//                                        it.data.draft_order.line_items.forEach {
+//                                            oldLineItem.add(it)
+//                                        }
+//                                        oldLineItem.add(
+//                                            draftOrderRequest(products).draft_order.line_items.get(0)
+//                                        )
+//
+//                                        val draft = draftOrderRequest(products).draft_order
+//
+//                                        draft.line_items = oldLineItem
+//
+//                                        authenticationViewModel.updateFavoriteDraftOrder(
+//                                            favoriteDraftOrderId,
+//                                            UpdateDraftOrderRequest(draft)
+//                                        )
+//                                    }
+//                                }
+//                            }
+                    }
+                }
+            }
+        }
+    }
+//    private fun draftOrderRequest(products: Products): DraftOrderRequest {
+//
+//        val draftOrderRequest = DraftOrderRequest(
+//            draft_order = DraftOrder(
+//                line_items = listOf(
+//                    LineItem(
+//                        product_id = products.id,
+//                        sku = "${products.id}<+>${products.image?.src}",
+//                        title = products.title, price = products.variants[0].price, quantity = 1
+//                    )
+//                ),
+//                use_customer_default_address = true,
+//                applied_discount = AppliedDiscount(),
+//                customer = Customers(customerId)
+//            )
+//
+//        )
+//        return draftOrderRequest
+//    }
+
+
+    fun createdCardDraftOrder() {
+        lifecycleScope.launch {
+            authenticationViewModel.createFavoriteDraftOrder(createdDraftOrderRequest())
+            authenticationViewModel.getCardDraftOrders()
+            authenticationViewModel.cardDraftOrdersStateFlow.collectLatest {
+                when (it) {
+                    is ApiState.Failure -> {}
+                    is ApiState.Loading -> {}
+                    is ApiState.Success -> {
+
+                        cardDraftOrderId = it.data.get(it.data.size - 1).id
+                        Log.d(
+                            TAG,
+                            "cardDraftOrderId ${cardDraftOrderId}"
+                        )
+                        sharedPreferences.edit().putString(
+                            MyKey.MY_CARD_DRAFT_ID,
+                            "${cardDraftOrderId}"
+                        ).apply()
+                    }
+                }
+            }
+        }
+    }
+
+    fun createdFavoriteDraftOrder() {
+        lifecycleScope.launch {
+            authenticationViewModel.createFavoriteDraftOrder(
+                createdDraftOrderRequest()
+            )
+            authenticationViewModel.getAllFavoriteDraftOrders()
+            authenticationViewModel.allDraftOrdersStateFlow.collectLatest {
+                when (it) {
+                    is ApiState.Failure -> {}
+                    is ApiState.Loading -> {}
+                    is ApiState.Success -> {
+
+                        favoriteDraftOrderId = it.data.get(it.data.size - 1).id
+                        Log.d(
+                            TAG,
+                            "favoriteDraftOrderId ${favoriteDraftOrderId}"
+                        )
+                        sharedPreferences.edit().putString(
+                            MyKey.MY_FAVORITE_DRAFT_ID,
+                            "${favoriteDraftOrderId}"
+                        ).apply()
+                    }
+                }
+            }
+        }
+    }
+
+    fun updateCustomer() {
+        val updateCustomerRequest = UpdateCustomerRequest(
+            customer = CustomerUpdate(
+                id = customerId,
+                first_name = favoriteDraftOrderId.toString(),
+                last_name = cardDraftOrderId.toString()
+            )
+        )
+        authenticationViewModel.updateCustomerById(
+            customerId, updateCustomerRequest
+        )
+    }
+
+    private fun createdDraftOrderRequest(): DraftOrderRequest {
+        val draftOrderRequest = DraftOrderRequest(
+            draft_order = DraftOrder(
+                line_items = listOf(
+                    LineItem(
+                        product_id = 0L,
+                        sku = "null",
+                        title = "amr", price = "0.0", quantity = 1
+                    )
+                ),
+                use_customer_default_address = true,
+                applied_discount = AppliedDiscount(),
+                customer = Customers(customerId)
+            )
+
+        )
+        return draftOrderRequest
     }
 
 }

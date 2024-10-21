@@ -1,5 +1,7 @@
 package com.example.mcommerce
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,6 +14,8 @@ import com.example.mcommerce.databinding.FragmentDummyBinding
 import com.example.mcommerce.model.network.ProductInfoRetrofit
 import com.example.mcommerce.model.network.RemoteDataSource
 import com.example.mcommerce.model.network.Repository
+import com.example.mcommerce.model.pojos.DraftOrderRequest
+import com.example.mcommerce.my_key.MyKey
 import com.example.mcommerce.ui.home.viewModel.HomeViewFactory
 import com.example.mcommerce.ui.home.viewModel.HomeViewModel
 import kotlinx.coroutines.Dispatchers
@@ -26,6 +30,8 @@ class DummyFragment : Fragment() {
     private lateinit var homeViewFactory: HomeViewFactory
     private var totalPrice by Delegates.notNull<Double>()
     private var discountPrice by Delegates.notNull<Double>()
+    private lateinit var sharedPreferences: SharedPreferences
+    private var draftOrderID: Long = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,6 +44,10 @@ class DummyFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         totalPrice = arguments?.getDouble("totalPrice") ?: 0.0
+        sharedPreferences =
+            requireContext().getSharedPreferences(MyKey.MY_SHARED_PREFERENCES, Context.MODE_PRIVATE)
+        draftOrderID = (sharedPreferences.getString(MyKey.MY_CARD_DRAFT_ID, "1")
+            ?: "1").toLong()
         binding.textViewTotalPrice.text = "Total Price: $$totalPrice"
 
         // Initialize ViewModel with the factory

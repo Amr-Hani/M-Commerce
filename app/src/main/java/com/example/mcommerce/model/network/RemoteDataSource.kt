@@ -5,14 +5,18 @@ package com.example.mcommerce.model.network
 
 import com.example.mcommerce.model.pojos.CustomerRequest
 import com.example.mcommerce.model.responses.CustomerResponse
-
+import com.example.mcommerce.model.pojos.UpdateCustomerRequest
 
 import SmartCollectionsItem
 import com.example.mcommerce.model.pojos.CustomCollection
 import com.example.mcommerce.model.pojos.DraftOrder
 import com.example.mcommerce.model.pojos.DraftOrderRequest
+
 import com.example.mcommerce.model.pojos.PriceRule
+
+
 import com.example.mcommerce.model.pojos.UpdateDraftOrderRequest
+import com.example.mcommerce.model.responses.CustomersByEmailResponse
 import com.example.mcommerce.model.responses.address.AddAddressResponse
 
 
@@ -21,6 +25,7 @@ import com.example.mcommerce.model.responses.ReceivedDraftOrder
 import com.example.mcommerce.model.responses.ReceivedOrdersResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import retrofit2.Response
 
 
 class RemoteDataSource(private val api: ShopifyApi) {
@@ -74,15 +79,8 @@ class RemoteDataSource(private val api: ShopifyApi) {
         return api.getFavoriteDraftOrder(draftOrderId)
     }
 
-
-
-
-
-
-
     //addresses
     suspend fun getAddresses(customerId: Long) = api.getAddresses(customerId)
-
 
     suspend fun addAddress(customerId: Long, address: AddAddressResponse) = api.addAddress(customerId, address)
 
@@ -94,6 +92,7 @@ class RemoteDataSource(private val api: ShopifyApi) {
         val couponMap = response.price_rules.associate { it.title to it as PriceRule }
         emit(couponMap)
     }
+
     // Create a new draft order
     suspend fun createDraftOrder(request: DraftOrderRequest): ReceivedDraftOrder {
         return api.createFavoriteDraftOrder(request)
@@ -135,4 +134,26 @@ class RemoteDataSource(private val api: ShopifyApi) {
         val updatedRequest = UpdateDraftOrderRequest(DraftOrder(updatedLineItems, existingOrder.draft_order.applied_discount, existingOrder.draft_order.customer, existingOrder.draft_order.use_customer_default_address))
         return updateDraftOrder(draftOrderId, updatedRequest)
     }
+
+
+    suspend fun deleteFavoriteDraftOrder(customerId: Long){
+        api.deleteFavoriteDraftOrder(customerId)
+    }
+
+    suspend fun getCustomerByEmail(customerEmail: String): CustomersByEmailResponse {
+       return api.getCustomerByEmail(customerEmail)
+    }
+
+    suspend fun updateCustomerById(updateCustomerById: Long,updateCustomerRequest: UpdateCustomerRequest):CustomerResponse {
+       return api.updateCustomerById(updateCustomerById,updateCustomerRequest)
+    }
+
+    suspend fun getCustomerById(customerId: Long):CustomerResponse {
+       return api.getCustomerById(customerId)
+    }
+
+
+
+
+
 }

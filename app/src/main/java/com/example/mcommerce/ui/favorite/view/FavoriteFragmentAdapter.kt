@@ -1,23 +1,17 @@
 package com.example.mcommerce.ui.favorite.view
 
 import android.content.Context
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.mcommerce.databinding.ShowFavoritePorductsBinding
-import com.example.mcommerce.model.network.ProductInfoRetrofit
-import com.example.mcommerce.model.network.RemoteDataSource
-import com.example.mcommerce.model.network.Repository
-import com.example.mcommerce.model.pojos.DraftOrderRequest
 import com.example.mcommerce.model.pojos.LineItem
-import com.example.mcommerce.ui.favorite.viewmodel.FavoriteViewModel
-import com.example.mcommerce.ui.favorite.viewmodel.FavoriteViewModelFactory
 
-class FavoriteFragmentAdapter :
+class FavoriteFragmentAdapter (val onFavoriteClick: OnFavoriteClick,val onProductDetails: OnProductDetails):
     ListAdapter<LineItem, FavoriteFragmentAdapter.FavoriteFragmentViewHolder>(
         FavoriteFragmentDiffUtil()
     ) {
@@ -40,6 +34,15 @@ class FavoriteFragmentAdapter :
     
             Glide.with(holder.itemView.context).load(split?.get(1))
             .into(holder.binding.ivCurrentIconFavorite)
+
+        holder.binding.root.setOnClickListener {
+            onProductDetails.onProductDetails(split?.get(0)!!.toLong())
+        }
+        holder.binding.ivIconFavorite.setColorFilter(Color.RED)
+
+        holder.binding.ivIconFavorite.setOnClickListener {
+            onFavoriteClick.onFavoriteClick(currentDraftOrderRequest)
+        }
     }
 
     class FavoriteFragmentViewHolder(val binding: ShowFavoritePorductsBinding) :
@@ -49,4 +52,6 @@ class FavoriteFragmentAdapter :
         val split = productName.split("|")
         return if (split.size > 1) split[1].trim() else productName
     }
+
+
 }

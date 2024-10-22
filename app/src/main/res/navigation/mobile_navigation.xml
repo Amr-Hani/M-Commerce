@@ -25,7 +25,11 @@
 
         <action
             android:id="@+id/action_navigation_home_to_settingFragment"
+
             app:destination="@id/navigation_setting" />
+
+
+
 
     </fragment>
 
@@ -161,11 +165,11 @@
         android:name="com.example.mcommerce.ui.order.view.OrderFragment"
         android:label="@string/_order"
         tools:layout="@layout/fragment_order" />
-    <fragment
-        android:id="@+id/placedOrderFragment"
-        android:name="com.example.mcommerce.ui.placedOrder.view.PlacedOrderFragment"
-        android:label="Placed_Order"
-        tools:layout="@layout/fragment_placed_order" />
+<!--    <fragment-->
+<!--        android:id="@+id/placedOrderFragment"-->
+<!--        android:name="com.example.mcommerce.ui.placedOrder.view.PlacedOrderFragment"-->
+<!--        android:label="Placed_Order"-->
+<!--        tools:layout="@layout/fragment_placed_order" />-->
 
 
         <action
@@ -175,7 +179,7 @@
     <fragment
         android:id="@+id/dummyFragment"
         android:name="com.example.mcommerce.ui.dummy.view.DummyFragment"
-        android:label="fragment_dummy"
+        android:label="Placed Order"
         tools:layout="@layout/fragment_dummy" />
     <fragment
         android:id="@+id/paymentFragment"

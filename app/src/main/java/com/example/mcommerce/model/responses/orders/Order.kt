@@ -14,7 +14,7 @@ data class Order (
         val browserIP: Any? = null,
         val buyerAcceptsMarketing: Boolean,
         val cancelReason: Any? = null,
-        val cancelledAt: Any? = null,
+        val cancelle_dAt: Any? = null,
         val cartToken: Any? = null,
         val checkoutID: Any? = null,
         val checkoutToken: Any? = null,

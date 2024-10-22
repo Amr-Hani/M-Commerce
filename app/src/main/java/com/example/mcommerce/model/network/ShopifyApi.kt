@@ -109,7 +109,7 @@ interface ShopifyApi {
     @GET("admin/api/2024-10/draft_orders.json")
     suspend fun getAllDraftOrders() : ReceivedOrdersResponse
 @POST("admin/api/2024-10/orders.json")
-suspend fun confirmOrder(@Body orderResponse: Order): Order
+suspend fun confirmOrder(@Body orderResponse: DraftOrderRequest?): ReceivedOrdersResponse
 
     @GET("admin/api/2024-10/draft_orders/{draftOrderId}.json")
     suspend fun getDrafrOrderById(
@@ -118,7 +118,11 @@ suspend fun confirmOrder(@Body orderResponse: Order): Order
 
 
     @GET("admin/api/2024-10/orders/{orderId}.json")
-    suspend fun getOrderById(@Path("orderId") orderId: String): Order
+    suspend fun getOrderByIdd(@Path("orderId") orderId: String): Order
+    @GET("admin/api/2022-01/orders.json")
+    suspend fun getOrderById(
+        @Query("query") query: String
+    ): ReceivedOrdersResponse
 
     @PUT("admin/api/2024-10/draft_orders/{draftOrderId}.json")
   suspend fun updateDraftOrder(

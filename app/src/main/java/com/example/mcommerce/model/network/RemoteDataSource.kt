@@ -12,8 +12,6 @@ import com.example.mcommerce.model.pojos.CustomCollection
 import com.example.mcommerce.model.pojos.DraftOrder
 import com.example.mcommerce.model.pojos.DraftOrderRequest
 
-import com.example.mcommerce.model.responses.orders.Order
-
 
 import com.example.mcommerce.model.pojos.PriceRule
 
@@ -29,7 +27,6 @@ import com.example.mcommerce.model.responses.ReceivedDraftOrder
 import com.example.mcommerce.model.responses.ReceivedOrdersResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import retrofit2.Response
 
 
 class RemoteDataSource(private val api: ShopifyApi) {
@@ -88,7 +85,7 @@ class RemoteDataSource(private val api: ShopifyApi) {
 
 
 
-    suspend fun confirmOrder(ordersItem: Order): Flow<Order> = flow {
+    suspend fun confirmOrder(ordersItem: DraftOrderRequest?): Flow<ReceivedOrdersResponse> = flow {
         emit(api.confirmOrder(ordersItem))
     }
 
@@ -96,7 +93,7 @@ class RemoteDataSource(private val api: ShopifyApi) {
         emit(api.getDrafrOrderById(id))
     }
 
-    suspend fun getOrderById(id: String): Flow<Order> = flow {
+    suspend fun getOrderById(id: String): Flow<ReceivedOrdersResponse> = flow {
         emit(api.getOrderById(id))
     }
 

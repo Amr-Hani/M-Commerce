@@ -11,27 +11,29 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
 import com.example.mcommerce.databinding.ItemOrderBinding
+import com.example.mcommerce.model.pojos.DraftOrderRequest
 import com.example.mcommerce.model.responses.ReceivedDraftOrder
+import com.example.mcommerce.model.responses.ReceivedOrdersResponse
 import com.example.mcommerce.model.responses.orders.OrderElement
 
-class OrderAdapter():ListAdapter<ReceivedDraftOrder,OrderAdapter.ViewModel>(MyDiffUtil()) {
+class OrderAdapter():ListAdapter<DraftOrderRequest,OrderAdapter.ViewModel>(MyDiffUtil()) {
 
 
 
     class ViewModel( private var binding: ItemOrderBinding):RecyclerView.ViewHolder(binding.root){
 
-        fun bind(order: ReceivedDraftOrder) {
+        fun bind(order: DraftOrderRequest) {
             binding.apply {
                 // Set brand title
-                orderid.text = order.id.toString()
-                noOFitemid.text=order.line_items?.get(0)?.quantity.toString()
-                monyPaidid.text=order.total_price
-                val price = order.total_price ?: "0.00"
+                orderid.text = order.draft_order.line_items.get(0).price
+                noOFitemid.text=order.draft_order.line_items?.get(0)?.quantity.toString()
+                monyPaidid.text=order.draft_order.line_items.get(0).price
+                val price = order.draft_order.line_items ?: "0.00"
 
                 val currency = "USD"
                 monyPaidid.text = "$price $currency"
-                addressid.text=order.shipping_address?.city
-                dateid.text=order.created_at
+                addressid.text=order.draft_order.line_items.get(0).vendor
+                dateid.text=order.draft_order.line_items.get(0).title
 
 
     }}}
@@ -46,12 +48,12 @@ class OrderAdapter():ListAdapter<ReceivedDraftOrder,OrderAdapter.ViewModel>(MyDi
         val currentItem = getItem(position)
         holder.bind(currentItem)
     }
-    class MyDiffUtil():DiffUtil.ItemCallback<ReceivedDraftOrder>() {
-        override fun areItemsTheSame(oldItem: ReceivedDraftOrder, newItem: ReceivedDraftOrder): Boolean {
+    class MyDiffUtil():DiffUtil.ItemCallback<DraftOrderRequest>() {
+        override fun areItemsTheSame(oldItem: DraftOrderRequest, newItem: DraftOrderRequest): Boolean {
             return oldItem === newItem
         }
 
-        override fun areContentsTheSame(oldItem: ReceivedDraftOrder, newItem: ReceivedDraftOrder): Boolean {
+        override fun areContentsTheSame(oldItem: DraftOrderRequest, newItem: DraftOrderRequest): Boolean {
                     return oldItem == newItem
         }
     }

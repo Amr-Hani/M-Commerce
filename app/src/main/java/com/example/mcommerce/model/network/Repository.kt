@@ -8,7 +8,6 @@ import com.example.mcommerce.model.responses.CustomerResponse
 import SmartCollectionsItem
 import com.example.mcommerce.model.pojos.CustomCollection
 import com.example.mcommerce.model.pojos.DraftOrderRequest
-import com.example.mcommerce.model.responses.orders.Order
 
 import com.example.mcommerce.model.pojos.PriceRule
 
@@ -23,7 +22,6 @@ import com.example.mcommerce.model.responses.ReceivedDraftOrder
 import com.example.mcommerce.model.responses.ReceivedOrdersResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import retrofit2.Response
 
 class Repository private constructor(private val remoteDataSource: RemoteDataSource) {
     companion object {
@@ -186,14 +184,14 @@ class Repository private constructor(private val remoteDataSource: RemoteDataSou
         return remoteDataSource.delCartItem(id)
     }
 
-    suspend fun confirmOrder(ordersItem: Order):Flow<Order> {
+    suspend fun confirmOrder(ordersItem: DraftOrderRequest?):Flow<ReceivedOrdersResponse> {
         return remoteDataSource.confirmOrder(ordersItem)
     }
     suspend fun getDraftOrderById(id: String): Flow<ReceivedDraftOrder> {
         return remoteDataSource.getDrafrOrderById(id)
     }
 
-    suspend fun getOrderById(id:String):Flow<Order>{
+    suspend fun getOrderById(id:String):Flow<ReceivedOrdersResponse>{
         return remoteDataSource.getOrderById(id)
     }
 }

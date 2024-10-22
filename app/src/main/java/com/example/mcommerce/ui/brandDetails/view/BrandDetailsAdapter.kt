@@ -52,11 +52,6 @@ class BrandDetailsAdapter(
                 root.setOnClickListener {
                     itemClickListener(product.id) // Pass the product's ID on click
                 }
-
-                // Set click listener for the "add" button
-                favBrandDetailsid.setOnClickListener {
-                    addClickListener(product, position)
-                }
             }
         }
     }

@@ -392,16 +392,18 @@ class ProductInfoFragment : Fragment() {
 
         if(currency == "EGP")
         {
+            price = products.variants.get(0).price
             binding.tvPrice.text = price + " EGP"
         }
         else{
+            price = products.variants.get(0).price
             binding.tvPrice.text = price + " USD"
         }
         val randomRatingBarList = listOf(2.5f, 3.5f, 4.0f, 4.5f, 5.0f, 1.0f, 1.5f, 2.0f, 3.0f, 4.2f)
         val randomNumber = Random.nextInt(1, 10)
         binding.tvTitle.text = products.title
         binding.tvDescription.text = products.body_html
-        price = products.variants.get(0).price
+
         binding.ratingBar.rating = randomRatingBarList.get(randomNumber)
         Log.d(TAG, "showProductInfoDetails: ${products.body_html}")
         val showImagesProducts = products.images.map {

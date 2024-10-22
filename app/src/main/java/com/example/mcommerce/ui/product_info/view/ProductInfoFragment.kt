@@ -69,11 +69,13 @@ class ProductInfoFragment : Fragment() {
     var isFavorite = false
     var productId: Long = 0
     var favoriteDraftOrderId: Long = 0
+    lateinit var currencySharedPreferences: SharedPreferences
 
     var color: String? = null
     var size: String? = null
     var price: String? = null
-
+    var guest: String? = null
+    var currency: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,7 +91,10 @@ class ProductInfoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        productId = ProductInfoFragmentArgs.fromBundle(requireArguments()).productId
+        currencySharedPreferences = requireActivity().getSharedPreferences("user_settings", Context.MODE_PRIVATE)
+        currency = currencySharedPreferences.getString("currency", "EGP") ?: "EGP"
+
+            productId = ProductInfoFragmentArgs.fromBundle(requireArguments()).productId
         productInfoViewModelFactory = ProductInfoViewModelFactory(
             Repository.getInstance(
                 RemoteDataSource(ProductInfoRetrofit.productService)
@@ -121,9 +126,8 @@ class ProductInfoFragment : Fragment() {
         getDraftOrderById(favoriteDraftOrderId)
         getDraftOrderByIdForCart(draftOrderID)
 
-
+        guest = sharedPreferences.getString(MyKey.GUEST, "login")
         binding.btnAddToFavorite.setOnClickListener {
-            val guest = sharedPreferences.getString(MyKey.GUEST, "login")
             if (guest != "GUEST") {
                 if (isFavorite) {
                     AlertDialog.Builder(requireContext())
@@ -199,80 +203,109 @@ class ProductInfoFragment : Fragment() {
             }
         }
         binding.btnAddToCard.setOnClickListener {
-            if (!size.isNullOrBlank()) {
-                if (!color.isNullOrBlank()) {
-                    lifecycleScope.launch(Dispatchers.IO) {
-                        favoriteViewModel.getFavoriteDraftOrder(draftOrderID)
-                        favoriteViewModel.draftOrderStateFlow.collectLatest {
-                            when (it) {
-                                is ApiState.Failure -> {
-                                    Log.d(TAG, "showProductInfoDetails: btnAddToCard ${it.message}")
-                                }
-
-                                is ApiState.Loading -> {}
-                                is ApiState.Success -> {
-                                    Log.d(TAG, "showProductInfoDetails: sucess here ")
-                                    var oldLineItem: MutableList<LineItem> = mutableListOf()
-
-                                    draftOrderRequest.draft_order.line_items.forEach {
-                                        oldLineItem.add(it)
+            if (guest != "GUEST") {
+                if (!size.isNullOrBlank()) {
+                    if (!color.isNullOrBlank()) {
+                        lifecycleScope.launch(Dispatchers.IO) {
+                            favoriteViewModel.getFavoriteDraftOrder(draftOrderID)
+                            favoriteViewModel.draftOrderStateFlow.collectLatest {
+                                when (it) {
+                                    is ApiState.Failure -> {
+                                        Log.d(
+                                            TAG,
+                                            "showProductInfoDetails: btnAddToCard ${it.message}"
+                                        )
                                     }
-                                    val draftOrder =
-                                        draftOrderRequest(products).draft_order.line_items.get(0)
-                                    oldLineItem.add(
-                                        draftOrder
-                                    )
-                                    Log.d(TAG, "showProductInfoDetails: $draftOrder")
-                                    Log.d(TAG, "onViewCreated: $oldLineItem")
-                                    val draft = draftOrderRequest.draft_order
 
-                                    draft.line_items = oldLineItem
+                                    is ApiState.Loading -> {}
+                                    is ApiState.Success -> {
+                                        Log.d(TAG, "showProductInfoDetails: sucess here ")
+                                        var oldLineItem: MutableList<LineItem> = mutableListOf()
 
-                                    productInfoViewModel.updateFavoriteDraftOrder(
-                                        draftOrderID,
-                                        UpdateDraftOrderRequest(draft)
-                                    )
+                                        draftOrderRequest.draft_order.line_items.forEach {
+                                            oldLineItem.add(it)
+                                        }
+                                        val draftOrder =
+                                            draftOrderRequest(products).draft_order.line_items.get(0)
+                                        oldLineItem.add(
+                                            draftOrder
+                                        )
+                                        Log.d(TAG, "showProductInfoDetails: $draftOrder")
+                                        Log.d(TAG, "onViewCreated: $oldLineItem")
+                                        val draft = draftOrderRequest.draft_order
+
+                                        draft.line_items = oldLineItem
+
+                                        productInfoViewModel.updateFavoriteDraftOrder(
+                                            draftOrderID,
+                                            UpdateDraftOrderRequest(draft)
+                                        )
+                                    }
                                 }
                             }
                         }
+                        Log.d(
+                            TAG,
+                            "showProductInfoDetails: size = $size  color = $color  price = $price"
+                        )
+                    } else {
+                        Toast.makeText(requireContext(), "Please Select Color", Toast.LENGTH_SHORT)
+                            .show()
                     }
-                    Log.d(
-                        TAG,
-                        "showProductInfoDetails: size = $size  color = $color  price = $price"
-                    )
                 } else {
-                    Toast.makeText(requireContext(), "Please Select Color", Toast.LENGTH_SHORT)
+                    Toast.makeText(requireContext(), "Please Select Size", Toast.LENGTH_SHORT)
                         .show()
                 }
             } else {
-                Toast.makeText(requireContext(), "Please Select Size", Toast.LENGTH_SHORT).show()
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Regester")
+                    .setMessage("if you want to add to cart you must register")
+                    .setPositiveButton("Yes") { dialog, _ ->
+                        val intent = Intent(requireContext(), MainActivity::class.java)
+                        startActivity(intent)
+                    }.setNegativeButton("No") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
             }
         }
         binding.btnAddToCard.setOnClickListener {
-            lifecycleScope.launch(Dispatchers.IO) {
-                var oldLineItem: MutableList<LineItem> = mutableListOf()
+            if (guest != "GUEST") {
+                lifecycleScope.launch(Dispatchers.IO) {
+                    var oldLineItem: MutableList<LineItem> = mutableListOf()
 
-                draftOrderRequestForCart.draft_order.line_items.forEach {
-                    oldLineItem.add(it)
+                    draftOrderRequestForCart.draft_order.line_items.forEach {
+                        oldLineItem.add(it)
+                    }
+                    val draftOrder = draftOrderRequest(products).draft_order.line_items.get(0)
+                    oldLineItem.add(
+                        draftOrder
+                    )
+                    Log.d(TAG, "showProductInfoDetails: $draftOrder")
+                    Log.d(TAG, "onViewCreated: $oldLineItem")
+                    val draft = draftOrderRequest.draft_order
+
+                    draft.line_items = oldLineItem
+
+                    favoriteViewModel.updateFavoriteDraftOrder(
+                        draftOrderID,
+                        UpdateDraftOrderRequest(draft)
+                    )
                 }
-                val draftOrder = draftOrderRequest(products).draft_order.line_items.get(0)
-                oldLineItem.add(
-                    draftOrder
-                )
-                Log.d(TAG, "showProductInfoDetails: $draftOrder")
-                Log.d(TAG, "onViewCreated: $oldLineItem")
-                val draft = draftOrderRequest.draft_order
-
-                draft.line_items = oldLineItem
-
-                favoriteViewModel.updateFavoriteDraftOrder(
-                    draftOrderID,
-                    UpdateDraftOrderRequest(draft)
-                )
+            } else {
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Regester")
+                    .setMessage("if you want to add to cart you must register")
+                    .setPositiveButton("Yes") { dialog, _ ->
+                        val intent = Intent(requireContext(), MainActivity::class.java)
+                        startActivity(intent)
+                    }.setNegativeButton("No") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
             }
         }
     }
-
 
     fun getDraftOrderByIdForCart(draftOrderId: Long) {
         lifecycleScope.launch {
@@ -352,12 +385,18 @@ class ProductInfoFragment : Fragment() {
 
     fun showProductInfoDetails(products: Products) {
 
+        if(currency == "EGP")
+        {
+            binding.tvPrice.text = price + " EGP"
+        }
+        else{
+            binding.tvPrice.text = price + " USD"
+        }
         val randomRatingBarList = listOf(2.5f, 3.5f, 4.0f, 4.5f, 5.0f, 1.0f, 1.5f, 2.0f, 3.0f, 4.2f)
         val randomNumber = Random.nextInt(1, 10)
         binding.tvTitle.text = products.title
         binding.tvDescription.text = products.body_html
         price = products.variants.get(0).price
-        binding.tvPrice.text = price + " EGP"
         binding.ratingBar.rating = randomRatingBarList.get(randomNumber)
         Log.d(TAG, "showProductInfoDetails: ${products.body_html}")
         val showImagesProducts = products.images.map {
@@ -470,6 +509,7 @@ class ProductInfoFragment : Fragment() {
         }
 
     }
+
     private fun draftOrderRequest(products: Products): DraftOrderRequest {
         val draftOrderRequest = DraftOrderRequest(
             draft_order = DraftOrder(

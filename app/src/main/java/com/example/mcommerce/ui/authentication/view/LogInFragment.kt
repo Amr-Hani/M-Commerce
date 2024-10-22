@@ -133,8 +133,6 @@ class LogInFragment : Fragment() {
             authenticationViewModel.logIn(email!!, password!!)
                 .addOnCompleteListener(requireActivity()) { task ->
                     if (task.isSuccessful) {
-                        //customerRequest.customer.email = email
-
                         checkIfEmailVerified()
                     } else {
                         binding.etPasswordLogin.error = "Maybe Password Is Incorrect"

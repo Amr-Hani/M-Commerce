@@ -16,6 +16,7 @@ import com.denzcoskun.imageslider.models.SlideModel
 import com.example.mcommerce.MainActivity
 import com.example.mcommerce.R
 import com.example.mcommerce.databinding.FragmentSettingBinding
+import com.example.mcommerce.my_key.MyKey
 import com.example.mcommerce.ui.setting.view.currency.CurrencyDialogFragment
 import com.google.android.gms.auth.api.Auth
 import com.google.firebase.auth.FirebaseAuth
@@ -24,8 +25,10 @@ class SettingFragment : Fragment(), CurrencyDialogFragment.CurrencySelectionList
 
     private lateinit var binding: FragmentSettingBinding
     private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var sharedPreferences2: SharedPreferences
     private lateinit var imageList: List<SlideModel>
     lateinit var mAuth: FirebaseAuth
+    var guest: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,6 +37,11 @@ class SettingFragment : Fragment(), CurrencyDialogFragment.CurrencySelectionList
         binding = FragmentSettingBinding.inflate(inflater, container, false)
         sharedPreferences =
             requireActivity().getSharedPreferences("user_settings", Context.MODE_PRIVATE)
+        sharedPreferences2 =
+            requireActivity().getSharedPreferences(
+                MyKey.MY_SHARED_PREFERENCES,
+                Context.MODE_PRIVATE
+            )
         loadCurrency()
         return binding.root
     }
@@ -41,6 +49,7 @@ class SettingFragment : Fragment(), CurrencyDialogFragment.CurrencySelectionList
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupOnClickListeners()
+        guest = sharedPreferences.getString(MyKey.GUEST, "login")
 
         // setupImageSlider()
     }
@@ -66,16 +75,22 @@ class SettingFragment : Fragment(), CurrencyDialogFragment.CurrencySelectionList
 
     private fun setupOnClickListeners() {
         binding.addressSection.setOnClickListener {
-            AlertDialog.Builder(requireContext())
-                .setTitle("Regester")
-                .setMessage("if you want to see the address you must register")
-                .setPositiveButton("Yes") { dialog, _ ->
-                    navigateTo(R.id.action_settingFragment_to_addressFragment)
-                }
-                .setNegativeButton("No") { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .show()
+            if (guest != "GUEST") {
+                navigateTo(R.id.action_settingFragment_to_addressFragment)
+            } else {
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Regester")
+                    .setMessage("if you want to see the address you must register")
+                    .setPositiveButton("Yes") { dialog, _ ->
+                        val intent = Intent(requireContext(), MainActivity::class.java)
+                        startActivity(intent)
+                    }
+                    .setNegativeButton("No") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            }
+
         }
         binding.aboutSection.setOnClickListener {
             navigateTo(R.id.action_settingFragment_to_aboutUsFragment)
@@ -84,16 +99,22 @@ class SettingFragment : Fragment(), CurrencyDialogFragment.CurrencySelectionList
             navigateTo(R.id.action_settingFragment_to_contactUsFragment)
         }
         binding.currencySection.setOnClickListener {
-            AlertDialog.Builder(requireContext())
-                .setTitle("Regester")
-                .setMessage("if you want to change the currency you must register")
-                .setPositiveButton("Yes") { dialog, _ ->
-                    showCurrencyDialog()
-                }
-                .setNegativeButton("No") { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .show()
+            if (guest != "GUEST") {
+                showCurrencyDialog()
+            } else {
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Regester")
+                    .setMessage("if you want to change the currency you must register")
+                    .setPositiveButton("Yes") { dialog, _ ->
+                        val intent = Intent(requireContext(), MainActivity::class.java)
+                        startActivity(intent)
+                    }
+                    .setNegativeButton("No") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            }
+
         }
         binding.logoutButton.setOnClickListener {
             mAuth = FirebaseAuth.getInstance()

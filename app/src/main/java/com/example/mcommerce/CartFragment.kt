@@ -113,9 +113,16 @@ class CartFragment : Fragment(), PaymentDialogFragment.CurrencySelectionListener
                 when (state) {
                     is ApiState.Loading -> { }
                     is ApiState.Success -> {
+                        val mutableList: MutableList<LineItem> = mutableListOf()
+
+                        state.data.draft_order.line_items.forEach {
+                            if (it.sku != "null") {
+                                mutableList.add(it)
+                            }
+                        }
                         productList = state.data.draft_order.line_items
                         draftOrderRequest = state.data
-                        cartAdapter.submitList(productList)
+                        cartAdapter.submitList(mutableList)
                         updateSubtotal()
                         Log.d("draftOrderID", "productListl : $productList")
                         Log.d("draftOrderID", "draftOrderID after  updateSubtotal : $draftOrderID")

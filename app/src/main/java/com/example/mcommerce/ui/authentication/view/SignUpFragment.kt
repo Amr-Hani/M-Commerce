@@ -1,6 +1,7 @@
 package com.example.mcommerce.ui.authentication.view
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.Paint
@@ -16,6 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
+import com.example.mcommerce.MainActivity2
 import com.example.mcommerce.databinding.FragmentSignUpBinding
 import com.example.mcommerce.model.firebase.FireBaseDataSource
 import com.example.mcommerce.model.firebase.Repo
@@ -111,6 +113,8 @@ class SignUpFragment : Fragment() {
         binding.tvGuest.setOnClickListener {
             sharedPreferences.edit().putString(MyKey.GUEST, "Guest")
                 .apply()
+            val intent = Intent(requireActivity(), MainActivity2::class.java)
+            startActivity(intent)
         }
     }
 

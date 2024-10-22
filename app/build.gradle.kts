@@ -9,14 +9,7 @@ plugins {
 
 
 android {
-    packaging {
-        resources {
-            excludes += setOf(
-                "META-INF/NOTICE.md",
-                "META-INF/LICENSE.md"
-            )
-        }
-    }
+
     namespace = "com.example.mcommerce"
     compileSdk = 34
 
@@ -117,8 +110,6 @@ dependencies {
 //stripe for online payment
         implementation ("com.stripe:stripe-android:20.52.1")
         implementation("com.android.volley:volley:1.2.1")
-////confirmation mail
-        implementation ("com.sun.mail:android-mail:1.6.7")
-        implementation ("com.sun.mail:android-activation:1.6.7")
+
 }}
 

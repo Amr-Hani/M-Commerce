@@ -1,11 +1,11 @@
 package com.example.mcommerce.ui.product_info.view
 
 
-
 import android.content.Context
 import android.content.SharedPreferences
 
 import android.app.AlertDialog
+import android.content.Intent
 
 import android.graphics.Color
 
@@ -23,7 +23,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.models.SlideModel
+
 import com.example.mcommerce.R
+
+import com.example.mcommerce.MainActivity
+
 import com.example.mcommerce.databinding.FragmentProductInfoBinding
 import com.example.mcommerce.model.network.ApiState
 import com.example.mcommerce.model.network.ProductInfoRetrofit
@@ -70,8 +74,13 @@ class ProductInfoFragment : Fragment() {
     var isFavorite = false
     var productId: Long = 0
     var favoriteDraftOrderId: Long = 0
+    lateinit var currencySharedPreferences: SharedPreferences
 
-
+    var color: String? = null
+    var size: String? = null
+    var price: String? = null
+    var guest: String? = null
+    var currency: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,7 +96,10 @@ class ProductInfoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        productId = ProductInfoFragmentArgs.fromBundle(requireArguments()).productId
+        currencySharedPreferences = requireActivity().getSharedPreferences("user_settings", Context.MODE_PRIVATE)
+        currency = currencySharedPreferences.getString("currency", "EGP") ?: "EGP"
+
+            productId = ProductInfoFragmentArgs.fromBundle(requireArguments()).productId
         productInfoViewModelFactory = ProductInfoViewModelFactory(
             Repository.getInstance(
                 RemoteDataSource(ProductInfoRetrofit.productService)
@@ -102,6 +114,9 @@ class ProductInfoFragment : Fragment() {
         sharedPreferences =
             requireContext().getSharedPreferences(MyKey.MY_SHARED_PREFERENCES, Context.MODE_PRIVATE)
 
+        draftOrderID = (sharedPreferences.getString(MyKey.MY_CARD_DRAFT_ID, "1")
+            ?: "1").toLong()
+        Log.d(TAG, "onViewCreated: draftOrderID ${draftOrderID}")
 
         favoriteViewModelFactory = FavoriteViewModelFactory(
             Repository.getInstance(
@@ -112,100 +127,192 @@ class ProductInfoFragment : Fragment() {
             ViewModelProvider(this, favoriteViewModelFactory).get(FavoriteViewModel::class.java)
         favoriteDraftOrderId =
             (sharedPreferences.getString(MyKey.MY_FAVORITE_DRAFT_ID, "0") ?: "0").toLong()
-        draftOrderID =( sharedPreferences.getString(MyKey.MY_CARD_DRAFT_ID, "1")?: "1").toLong()
-        Log.d(TAG, "onViewCreated: $favoriteDraftOrderId")
-        Log.d("draftOrderID", "draftOrderID: $draftOrderID")
+        Log.d(TAG, "onViewCreated: favoriteDraftOrderId$favoriteDraftOrderId")
         getDraftOrderById(favoriteDraftOrderId)
         getDraftOrderByIdForCart(draftOrderID)
 
+        guest = sharedPreferences.getString(MyKey.GUEST, "login")
         binding.btnAddToFavorite.setOnClickListener {
-            if (isFavorite) {
-                AlertDialog.Builder(requireContext())
-                    .setTitle("Deletion")
-                    .setMessage("Do You Want Remove This Item From Favorite")
-                    .setPositiveButton("Yes") { dialog, _ ->
+            if (guest != "GUEST") {
+                if (isFavorite) {
+                    AlertDialog.Builder(requireContext())
+                        .setTitle("Deletion")
+                        .setMessage("Do You Want Remove This Item From Favorite")
+                        .setPositiveButton("Yes") { dialog, _ ->
 
-                        isFavorite = !isFavorite
-                        lifecycleScope.launch {
+                            isFavorite = !isFavorite
+                            lifecycleScope.launch {
 
-                            Log.d(TAG, "onViewCreated: ana not favorite ")
+                                Log.d(TAG, "onViewCreated: ana not favorite ")
 
-                            var oldLineItem: MutableList<LineItem> = mutableListOf()
+                                var oldLineItem: MutableList<LineItem> = mutableListOf()
 
-                            draftOrderRequest.draft_order.line_items.forEach {
-                                if (products.title != it.title) {
-                                    oldLineItem.add(it)
+                                draftOrderRequest.draft_order.line_items.forEach {
+                                    if (products.title != it.title) {
+                                        oldLineItem.add(it)
+                                    }
                                 }
-                            }
-                            //oldLineItem.remove(draftOrderRequest(products).draft_order.line_items.get(0))
-                            Log.d(TAG, "onViewCreated: $oldLineItem")
-                            val draft = draftOrderRequest.draft_order
+                                //oldLineItem.remove(draftOrderRequest(products).draft_order.line_items.get(0))
+                                Log.d(TAG, "onViewCreated: $oldLineItem")
+                                val draft = draftOrderRequest.draft_order
 
-                            draft.line_items = oldLineItem
-                            binding.btnAddToFavorite.setColorFilter(Color.RED)
-                            productInfoViewModel.updateFavoriteDraftOrder(
-                                favoriteDraftOrderId,
-                                UpdateDraftOrderRequest(draft)
-                            )
-                            binding.btnAddToFavorite.setColorFilter(Color.BLACK)
+                                draft.line_items = oldLineItem
+                                binding.btnAddToFavorite.setColorFilter(Color.RED)
+                                productInfoViewModel.updateFavoriteDraftOrder(
+                                    favoriteDraftOrderId,
+                                    UpdateDraftOrderRequest(draft)
+                                )
+                                binding.btnAddToFavorite.setColorFilter(Color.BLACK)
+                            }
                         }
+                        .setNegativeButton("No") { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .show()
+
+                } else {
+                    isFavorite = !isFavorite
+                    lifecycleScope.launch {
+
+                        Log.d(TAG, "onViewCreated: ana not favorite ")
+
+                        var oldLineItem: MutableList<LineItem> = mutableListOf()
+
+                        draftOrderRequest.draft_order.line_items.forEach {
+                            oldLineItem.add(it)
+                        }
+                        oldLineItem.add(draftOrderRequest(products).draft_order.line_items.get(0))
+                        Log.d(TAG, "onViewCreated: $oldLineItem")
+                        val draft = draftOrderRequest.draft_order
+
+                        draft.line_items = oldLineItem
+                        productInfoViewModel.updateFavoriteDraftOrder(
+                            favoriteDraftOrderId,
+                            UpdateDraftOrderRequest(draft)
+                        )
+                        binding.btnAddToFavorite.setColorFilter(Color.RED)
                     }
-                    .setNegativeButton("No") { dialog, _ ->
+                }
+            } else {
+
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Regester")
+                    .setMessage("if you want to add to favorite you must register")
+                    .setPositiveButton("Yes") { dialog, _ ->
+                        val intent = Intent(requireContext(), MainActivity::class.java)
+                        startActivity(intent)
+                    }.setNegativeButton("No") { dialog, _ ->
                         dialog.dismiss()
                     }
                     .show()
+            }
+        }
+        binding.btnAddToCard.setOnClickListener {
+            if (guest != "GUEST") {
+                if (!size.isNullOrBlank()) {
+                    if (!color.isNullOrBlank()) {
+                        lifecycleScope.launch(Dispatchers.IO) {
+                            favoriteViewModel.getFavoriteDraftOrder(draftOrderID)
+                            favoriteViewModel.draftOrderStateFlow.collectLatest {
+                                when (it) {
+                                    is ApiState.Failure -> {
+                                        Log.d(
+                                            TAG,
+                                            "showProductInfoDetails: btnAddToCard ${it.message}"
+                                        )
+                                    }
 
+                                    is ApiState.Loading -> {}
+                                    is ApiState.Success -> {
+                                        Log.d(TAG, "showProductInfoDetails: sucess here ")
+                                        var oldLineItem: MutableList<LineItem> = mutableListOf()
+
+                                        draftOrderRequest.draft_order.line_items.forEach {
+                                            oldLineItem.add(it)
+                                        }
+                                        val draftOrder =
+                                            draftOrderRequest(products).draft_order.line_items.get(0)
+                                        oldLineItem.add(
+                                            draftOrder
+                                        )
+                                        Log.d(TAG, "showProductInfoDetails: $draftOrder")
+                                        Log.d(TAG, "onViewCreated: $oldLineItem")
+                                        val draft = draftOrderRequest.draft_order
+
+                                        draft.line_items = oldLineItem
+
+                                        productInfoViewModel.updateFavoriteDraftOrder(
+                                            draftOrderID,
+                                            UpdateDraftOrderRequest(draft)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                        Log.d(
+                            TAG,
+                            "showProductInfoDetails: size = $size  color = $color  price = $price"
+                        )
+                    } else {
+                        Toast.makeText(requireContext(), "Please Select Color", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                } else {
+                    Toast.makeText(requireContext(), "Please Select Size", Toast.LENGTH_SHORT)
+                        .show()
+                }
             } else {
-                isFavorite = !isFavorite
-                lifecycleScope.launch {
-
-                    Log.d(TAG, "onViewCreated: ana not favorite ")
-
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Regester")
+                    .setMessage("if you want to add to cart you must register")
+                    .setPositiveButton("Yes") { dialog, _ ->
+                        val intent = Intent(requireContext(), MainActivity::class.java)
+                        startActivity(intent)
+                    }.setNegativeButton("No") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            }
+        }
+        binding.btnAddToCard.setOnClickListener {
+            if (guest != "GUEST") {
+                lifecycleScope.launch(Dispatchers.IO) {
                     var oldLineItem: MutableList<LineItem> = mutableListOf()
 
-                    draftOrderRequest.draft_order.line_items.forEach {
+                    draftOrderRequestForCart.draft_order.line_items.forEach {
                         oldLineItem.add(it)
                     }
-                    oldLineItem.add(draftOrderRequest(products).draft_order.line_items.get(0))
+                    val draftOrder = draftOrderRequest(products).draft_order.line_items.get(0)
+                    oldLineItem.add(
+                        draftOrder
+                    )
+                    Log.d(TAG, "showProductInfoDetails: $draftOrder")
                     Log.d(TAG, "onViewCreated: $oldLineItem")
                     val draft = draftOrderRequest.draft_order
 
                     draft.line_items = oldLineItem
-                    productInfoViewModel.updateFavoriteDraftOrder(
-                        favoriteDraftOrderId,
+
+                    favoriteViewModel.updateFavoriteDraftOrder(
+                        draftOrderID,
                         UpdateDraftOrderRequest(draft)
                     )
-                    binding.btnAddToFavorite.setColorFilter(Color.RED)
                 }
+            } else {
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Regester")
+                    .setMessage("if you want to add to cart you must register")
+                    .setPositiveButton("Yes") { dialog, _ ->
+                        val intent = Intent(requireContext(), MainActivity::class.java)
+                        startActivity(intent)
+                    }.setNegativeButton("No") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
             }
         }
-        binding.btnAddToCard.setOnClickListener {
-                    lifecycleScope.launch(Dispatchers.IO) {
-                                    var oldLineItem: MutableList<LineItem> = mutableListOf()
+    }
 
-                                    draftOrderRequestForCart.draft_order.line_items.forEach {
-                                        oldLineItem.add(it)
-                                    }
-                                    val draftOrder =  draftOrderRequest(products).draft_order.line_items.get(0)
-                                    oldLineItem.add(
-                                        draftOrder
-                                    )
-                                    Log.d(TAG, "showProductInfoDetails: $draftOrder")
-                                    Log.d(TAG, "onViewCreated: $oldLineItem")
-                                    val draft = draftOrderRequest.draft_order
-
-                                    draft.line_items = oldLineItem
-
-                                    favoriteViewModel.updateFavoriteDraftOrder(
-                                        draftOrderID,
-                                        UpdateDraftOrderRequest(draft)
-                                    )
-                                }
-                            }
-                        }
-
-
-    fun getDraftOrderByIdForCart(draftOrderId: Long){
+    fun getDraftOrderByIdForCart(draftOrderId: Long) {
         lifecycleScope.launch {
             productInfoViewModel.getFavoriteDraftOrder(draftOrderId)
             productInfoViewModel.draftOrderStateFlow.collectLatest {
@@ -216,13 +323,14 @@ class ProductInfoFragment : Fragment() {
 
                     is ApiState.Loading -> {}
                     is ApiState.Success -> {
-                        draftOrderRequestForCart = DraftOrderRequest( it.data.draft_order)
+                        draftOrderRequestForCart = DraftOrderRequest(it.data.draft_order)
 
                     }
                 }
             }
         }
     }
+
     fun getDraftOrderById(favoriteDraftOrderId: Long) {
         lifecycleScope.launch {
             productInfoViewModel.getFavoriteDraftOrder(favoriteDraftOrderId)
@@ -254,7 +362,6 @@ class ProductInfoFragment : Fragment() {
         }
 
 
-
     }
 
     fun getProductInfoDetails() {
@@ -282,15 +389,19 @@ class ProductInfoFragment : Fragment() {
 
 
     fun showProductInfoDetails(products: Products) {
-        var color: String? = null
-        var size: String? = null
-        var price: String? = null
+
+        if(currency == "EGP")
+        {
+            binding.tvPrice.text = price + " EGP"
+        }
+        else{
+            binding.tvPrice.text = price + " USD"
+        }
         val randomRatingBarList = listOf(2.5f, 3.5f, 4.0f, 4.5f, 5.0f, 1.0f, 1.5f, 2.0f, 3.0f, 4.2f)
         val randomNumber = Random.nextInt(1, 10)
         binding.tvTitle.text = products.title
         binding.tvDescription.text = products.body_html
         price = products.variants.get(0).price
-        binding.tvPrice.text = price + " EGP"
         binding.ratingBar.rating = randomRatingBarList.get(randomNumber)
         Log.d(TAG, "showProductInfoDetails: ${products.body_html}")
         val showImagesProducts = products.images.map {
@@ -403,95 +514,8 @@ class ProductInfoFragment : Fragment() {
         }
 
     }
-      /*  binding.btnAddToCard.setOnClickListener {
-            Log.d("draftOrderID", "draftOrderID after click: $draftOrderID")
-            if (!size.isNullOrBlank()) {
-                if (!color.isNullOrBlank()) {
-                    favoriteViewModel.getFavoriteDraftOrder(draftOrderID)
-                    Log.d("draftOrderID", "draftOrderID after gir favorite: $draftOrderID")
-                //    productInfoViewModel.insertItemToDraftOrder( draftOrderID,draftOrderRequest(products))
-                    lifecycleScope.launch {
-                        Log.d("draftOrderID", "draftOrderID at launch: $draftOrderID")
-                       /* if (draftOrderID != 1172999471403) {
-                            favoriteViewModel.createFavoriteDraftOrder(draftOrderRequest(products))
-                            delay(2000)
-                            favoriteViewModel.getAllFavoriteDraftOrders()
-                            favoriteViewModel.allDraftOrdersStateFlow.collectLatest {
-                                when (it) {
-                                    is ApiState.Failure -> {}
-                                    is ApiState.Loading -> {}
-                                    is ApiState.Success -> {
-                                        Log.d(
-                                            TAG,
-                                            "onClick: ana defto hala ${it.data.get(it.data.size - 1).id}"
-                                        )
-                                        sharedPreferences.edit().putString(
-                                            MyKey.DRAFT_ORDER_CART_ID,
-                                            "${it.data.get(it.data.size - 1).id}"
-                                        ).apply()
-                                    }
-                                }
-                            }
-                        }*/
-
-                            favoriteViewModel.draftOrderStateFlow.collectLatest {
-                                when (it) {
-                                    is ApiState.Failure -> {}
-                                    is ApiState.Loading -> {}
-                                    is ApiState.Success -> {
-                                        var oldLineItem: MutableList<LineItem> = mutableListOf()
-                                        it.data.draft_order.line_items.forEach {
-                                            oldLineItem.add(it)
-                                            Log.d("draftOrderID", "oldLineItem: $oldLineItem")
-                                            Log.d("draftOrderID", "draftOrderID when add: $draftOrderID")
-                                        }
-                                        oldLineItem.add(
-
-                                            draftOrderRequest(products).draft_order.line_items.get(0)
-
-
-                                        )
-                                        Log.d("draftOrderID", "oldLineItem after add: $oldLineItem")
-                                        val draft = draftOrderRequest(products).draft_order
-
-                                        draft.line_items = oldLineItem
-
-                                        favoriteViewModel.updateFavoriteDraftOrder(
-                                            draftOrderID,
-                                            UpdateDraftOrderRequest(draft)
-                                        )
-                                        Log.d("draftOrderID", "draftOrderID after update : $draftOrderID")
-//                                }
-//                                else{
-//                                    favoriteViewModel.createOrder(draftOrderRequest(products))
-//                                }
-
-
-                                }
-                            }
-
-
-                        }
-
-                    }
-
-                    Log.d(
-                        TAG,
-                        "showProductInfoDetails: size = $size  color = $color  price = $price"
-                    )
-
-                } else {
-                    Toast.makeText(requireContext(), "Please Select Color", Toast.LENGTH_SHORT)
-                        .show()
-                }
-            } else {
-                Toast.makeText(requireContext(), "Please Select Size", Toast.LENGTH_SHORT).show()
-            }
-        }*/
-   // }
 
     private fun draftOrderRequest(products: Products): DraftOrderRequest {
-
         val draftOrderRequest = DraftOrderRequest(
             draft_order = DraftOrder(
                 line_items = listOf(

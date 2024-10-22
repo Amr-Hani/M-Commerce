@@ -26,6 +26,7 @@
         <action
             android:id="@+id/action_navigation_home_to_settingFragment"
 
+
             app:destination="@id/navigation_setting" />
 
 
@@ -104,9 +105,11 @@
 <!--        android:label="@string/order"-->
 <!--        tools:layout="@layout/fragment_order" />-->
     <fragment
+
         android:id="@+id/navigation_setting"
         android:name="com.example.mcommerce.ui.setting.view.SettingFragment"
         android:label="fragment_setting"
+
         tools:layout="@layout/fragment_setting">
         <action
             android:id="@+id/action_settingFragment_to_aboutUsFragment"
@@ -174,7 +177,11 @@
 
         <action
             android:id="@+id/action_cartFragment_to_paymentFragment"
-            app:destination="@id/paymentFragment" />
+
+            app:destination="@id/settingFragment" />
+
+
+
 
     <fragment
         android:id="@+id/dummyFragment"
@@ -182,7 +189,7 @@
         android:label="Placed Order"
         tools:layout="@layout/fragment_dummy" />
     <fragment
-        android:id="@+id/paymentFragment"
+        android:id="@+id/settingFragment"
         android:name="com.example.mcommerce.PaymentFragment"
         android:label="fragment_payment"
         tools:layout="@layout/fragment_payment" />

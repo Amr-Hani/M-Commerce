@@ -17,6 +17,10 @@ import com.example.mcommerce.MainActivity
 import com.example.mcommerce.R
 import com.example.mcommerce.databinding.FragmentSettingBinding
 
+
+
+import com.example.mcommerce.my_key.MyKey
+
 import com.example.mcommerce.ui.setting.view.currency.CurrencyDialogFragment
 import com.google.android.gms.auth.api.Auth
 import com.google.firebase.auth.FirebaseAuth
@@ -25,8 +29,10 @@ class SettingFragment : Fragment(), CurrencyDialogFragment.CurrencySelectionList
 
     private lateinit var binding: FragmentSettingBinding
     private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var sharedPreferences2: SharedPreferences
     private lateinit var imageList: List<SlideModel>
     lateinit var mAuth: FirebaseAuth
+    var guest: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,6 +41,11 @@ class SettingFragment : Fragment(), CurrencyDialogFragment.CurrencySelectionList
         binding = FragmentSettingBinding.inflate(inflater, container, false)
         sharedPreferences =
             requireActivity().getSharedPreferences("user_settings", Context.MODE_PRIVATE)
+        sharedPreferences2 =
+            requireActivity().getSharedPreferences(
+                MyKey.MY_SHARED_PREFERENCES,
+                Context.MODE_PRIVATE
+            )
         loadCurrency()
         return binding.root
     }
@@ -42,16 +53,8 @@ class SettingFragment : Fragment(), CurrencyDialogFragment.CurrencySelectionList
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupOnClickListeners()
-        mAuth = FirebaseAuth.getInstance()
-        mAuth.addAuthStateListener { firebaseAuth ->
-            if (mAuth.currentUser == null) {
-                context?.let {
-                    val intent = Intent(it, MainActivity::class.java)
-                    startActivity(intent)
-                    activity?.finish()
-                } ?: Log.e("AccountFragment", "Context is null")
-            }
-        }
+        guest = sharedPreferences.getString(MyKey.GUEST, "login")
+
         // setupImageSlider()
     }
 
@@ -76,7 +79,22 @@ class SettingFragment : Fragment(), CurrencyDialogFragment.CurrencySelectionList
 
     private fun setupOnClickListeners() {
         binding.addressSection.setOnClickListener {
-            navigateTo(R.id.action_settingFragment_to_addressFragment)
+            if (guest != "GUEST") {
+                navigateTo(R.id.action_settingFragment_to_addressFragment)
+            } else {
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Regester")
+                    .setMessage("if you want to see the address you must register")
+                    .setPositiveButton("Yes") { dialog, _ ->
+                        val intent = Intent(requireContext(), MainActivity::class.java)
+                        startActivity(intent)
+                    }
+                    .setNegativeButton("No") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            }
+
         }
         binding.aboutSection.setOnClickListener {
             navigateTo(R.id.action_settingFragment_to_aboutUsFragment)
@@ -85,13 +103,38 @@ class SettingFragment : Fragment(), CurrencyDialogFragment.CurrencySelectionList
             navigateTo(R.id.action_settingFragment_to_contactUsFragment)
         }
         binding.currencySection.setOnClickListener {
-            showCurrencyDialog()
+            if (guest != "GUEST") {
+                showCurrencyDialog()
+            } else {
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Regester")
+                    .setMessage("if you want to change the currency you must register")
+                    .setPositiveButton("Yes") { dialog, _ ->
+                        val intent = Intent(requireContext(), MainActivity::class.java)
+                        startActivity(intent)
+                    }
+                    .setNegativeButton("No") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            }
+
         }
         binding.ordericon.setOnClickListener {
             val action = SettingFragmentDirections.actionNavigationSettingToOrderFragment()
             findNavController().navigate(action)
         }
         binding.logoutButton.setOnClickListener {
+            mAuth = FirebaseAuth.getInstance()
+            mAuth.addAuthStateListener { firebaseAuth ->
+                if (mAuth.currentUser == null) {
+                    context?.let {
+                        val intent = Intent(it, MainActivity::class.java)
+                        startActivity(intent)
+                        activity?.finish()
+                    } ?: Log.e("AccountFragment", "Context is null")
+                }
+            }
             AlertDialog.Builder(requireContext())
                 .setTitle("Logout")
                 .setMessage("Do You Want Logout")

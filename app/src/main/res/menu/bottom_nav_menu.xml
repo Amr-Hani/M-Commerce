@@ -12,8 +12,13 @@
         android:title="@string/category" />
 
 
+
+
+    
+
     <item
-        android:id="@+id/navigation_setting"
+        android:id="@+id/setting"
+
         android:icon="@drawable/setting"
         android:title="@string/setting" />
 

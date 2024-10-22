@@ -1,17 +1,27 @@
 package com.example.mcommerce.ui.favorite.view
 
 import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.mcommerce.MainActivity
 import com.example.mcommerce.databinding.ShowFavoritePorductsBinding
 import com.example.mcommerce.model.pojos.LineItem
+import com.example.mcommerce.my_key.MyKey
 
-class FavoriteFragmentAdapter (val onFavoriteClick: OnFavoriteClick,val onProductDetails: OnProductDetails):
+class FavoriteFragmentAdapter(
+    val onFavoriteClick: OnFavoriteClick,
+    val onProductDetails: OnProductDetails
+) :
     ListAdapter<LineItem, FavoriteFragmentAdapter.FavoriteFragmentViewHolder>(
         FavoriteFragmentDiffUtil()
     ) {
@@ -28,11 +38,12 @@ class FavoriteFragmentAdapter (val onFavoriteClick: OnFavoriteClick,val onProduc
     override fun onBindViewHolder(holder: FavoriteFragmentViewHolder, position: Int) {
         val currentDraftOrderRequest = getItem(position)
         holder.binding.tvFavoriteName.text = productName(currentDraftOrderRequest.title)
-        
+
+
         val split = currentDraftOrderRequest.sku?.split("<+>")
         Log.d("TAG", "onBindViewHolder: $split")
-    
-            Glide.with(holder.itemView.context).load(split?.get(1))
+
+        Glide.with(holder.itemView.context).load(split?.get(1))
             .into(holder.binding.ivCurrentIconFavorite)
 
         holder.binding.root.setOnClickListener {
@@ -41,7 +52,10 @@ class FavoriteFragmentAdapter (val onFavoriteClick: OnFavoriteClick,val onProduc
         holder.binding.ivIconFavorite.setColorFilter(Color.RED)
 
         holder.binding.ivIconFavorite.setOnClickListener {
+
             onFavoriteClick.onFavoriteClick(currentDraftOrderRequest)
+
+
         }
     }
 

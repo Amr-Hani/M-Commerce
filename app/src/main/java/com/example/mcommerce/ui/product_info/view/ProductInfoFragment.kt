@@ -63,6 +63,7 @@ class ProductInfoFragment : Fragment() {
     lateinit var favoriteViewModelFactory: FavoriteViewModelFactory
 
     lateinit var draftOrderRequest: DraftOrderRequest
+    lateinit var draftOrderRequestForCart: DraftOrderRequest
     lateinit var products: Products
     var customerId: Long = 0
     var isFavorite = false
@@ -72,6 +73,7 @@ class ProductInfoFragment : Fragment() {
     var color: String? = null
     var size: String? = null
     var price: String? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,6 +107,7 @@ class ProductInfoFragment : Fragment() {
         draftOrderID = (sharedPreferences.getString(MyKey.MY_CARD_DRAFT_ID, "1")
             ?: "1").toLong()
         Log.d(TAG, "onViewCreated: draftOrderID ${draftOrderID}")
+
         favoriteViewModelFactory = FavoriteViewModelFactory(
             Repository.getInstance(
                 RemoteDataSource(ProductInfoRetrofit.productService)
@@ -116,6 +119,7 @@ class ProductInfoFragment : Fragment() {
             (sharedPreferences.getString(MyKey.MY_FAVORITE_DRAFT_ID, "0") ?: "0").toLong()
         Log.d(TAG, "onViewCreated: favoriteDraftOrderId$favoriteDraftOrderId")
         getDraftOrderById(favoriteDraftOrderId)
+        getDraftOrderByIdForCart(draftOrderID)
 
 
         binding.btnAddToFavorite.setOnClickListener {
@@ -242,6 +246,49 @@ class ProductInfoFragment : Fragment() {
                 }
             } else {
                 Toast.makeText(requireContext(), "Please Select Size", Toast.LENGTH_SHORT).show()
+            }
+        }
+        binding.btnAddToCard.setOnClickListener {
+            lifecycleScope.launch(Dispatchers.IO) {
+                var oldLineItem: MutableList<LineItem> = mutableListOf()
+
+                draftOrderRequestForCart.draft_order.line_items.forEach {
+                    oldLineItem.add(it)
+                }
+                val draftOrder = draftOrderRequest(products).draft_order.line_items.get(0)
+                oldLineItem.add(
+                    draftOrder
+                )
+                Log.d(TAG, "showProductInfoDetails: $draftOrder")
+                Log.d(TAG, "onViewCreated: $oldLineItem")
+                val draft = draftOrderRequest.draft_order
+
+                draft.line_items = oldLineItem
+
+                favoriteViewModel.updateFavoriteDraftOrder(
+                    draftOrderID,
+                    UpdateDraftOrderRequest(draft)
+                )
+            }
+        }
+    }
+
+
+    fun getDraftOrderByIdForCart(draftOrderId: Long) {
+        lifecycleScope.launch {
+            productInfoViewModel.getFavoriteDraftOrder(draftOrderId)
+            productInfoViewModel.draftOrderStateFlow.collectLatest {
+                when (it) {
+                    is ApiState.Failure -> {
+                        Log.d(TAG, "showProductInfoDetails: btnAddToCard ${it.message}")
+                    }
+
+                    is ApiState.Loading -> {}
+                    is ApiState.Success -> {
+                        draftOrderRequestForCart = DraftOrderRequest(it.data.draft_order)
+
+                    }
+                }
             }
         }
     }
@@ -422,9 +469,7 @@ class ProductInfoFragment : Fragment() {
             }
         }
 
-
     }
-
     private fun draftOrderRequest(products: Products): DraftOrderRequest {
         val draftOrderRequest = DraftOrderRequest(
             draft_order = DraftOrder(

@@ -1,5 +1,7 @@
 package com.example.mcommerce.ui.setting.view.adress
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -19,6 +21,7 @@ import com.example.mcommerce.model.network.Repository
 import com.example.mcommerce.model.network.currency.RetrofitInstance
 import com.example.mcommerce.model.responses.Address
 import com.example.mcommerce.model.responses.address.CustomerAddress
+import com.example.mcommerce.my_key.MyKey
 import com.example.mcommerceapp.model.network.IRepo
 import com.example.mcommerceapp.model.network.RemoteDataSourceForCurrency
 import com.example.mcommerceapp.model.network.Repo
@@ -31,6 +34,7 @@ class AddressDetailsFragment : Fragment() {
 
     private lateinit var binding: FragmentAddressDetailsBinding
     private lateinit var settingViewModel: SettingViewModel
+    //lateinit var sharedPreferences: SharedPreferences
     val customerId = 8246104654123
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,6 +46,8 @@ class AddressDetailsFragment : Fragment() {
         observeViewModel()
 
 
+      //  sharedPreferences = requireContext().getSharedPreferences(MyKey.MY_SHARED_PREFERENCES, Context.MODE_PRIVATE)
+      //  customerId = (sharedPreferences.getString(MyKey.MY_CUSTOMER_ID, "0") ?: "0").toLong()
         arguments?.let { bundle ->
             val city = bundle.getString("city")
             val country = bundle.getString("country")

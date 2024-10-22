@@ -208,15 +208,24 @@ class LogInFragment : Fragment() {
                                     0
                                 ).last_name.isNullOrBlank()
                             ) {
-
+                                createdCardDraftOrder()
+                                delay(3000)
                                 createdFavoriteDraftOrder()
                                 delay(2000)
 
-                                createdCardDraftOrder()
-                                delay(3000)
+
 
                                 updateCustomer()
                             } else {
+
+                                cardDraftOrderId = it.data.customers.get(0).last_name.toLong()
+                                Log.d(TAG, "getCustomerByEmail: cardDraftOrderId $cardDraftOrderId")
+
+                                sharedPreferences.edit().putString(
+                                    MyKey.MY_CARD_DRAFT_ID,
+                                    "${cardDraftOrderId}"
+                                ).apply()
+
                                 favoriteDraftOrderId = it.data.customers.get(0).first_name.toLong()
                                 Log.d(
                                     TAG,
@@ -227,13 +236,6 @@ class LogInFragment : Fragment() {
                                     "${favoriteDraftOrderId}"
                                 ).apply()
 
-                                cardDraftOrderId = it.data.customers.get(0).last_name.toLong()
-                                Log.d(TAG, "getCustomerByEmail: cardDraftOrderId $cardDraftOrderId")
-
-                                sharedPreferences.edit().putString(
-                                    MyKey.MY_CARD_DRAFT_ID,
-                                    "${cardDraftOrderId}"
-                                ).apply()
                             }
 
                         } else {

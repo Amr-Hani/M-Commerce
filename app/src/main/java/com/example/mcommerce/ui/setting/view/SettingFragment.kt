@@ -41,16 +41,7 @@ class SettingFragment : Fragment(), CurrencyDialogFragment.CurrencySelectionList
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupOnClickListeners()
-        mAuth = FirebaseAuth.getInstance()
-        mAuth.addAuthStateListener { firebaseAuth ->
-            if (mAuth.currentUser == null) {
-                context?.let {
-                    val intent = Intent(it, MainActivity::class.java)
-                    startActivity(intent)
-                    activity?.finish()
-                } ?: Log.e("AccountFragment", "Context is null")
-            }
-        }
+
         // setupImageSlider()
     }
 
@@ -75,7 +66,16 @@ class SettingFragment : Fragment(), CurrencyDialogFragment.CurrencySelectionList
 
     private fun setupOnClickListeners() {
         binding.addressSection.setOnClickListener {
-            navigateTo(R.id.action_settingFragment_to_addressFragment)
+            AlertDialog.Builder(requireContext())
+                .setTitle("Regester")
+                .setMessage("if you want to see the address you must register")
+                .setPositiveButton("Yes") { dialog, _ ->
+                    navigateTo(R.id.action_settingFragment_to_addressFragment)
+                }
+                .setNegativeButton("No") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
         }
         binding.aboutSection.setOnClickListener {
             navigateTo(R.id.action_settingFragment_to_aboutUsFragment)
@@ -84,9 +84,28 @@ class SettingFragment : Fragment(), CurrencyDialogFragment.CurrencySelectionList
             navigateTo(R.id.action_settingFragment_to_contactUsFragment)
         }
         binding.currencySection.setOnClickListener {
-            showCurrencyDialog()
+            AlertDialog.Builder(requireContext())
+                .setTitle("Regester")
+                .setMessage("if you want to change the currency you must register")
+                .setPositiveButton("Yes") { dialog, _ ->
+                    showCurrencyDialog()
+                }
+                .setNegativeButton("No") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
         }
         binding.logoutButton.setOnClickListener {
+            mAuth = FirebaseAuth.getInstance()
+            mAuth.addAuthStateListener { firebaseAuth ->
+                if (mAuth.currentUser == null) {
+                    context?.let {
+                        val intent = Intent(it, MainActivity::class.java)
+                        startActivity(intent)
+                        activity?.finish()
+                    } ?: Log.e("AccountFragment", "Context is null")
+                }
+            }
             AlertDialog.Builder(requireContext())
                 .setTitle("Logout")
                 .setMessage("Do You Want Logout")

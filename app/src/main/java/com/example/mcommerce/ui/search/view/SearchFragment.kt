@@ -1,6 +1,7 @@
 package com.example.mcommerce.ui.search.view
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
@@ -9,10 +10,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.mcommerce.MainActivity
 import com.example.mcommerce.databinding.FragmentSearchBinding
 import com.example.mcommerce.model.network.ApiState
 import com.example.mcommerce.model.network.ProductInfoRetrofit
@@ -64,6 +67,11 @@ class SearchFragment : Fragment(), OnFavoriteClick<Products>, OnDetailsClick<Pro
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        sharedPreferences =
+            requireContext().getSharedPreferences(
+                MyKey.MY_SHARED_PREFERENCES,
+                Context.MODE_PRIVATE
+            )
         ///////////////////////////////
         favoriteViewModelFactory = FavoriteViewModelFactory(
             Repository.getInstance(
@@ -84,9 +92,7 @@ class SearchFragment : Fragment(), OnFavoriteClick<Products>, OnDetailsClick<Pro
         customerID = (sharedPreferences.getString(MyKey.MY_CUSTOMER_ID, "0")
             ?: "0").toLong()
 
-
         ///////////////////////////////
-
 
         searchFragmentViewModelFactory = SearchFragmentViewModelFactory(
             Repository.getInstance(
@@ -114,7 +120,6 @@ class SearchFragment : Fragment(), OnFavoriteClick<Products>, OnDetailsClick<Pro
                             override fun onQueryTextSubmit(query: String?): Boolean {
                                 return false
                             }
-
                             override fun onQueryTextChange(newText: String?): Boolean {
                                 lifecycleScope.launch {
                                     if (newText.isNullOrEmpty()) {
@@ -141,36 +146,50 @@ class SearchFragment : Fragment(), OnFavoriteClick<Products>, OnDetailsClick<Pro
     }
 
     override fun onFavoriteClick(products: Products) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            favoriteViewModel.getFavoriteDraftOrder(favoriteDraftOrderId)
-            favoriteViewModel.draftOrderStateFlow.collectLatest {
-                when (it) {
-                    is ApiState.Failure -> {}
-                    is ApiState.Loading -> {}
-                    is ApiState.Success -> {
-                        var oldLineItem: MutableList<LineItem> = mutableListOf()
-                        val draftOrderRequest =
-                            draftOrderRequest(products).draft_order.line_items.get(0)
-                        it.data.draft_order.line_items.forEach {
-                            if (draftOrderRequest.title != it.title) {
-                                oldLineItem.add(it)
+        val guest = sharedPreferences.getString(MyKey.GUEST, "notguest")
+        if (guest != "GUEST") {
+            lifecycleScope.launch(Dispatchers.IO) {
+                favoriteViewModel.getFavoriteDraftOrder(favoriteDraftOrderId)
+                favoriteViewModel.draftOrderStateFlow.collectLatest {
+                    when (it) {
+                        is ApiState.Failure -> {}
+                        is ApiState.Loading -> {}
+                        is ApiState.Success -> {
+                            var oldLineItem: MutableList<LineItem> = mutableListOf()
+                            val draftOrderRequest =
+                                draftOrderRequest(products).draft_order.line_items.get(0)
+                            it.data.draft_order.line_items.forEach {
+                                if (draftOrderRequest.title != it.title) {
+                                    oldLineItem.add(it)
+                                }
                             }
+                            oldLineItem.add(
+                                draftOrderRequest
+                            )
+
+                            val draft = draftOrderRequest(products).draft_order
+
+                            draft.line_items = oldLineItem
+
+                            favoriteViewModel.updateFavoriteDraftOrder(
+                                favoriteDraftOrderId,
+                                UpdateDraftOrderRequest(draft)
+                            )
                         }
-                        oldLineItem.add(
-                            draftOrderRequest
-                        )
-
-                        val draft = draftOrderRequest(products).draft_order
-
-                        draft.line_items = oldLineItem
-
-                        favoriteViewModel.updateFavoriteDraftOrder(
-                            favoriteDraftOrderId,
-                            UpdateDraftOrderRequest(draft)
-                        )
                     }
                 }
             }
+        } else {
+            AlertDialog.Builder(requireContext())
+                .setTitle("Regester")
+                .setMessage("if you want to add to favorite you must register")
+                .setPositiveButton("Yes") { dialog, _ ->
+                    val intent = Intent(requireContext(), MainActivity::class.java)
+                    startActivity(intent)
+                }.setNegativeButton("No") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
         }
 
     }

@@ -99,8 +99,10 @@ class LogInFragment : Fragment() {
             logIn()
         }
         binding.tvGuest.setOnClickListener {
-            sharedPreferences.edit().putString(MyKey.GUEST, "Guest")
+            sharedPreferences.edit().putString(MyKey.GUEST, "GUEST")
                 .apply()
+            val intent = Intent(requireActivity(), MainActivity2::class.java)
+            startActivity(intent)
         }
     }
 
@@ -163,6 +165,7 @@ class LogInFragment : Fragment() {
                 Toast.makeText(requireContext(), "Authentication success.", Toast.LENGTH_SHORT)
                     .show()
                 email?.let { getCustomerByEmail(it) }
+
                 sharedPreferences.edit().putString(MyKey.GUEST, "LogIn")
                     .apply()
 
@@ -223,6 +226,7 @@ class LogInFragment : Fragment() {
                                     MyKey.MY_FAVORITE_DRAFT_ID,
                                     "${favoriteDraftOrderId}"
                                 ).apply()
+
                                 cardDraftOrderId = it.data.customers.get(0).last_name.toLong()
                                 Log.d(TAG, "getCustomerByEmail: cardDraftOrderId $cardDraftOrderId")
 
@@ -242,68 +246,6 @@ class LogInFragment : Fragment() {
             }
         }
     }
-
-
-    fun amr() {
-        lifecycleScope.launch(Dispatchers.IO) {
-            authenticationViewModel.getCustomerById(customerId)
-            authenticationViewModel.getCustomerByIdStateFlow.collectLatest { result ->
-                when (result) {
-                    is ApiState.Failure -> {}
-                    is ApiState.Loading -> {}
-                    is ApiState.Success -> {
-
-//                            favoriteDraftOrderId = result.data.customer.first_name.toLong()
-//                            authenticationViewModel.getFavoriteDraftOrder(favoriteDraftOrderId)
-//                            authenticationViewModel.draftOrderStateFlow.collectLatest {
-//                                when (it) {
-//                                    is ApiState.Failure -> {}
-//                                    is ApiState.Loading -> {}
-//                                    is ApiState.Success -> {
-//                                        var oldLineItem: MutableList<LineItem> = mutableListOf()
-//                                        it.data.draft_order.line_items.forEach {
-//                                            oldLineItem.add(it)
-//                                        }
-//                                        oldLineItem.add(
-//                                            draftOrderRequest(products).draft_order.line_items.get(0)
-//                                        )
-//
-//                                        val draft = draftOrderRequest(products).draft_order
-//
-//                                        draft.line_items = oldLineItem
-//
-//                                        authenticationViewModel.updateFavoriteDraftOrder(
-//                                            favoriteDraftOrderId,
-//                                            UpdateDraftOrderRequest(draft)
-//                                        )
-//                                    }
-//                                }
-//                            }
-                    }
-                }
-            }
-        }
-    }
-//    private fun draftOrderRequest(products: Products): DraftOrderRequest {
-//
-//        val draftOrderRequest = DraftOrderRequest(
-//            draft_order = DraftOrder(
-//                line_items = listOf(
-//                    LineItem(
-//                        product_id = products.id,
-//                        sku = "${products.id}<+>${products.image?.src}",
-//                        title = products.title, price = products.variants[0].price, quantity = 1
-//                    )
-//                ),
-//                use_customer_default_address = true,
-//                applied_discount = AppliedDiscount(),
-//                customer = Customers(customerId)
-//            )
-//
-//        )
-//        return draftOrderRequest
-//    }
-
 
     fun createdCardDraftOrder() {
         lifecycleScope.launch {

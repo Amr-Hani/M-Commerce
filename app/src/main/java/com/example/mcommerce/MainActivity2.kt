@@ -1,6 +1,10 @@
 package com.example.mcommerce
 
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
+import androidx.appcompat.app.AlertDialog
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.Navigation
@@ -9,13 +13,16 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.mcommerce.databinding.ActivityMain2Binding
+import com.example.mcommerce.my_key.MyKey
 
 class MainActivity2 : AppCompatActivity() {
 
     private lateinit var binding: ActivityMain2Binding
-
+    lateinit var sharedPreferences: SharedPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        sharedPreferences =
+            this.getSharedPreferences(MyKey.MY_SHARED_PREFERENCES, Context.MODE_PRIVATE)
 
         binding = ActivityMain2Binding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -33,21 +40,66 @@ class MainActivity2 : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+        val guest = sharedPreferences.getString(MyKey.GUEST, "notguest")
 
         binding.imageView2.setOnClickListener {
-            navController.navigate(R.id.favoriteFragment)
+            if (guest != "GUEST") {
+                navController.navigate(R.id.favoriteFragment)
+            } else {
+
+                AlertDialog.Builder(this)
+                    .setTitle("Regester")
+                    .setMessage("if you want to see the favorite you must register")
+                    .setPositiveButton("Yes") { dialog, _ ->
+                        val intent = Intent(this, MainActivity::class.java)
+                        startActivity(intent)
+                    }.setNegativeButton("No") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            }
         }
+        binding.imageView.setOnClickListener {
+            if (guest != "GUEST") {
+                navController.navigate(R.id.cartFragment)
+            } else {
+
+                AlertDialog.Builder(this)
+                    .setTitle("Regester")
+                    .setMessage("if you want to see the cart you must register")
+                    .setPositiveButton("Yes") { dialog, _ ->
+                        val intent = Intent(this, MainActivity::class.java)
+                        startActivity(intent)
+                    }.setNegativeButton("No") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            }
+        }
+        binding.imageView.setOnClickListener {
+            if (guest != "GUEST") {
+
+                navController.navigate(R.id.cartFragment)
+            } else {
+
+                AlertDialog.Builder(this)
+                    .setTitle("Regester")
+                    .setMessage("if you want to see the cart you must register")
+                    .setPositiveButton("Yes") { dialog, _ ->
+                        val intent = Intent(this, MainActivity::class.java)
+                        startActivity(intent)
+                    }.setNegativeButton("No") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            }
+        }
+
+
         binding.imageView3.setOnClickListener {
             navController.navigate(R.id.searchFragment)
         }
-        binding.imageView.setOnClickListener {
 
-             navController.navigate(R.id.cartFragment)
-        }
-        binding.imageView.setOnClickListener {
-
-            navController.navigate(R.id.cartFragment)
-        }
     }
 
     override fun onSupportNavigateUp(): Boolean {

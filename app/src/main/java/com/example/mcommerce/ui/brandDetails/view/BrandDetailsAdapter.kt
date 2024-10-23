@@ -40,7 +40,7 @@ class BrandDetailsAdapter(
                 titleeid.text=product.title
 
                 val currency = "USD"
-                pricetextbrand.text = "$price $currency"
+                pricetextbrand.text = "$price"
 
                 // Load product image using Glide, if available
                 Glide.with(imagbrandDetailid.context)

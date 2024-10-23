@@ -10,7 +10,7 @@ import android.widget.TextView
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 
-class ContactUsFragment : Fragment() {
+class ContactUsFragment : Fragment(R.layout.fragment_contact_us) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

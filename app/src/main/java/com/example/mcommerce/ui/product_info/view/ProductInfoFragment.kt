@@ -18,6 +18,7 @@ import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -33,6 +34,7 @@ import com.example.mcommerce.model.network.ApiState
 import com.example.mcommerce.model.network.ProductInfoRetrofit
 import com.example.mcommerce.model.network.RemoteDataSource
 import com.example.mcommerce.model.network.Repository
+import com.example.mcommerce.model.network.currency.RetrofitInstance
 import com.example.mcommerce.model.pojos.AppliedDiscount
 import com.example.mcommerce.model.pojos.Customers
 import com.example.mcommerce.model.pojos.DraftOrder
@@ -47,10 +49,16 @@ import com.example.mcommerce.ui.favorite.viewmodel.FavoriteViewModelFactory
 
 import com.example.mcommerce.ui.product_info.viewmodel.ProductInfoViewModel
 import com.example.mcommerce.ui.product_info.viewmodel.ProductInfoViewModelFactory
+import com.example.mcommerceapp.model.network.RemoteDataSourceForCurrency
+import com.example.mcommerceapp.model.network.Repo
+import com.example.mcommerceapp.ui.setting.veiwmodel.SettingViewModel
+import com.example.mcommerceapp.ui.setting.veiwmodel.SettingViewModelFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
+import java.math.RoundingMode
 import kotlin.random.Random
 
 class ProductInfoFragment : Fragment() {
@@ -73,6 +81,7 @@ class ProductInfoFragment : Fragment() {
     var customerId: Long = 0
     var isFavorite = false
     var productId: Long = 0
+    var rating: Double = 0.0
     var favoriteDraftOrderId: Long = 0
     lateinit var currencySharedPreferences: SharedPreferences
 
@@ -81,7 +90,12 @@ class ProductInfoFragment : Fragment() {
     var price: String? = null
     var guest: String? = null
     var currency: String? = null
-
+    private val settingViewModel: SettingViewModel by viewModels {
+        SettingViewModelFactory(
+            Repository.getInstance(RemoteDataSource(ProductInfoRetrofit.productService)),
+            Repo.getInstance(RemoteDataSourceForCurrency(RetrofitInstance.exchangeRateApi))
+        )
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -96,10 +110,11 @@ class ProductInfoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        currencySharedPreferences = requireActivity().getSharedPreferences("user_settings", Context.MODE_PRIVATE)
+        currencySharedPreferences =
+            requireActivity().getSharedPreferences("user_settings", Context.MODE_PRIVATE)
         currency = currencySharedPreferences.getString("currency", "EGP") ?: "EGP"
 
-            productId = ProductInfoFragmentArgs.fromBundle(requireArguments()).productId
+        productId = ProductInfoFragmentArgs.fromBundle(requireArguments()).productId
         productInfoViewModelFactory = ProductInfoViewModelFactory(
             Repository.getInstance(
                 RemoteDataSource(ProductInfoRetrofit.productService)
@@ -134,6 +149,7 @@ class ProductInfoFragment : Fragment() {
         guest = sharedPreferences.getString(MyKey.GUEST, "login")
         binding.btnAddToFavorite.setOnClickListener {
             if (guest != "GUEST") {
+
                 if (isFavorite) {
                     AlertDialog.Builder(requireContext())
                         .setTitle("Deletion")
@@ -276,26 +292,41 @@ class ProductInfoFragment : Fragment() {
         }
         binding.btnAddToCard.setOnClickListener {
             if (guest != "GUEST") {
-                lifecycleScope.launch(Dispatchers.IO) {
-                    var oldLineItem: MutableList<LineItem> = mutableListOf()
+                if (!size.isNullOrBlank()) {
+                    if (!color.isNullOrBlank()) {
+                        lifecycleScope.launch(Dispatchers.IO) {
+                            var oldLineItem: MutableList<LineItem> = mutableListOf()
 
-                    draftOrderRequestForCart.draft_order.line_items.forEach {
-                        oldLineItem.add(it)
+                            draftOrderRequestForCart.draft_order.line_items.forEach {
+                                oldLineItem.add(it)
+                            }
+                            val draftOrder =
+                                draftOrderRequest(products).draft_order.line_items.get(0)
+                            oldLineItem.add(
+                                draftOrder
+                            )
+                            Log.d(TAG, "showProductInfoDetails: $draftOrder")
+                            Log.d(TAG, "onViewCreated: $oldLineItem")
+                            val draft = draftOrderRequest.draft_order
+
+                            draft.line_items = oldLineItem
+
+                            favoriteViewModel.updateFavoriteDraftOrder(
+                                draftOrderID,
+                                UpdateDraftOrderRequest(draft)
+                            )
+                        }
+                    } else {
+                        Toast.makeText(
+                            requireContext(),
+                            "Please Select Color",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
                     }
-                    val draftOrder = draftOrderRequest(products).draft_order.line_items.get(0)
-                    oldLineItem.add(
-                        draftOrder
-                    )
-                    Log.d(TAG, "showProductInfoDetails: $draftOrder")
-                    Log.d(TAG, "onViewCreated: $oldLineItem")
-                    val draft = draftOrderRequest.draft_order
-
-                    draft.line_items = oldLineItem
-
-                    favoriteViewModel.updateFavoriteDraftOrder(
-                        draftOrderID,
-                        UpdateDraftOrderRequest(draft)
-                    )
+                } else {
+                    Toast.makeText(requireContext(), "Please Select Size", Toast.LENGTH_SHORT)
+                        .show()
                 }
             } else {
                 AlertDialog.Builder(requireContext())
@@ -390,16 +421,20 @@ class ProductInfoFragment : Fragment() {
 
     fun showProductInfoDetails(products: Products) {
 
-        if(currency == "EGP")
-        {
+        if (currency == "EGP") {
             price = products.variants.get(0).price
             binding.tvPrice.text = price + " EGP"
-        }
-        else{
+        } else {
+            getRatCurrency()
             price = products.variants.get(0).price
-            binding.tvPrice.text = price + " USD"
+            val totalPrice = (price!!.toDouble() / rating)
+            //val formattedPrice = BigDecimal(totalPrice).setScale(2, RoundingMode.HALF_UP).toDouble()
+            val formattedPrice = String.format("%.2f", totalPrice)
+            Thread.sleep(250)
+            binding.tvPrice.text =  "$formattedPrice USD"
         }
-        val randomRatingBarList = listOf(2.5f, 3.5f, 4.0f, 4.5f, 5.0f, 1.0f, 1.5f, 2.0f, 3.0f, 4.2f)
+        val randomRatingBarList =
+            listOf(2.5f, 3.5f, 4.0f, 4.5f, 5.0f, 1.0f, 1.5f, 2.0f, 3.0f, 4.2f)
         val randomNumber = Random.nextInt(1, 10)
         binding.tvTitle.text = products.title
         binding.tvDescription.text = products.body_html
@@ -463,6 +498,8 @@ class ProductInfoFragment : Fragment() {
                             }
                             setPadding(16, 8, 16, 8)
                             textSize = 14f
+
+
                         }
                         binding.radioGroup.addView(radioButton)
                     }
@@ -471,6 +508,7 @@ class ProductInfoFragment : Fragment() {
                         val selectedRadioButton =
                             binding.radioGroup.findViewById<RadioButton>(checkedId)
                         selectedRadioButton?.let {
+                            it. setTextColor(Color.BLACK)
                             Toast.makeText(
                                 requireContext(),
                                 "Select into ${it.text}",
@@ -495,10 +533,10 @@ class ProductInfoFragment : Fragment() {
                             }
                             setPadding(16, 8, 16, 8)
                             textSize = 14f
+                            setTextColor(Color.BLACK)
                         }
                         binding.radioGroup2.addView(radioButton)
                     }
-
                     binding.radioGroup2.setOnCheckedChangeListener { _, checkedId ->
                         val selectedRadioButton =
                             binding.radioGroup2.findViewById<RadioButton>(checkedId)
@@ -534,6 +572,26 @@ class ProductInfoFragment : Fragment() {
 
         )
         return draftOrderRequest
+    }
+
+    fun getRatCurrency(){
+        viewLifecycleOwner.lifecycleScope.launch {
+            settingViewModel.fetchLatestRates()
+            settingViewModel.exchangeRatesState.collectLatest { state ->
+                when (state) {
+                    is ApiState.Loading -> {
+
+                    }
+                    is ApiState.Success -> {
+
+                        rating = state.data
+                    }
+                    is ApiState.Failure -> {
+                        Log.e("CartFragment", "Error fetching rates:")
+                    }
+                }
+            }
+        }
     }
 
 }

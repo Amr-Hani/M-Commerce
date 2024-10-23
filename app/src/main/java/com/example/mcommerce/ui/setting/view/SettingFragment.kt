@@ -18,7 +18,6 @@ import com.example.mcommerce.R
 import com.example.mcommerce.databinding.FragmentSettingBinding
 
 
-
 import com.example.mcommerce.my_key.MyKey
 
 import com.example.mcommerce.ui.setting.view.currency.CurrencyDialogFragment
@@ -46,15 +45,16 @@ class SettingFragment : Fragment(), CurrencyDialogFragment.CurrencySelectionList
                 MyKey.MY_SHARED_PREFERENCES,
                 Context.MODE_PRIVATE
             )
+        guest = sharedPreferences2.getString(MyKey.GUEST, "login")
+
         loadCurrency()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupOnClickListeners()
-        guest = sharedPreferences.getString(MyKey.GUEST, "login")
 
+        setupOnClickListeners()
         // setupImageSlider()
     }
 
@@ -100,7 +100,21 @@ class SettingFragment : Fragment(), CurrencyDialogFragment.CurrencySelectionList
             navigateTo(R.id.action_settingFragment_to_aboutUsFragment)
         }
         binding.contactSection.setOnClickListener {
-            navigateTo(R.id.action_settingFragment_to_contactUsFragment)
+            if (guest != "GUEST") {
+                navigateTo(R.id.action_settingFragment_to_contactUsFragment)
+            } else {
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Regester")
+                    .setMessage("if you want to show about us you must register")
+                    .setPositiveButton("Yes") { dialog, _ ->
+                        val intent = Intent(requireContext(), MainActivity::class.java)
+                        startActivity(intent)
+                    }
+                    .setNegativeButton("No") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            }
         }
         binding.currencySection.setOnClickListener {
             if (guest != "GUEST") {
@@ -121,8 +135,22 @@ class SettingFragment : Fragment(), CurrencyDialogFragment.CurrencySelectionList
 
         }
         binding.ordericon.setOnClickListener {
-            val action = SettingFragmentDirections.actionNavigationSettingToOrderFragment()
-            findNavController().navigate(action)
+            if (guest != "GUEST") {
+                val action = SettingFragmentDirections.actionNavigationSettingToOrderFragment()
+                findNavController().navigate(action)
+            } else {
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Regester")
+                    .setMessage("if you want to show your order you must register")
+                    .setPositiveButton("Yes") { dialog, _ ->
+                        val intent = Intent(requireContext(), MainActivity::class.java)
+                        startActivity(intent)
+                    }
+                    .setNegativeButton("No") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            }
         }
         binding.logoutButton.setOnClickListener {
             mAuth = FirebaseAuth.getInstance()

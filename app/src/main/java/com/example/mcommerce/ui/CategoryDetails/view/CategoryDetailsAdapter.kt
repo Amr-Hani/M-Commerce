@@ -43,7 +43,7 @@ class CategoryDetailsAdapter(
                 val price = product.variants.getOrNull(0)?.price ?: "0.00"
 
                 val currency = "USD"
-                pricecategoryDetals.text = "$price $currency"
+                pricecategoryDetals.text = "$price"
                 titlid.text=product.title
                 // Load product image, if available
                 Glide.with(imagcategoryDetals.context)

@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
 import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
@@ -21,6 +22,7 @@ import com.example.mcommerce.model.network.ApiState
 import com.example.mcommerce.model.network.ProductInfoRetrofit
 import com.example.mcommerce.model.network.RemoteDataSource
 import com.example.mcommerce.model.network.Repository
+import com.example.mcommerce.model.network.currency.RetrofitInstance
 import com.example.mcommerce.model.pojos.AppliedDiscount
 import com.example.mcommerce.model.pojos.Customers
 import com.example.mcommerce.model.pojos.DraftOrder
@@ -29,10 +31,15 @@ import com.example.mcommerce.model.pojos.LineItem
 import com.example.mcommerce.model.pojos.Products
 import com.example.mcommerce.model.pojos.UpdateDraftOrderRequest
 import com.example.mcommerce.my_key.MyKey
+import com.example.mcommerce.ui.CategoryDetails.view.CategoryDetailsAdapter
 import com.example.mcommerce.ui.favorite.viewmodel.FavoriteViewModel
 import com.example.mcommerce.ui.favorite.viewmodel.FavoriteViewModelFactory
 import com.example.mcommerce.ui.search.viewmodel.SearchFragmentViewModel
 import com.example.mcommerce.ui.search.viewmodel.SearchFragmentViewModelFactory
+import com.example.mcommerceapp.model.network.RemoteDataSourceForCurrency
+import com.example.mcommerceapp.model.network.Repo
+import com.example.mcommerceapp.ui.setting.veiwmodel.SettingViewModel
+import com.example.mcommerceapp.ui.setting.veiwmodel.SettingViewModelFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -45,6 +52,9 @@ class SearchFragment : Fragment(), OnFavoriteClick<Products>, OnDetailsClick<Pro
     lateinit var searchFragmentAdapter: SearchFragmentAdapter
     private val TAG = "SearchFragment"
     lateinit var sharedPreferences: SharedPreferences
+    lateinit var sharedPreferences2: SharedPreferences
+    var currency: String? = null
+    var rating = 1.0
     var favoriteDraftOrderId: Long = 0
     var customerID: Long = 0
 
@@ -72,6 +82,13 @@ class SearchFragment : Fragment(), OnFavoriteClick<Products>, OnDetailsClick<Pro
                 MyKey.MY_SHARED_PREFERENCES,
                 Context.MODE_PRIVATE
             )
+        sharedPreferences2 =
+            requireContext().getSharedPreferences("user_settings", Context.MODE_PRIVATE)
+
+        currency = sharedPreferences2.getString("currency", "EGP") ?: "EGP"
+        if (currency != "EGP") {
+            getRatCurrency()
+        }
         ///////////////////////////////
         favoriteViewModelFactory = FavoriteViewModelFactory(
             Repository.getInstance(
@@ -120,6 +137,7 @@ class SearchFragment : Fragment(), OnFavoriteClick<Products>, OnDetailsClick<Pro
                             override fun onQueryTextSubmit(query: String?): Boolean {
                                 return false
                             }
+
                             override fun onQueryTextChange(newText: String?): Boolean {
                                 lifecycleScope.launch {
                                     if (newText.isNullOrEmpty()) {
@@ -128,6 +146,21 @@ class SearchFragment : Fragment(), OnFavoriteClick<Products>, OnDetailsClick<Pro
                                         val filteredList = withContext(Dispatchers.Default) {
                                             it.data.filter { item ->
                                                 item.title.contains(newText, ignoreCase = true)
+                                            }
+                                        }
+                                        if (currency != "EGP") {
+                                            Thread.sleep(250)
+                                            filteredList.forEach {
+                                                val totalPrice =
+                                                    (it.variants.get(0).price.toDouble()
+                                                        .toDouble() / rating)
+                                                val formattedPrice =
+                                                    String.format("%.2f", totalPrice)
+                                                it.variants.get(0).price = "$formattedPrice USD"
+                                            }
+                                        } else {
+                                            filteredList.forEach {
+                                                it.variants.get(0).price += " EGP"
                                             }
                                         }
                                         searchFragmentAdapter.submitList(filteredList)
@@ -221,5 +254,32 @@ class SearchFragment : Fragment(), OnFavoriteClick<Products>, OnDetailsClick<Pro
         return draftOrderRequest
     }
 
+    private val settingViewModel: SettingViewModel by viewModels {
+        SettingViewModelFactory(
+            Repository.getInstance(RemoteDataSource(ProductInfoRetrofit.productService)),
+            Repo.getInstance(RemoteDataSourceForCurrency(RetrofitInstance.exchangeRateApi))
+        )
+    }
 
+    fun getRatCurrency() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            settingViewModel.fetchLatestRates()
+            settingViewModel.exchangeRatesState.collectLatest { state ->
+                when (state) {
+                    is ApiState.Loading -> {
+
+                    }
+
+                    is ApiState.Success -> {
+
+                        rating = state.data
+                    }
+
+                    is ApiState.Failure -> {
+                        Log.e("CartFragment", "Error fetching rates:")
+                    }
+                }
+            }
+        }
+    }
 }

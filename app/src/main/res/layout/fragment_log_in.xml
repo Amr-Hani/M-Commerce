@@ -5,34 +5,38 @@
     android:id="@+id/frameLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.authentication.view.LogInFragment" >
+    tools:context=".ui.authentication.view.LogInFragment">
 
     <EditText
         android:id="@+id/et_userNameLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="393dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/edit_text_bacgraound"
         android:ems="10"
+        android:hint="@string/your_email"
+        android:minHeight="48dp"
+
         android:inputType="text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck"
-        android:hint="@string/your_email"/>
+        app:layout_constraintTop_toBottomOf="@+id/imageView4"
+        tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
 
     <EditText
+        android:background="@drawable/edit_text_bacgraound"
         android:id="@+id/et_passwordLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:ems="10"
+        android:hint="@string/pssword"
         android:inputType="textPassword"
         android:minHeight="48dp"
         app:layout_constraintEnd_toEndOf="@+id/et_userNameLogin"
         app:layout_constraintStart_toStartOf="@+id/et_userNameLogin"
         app:layout_constraintTop_toBottomOf="@+id/et_userNameLogin"
-        tools:ignore="SpeakableTextPresentCheck"
-        android:hint="@string/pssword"/>
+        tools:ignore="SpeakableTextPresentCheck" />
 
     <Button
         android:id="@+id/btn_logIn"
@@ -41,7 +45,7 @@
         android:layout_marginTop="8dp"
         android:text="@string/logIn"
         app:layout_constraintStart_toStartOf="@+id/et_passwordLogin"
-        app:layout_constraintTop_toBottomOf="@+id/et_passwordLogin" />
+        app:layout_constraintTop_toBottomOf="@+id/textView10" />
 
     <TextView
         android:id="@+id/tv_goToSignUp"
@@ -49,18 +53,41 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:text="@string/go_to_signUp"
+        android:textColor="@color/blue"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/btn_logIn"
         app:layout_constraintStart_toEndOf="@+id/btn_logIn"
-        app:layout_constraintTop_toTopOf="@+id/btn_logIn"
-        />
+        app:layout_constraintTop_toTopOf="@+id/btn_logIn" />
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:src="@drawable/online"
+        app:layout_constraintBottom_toTopOf="@+id/et_userNameLogin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/tv_guest"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="32dp"
+        android:layout_marginTop="56dp"
+        android:layout_marginEnd="36dp"
         android:text="@string/guest"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/message_acount2"
+        app:layout_constraintEnd_toEndOf="@+id/et_passwordLogin"
+        app:layout_constraintStart_toStartOf="@+id/et_passwordLogin"
+        app:layout_constraintTop_toBottomOf="@+id/et_passwordLogin" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,18 +5,20 @@
     android:id="@+id/constrainLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.authentication.view.SignUpFragment" >
+    tools:context=".ui.authentication.view.SignUpFragment">
 
     <EditText
         android:id="@+id/et_userName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="300dp"
+        android:layout_marginTop="340dp"
+        android:background="@drawable/edit_text_bacgraound"
         android:ems="10"
         android:hint="@string/your_email"
         android:inputType="text"
         android:minHeight="48dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.542"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -25,10 +27,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:background="@drawable/edit_text_bacgraound"
         android:ems="10"
         android:hint="@string/pssword"
         android:inputType="textPassword"
         android:minHeight="48dp"
+
         app:layout_constraintEnd_toEndOf="@+id/et_userName"
         app:layout_constraintStart_toStartOf="@+id/et_userName"
         app:layout_constraintTop_toBottomOf="@+id/et_userName"
@@ -39,6 +43,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:background="@drawable/edit_text_bacgraound"
         android:ems="10"
         android:hint="@string/confirm_password"
         android:inputType="textPassword"
@@ -53,8 +58,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/signUp"
-        app:layout_constraintStart_toStartOf="@+id/et_confirmPassword"
-        app:layout_constraintTop_toBottomOf="@+id/et_confirmPassword" />
+        app:layout_constraintStart_toStartOf="@+id/textView5"
+        app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
     <TextView
         android:id="@+id/tv_goToLogin"
@@ -62,9 +67,12 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:text="@string/go_to_login"
+        android:textColor="@color/blue"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/btn_signUp"
         app:layout_constraintStart_toEndOf="@+id/btn_signUp"
-        app:layout_constraintTop_toTopOf="@+id/btn_signUp" />
+        app:layout_constraintTop_toTopOf="@+id/btn_signUp"
+        app:layout_constraintVertical_bias="0.482" />
 
     <ImageView
         android:id="@+id/btn_google"
@@ -72,6 +80,7 @@
         android:layout_height="100dp"
         android:src="@drawable/social"
         app:layout_constraintEnd_toEndOf="@+id/tv_goToLogin"
+        app:layout_constraintHorizontal_bias="0.514"
         app:layout_constraintStart_toStartOf="@+id/btn_signUp"
         app:layout_constraintTop_toBottomOf="@+id/btn_signUp" />
 
@@ -79,11 +88,33 @@
         android:id="@+id/tv_guest"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="32dp"
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="48dp"
         android:text="@string/guest"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:src="@drawable/sign"
+        app:layout_constraintBottom_toTopOf="@+id/et_userName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.62" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/message_account"
+        app:layout_constraintStart_toStartOf="@+id/et_confirmPassword"
+        app:layout_constraintTop_toBottomOf="@+id/et_confirmPassword" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

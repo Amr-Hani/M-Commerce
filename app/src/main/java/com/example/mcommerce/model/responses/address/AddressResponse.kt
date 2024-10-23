@@ -1,6 +1,7 @@
 package com.example.mcommerce.model.responses.address
 
 import com.example.mcommerce.model.responses.Address
+import kotlinx.coroutines.flow.SharedFlow
 
 data class AddressResponse(val addresses: List<Address>)
 data class CustomerAddress(

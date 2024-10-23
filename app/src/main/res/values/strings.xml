@@ -60,6 +60,8 @@
     <string name="total">Total</string>
     <string name="place_order">PLACE ORDER</string>
     <string name="oorder">Order</string>
+    <string name="message_account">"If you have an account click here"</string>
+    <string name="message_acount2">"If you don't have an account click here "</string>
 </resources>
 
 

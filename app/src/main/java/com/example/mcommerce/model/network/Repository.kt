@@ -6,6 +6,7 @@ import com.example.mcommerce.model.responses.CustomerResponse
 
 
 import SmartCollectionsItem
+import com.example.mcommerce.PartialOrder2
 import com.example.mcommerce.model.pojos.CustomCollection
 import com.example.mcommerce.model.pojos.DraftOrderRequest
 
@@ -20,6 +21,8 @@ import com.example.mcommerce.model.responses.address.AddAddressResponse
 import com.example.mcommerce.model.responses.ProductResponse
 import com.example.mcommerce.model.responses.ReceivedDraftOrder
 import com.example.mcommerce.model.responses.ReceivedOrdersResponse
+import com.example.mcommerce.model.responses.orders.Order
+import com.example.mcommerce.model.responses.orders.OrderElement
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -132,7 +135,10 @@ class Repository private constructor(private val remoteDataSource: RemoteDataSou
     }
 
     // Insert item into a draft order
-    suspend fun insertItemToDraftOrder(draftOrderId: Long, lineItem: DraftOrderRequest): ReceivedDraftOrder {
+    suspend fun insertItemToDraftOrder(
+        draftOrderId: Long,
+        lineItem: DraftOrderRequest
+    ): ReceivedDraftOrder {
         return remoteDataSource.insertItemToDraftOrder(draftOrderId, lineItem)
     }
 
@@ -163,10 +169,13 @@ class Repository private constructor(private val remoteDataSource: RemoteDataSou
         }
     }
 
-    fun updateCustomerById(updateCustomerById: Long,updateCustomerRequest: UpdateCustomerRequest): Flow<CustomerResponse> {
+    fun updateCustomerById(
+        updateCustomerById: Long,
+        updateCustomerRequest: UpdateCustomerRequest
+    ): Flow<CustomerResponse> {
         return flow {
             emit(
-                remoteDataSource.updateCustomerById(updateCustomerById,updateCustomerRequest)
+                remoteDataSource.updateCustomerById(updateCustomerById, updateCustomerRequest)
             )
         }
     }
@@ -184,16 +193,27 @@ class Repository private constructor(private val remoteDataSource: RemoteDataSou
         return remoteDataSource.delCartItem(id)
     }
 
-    suspend fun confirmOrder(ordersItem: DraftOrderRequest?):Flow<ReceivedOrdersResponse> {
+    suspend fun confirmOrder(ordersItem: Order?): Flow<Order> {
         return remoteDataSource.confirmOrder(ordersItem)
     }
+
     suspend fun getDraftOrderById(id: String): Flow<ReceivedDraftOrder> {
         return remoteDataSource.getDrafrOrderById(id)
     }
 
-    suspend fun getOrderById(id:String):Flow<ReceivedOrdersResponse>{
+    suspend fun getOrderById(id: String): Flow<ReceivedOrdersResponse> {
         return remoteDataSource.getOrderById(id)
     }
+
+    suspend fun createOrder(partialOrder2: PartialOrder2): Flow<OrderElement> {
+        return flow { emit(remoteDataSource.createOrder(partialOrder2)) }
+    }
+
+    suspend fun getOrdersByCustomerId(customerId: String): Flow<Order> {
+        return flow { emit(remoteDataSource.getOrdersByCustomerId(customerId)) }
+    }
+
+
 }
 
 

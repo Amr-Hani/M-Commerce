@@ -11,7 +11,9 @@ import com.example.mcommerce.model.responses.ReceivedOrdersResponse
 import com.example.mcommerce.model.responses.orders.Order
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 class OrderViewModel(private val repository: Repository) : ViewModel() {
@@ -29,6 +31,22 @@ class OrderViewModel(private val repository: Repository) : ViewModel() {
                 _order.value = ApiState.Failure(e.message.toString())
                 Log.d("apiState", "getCustomerOrders:$e ")
             }
+        }
+    }
+    private val _getOrdersByCustomerIdStateFlow = MutableStateFlow<ApiState<Order>>(ApiState.Loading())
+    var  getOrdersByCustomerIdStateFlow: StateFlow<ApiState<Order>> = _getOrdersByCustomerIdStateFlow
+
+    fun getOrdersByCustomerId(customerId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.getOrdersByCustomerId(customerId)
+                .catch {
+                    _getOrdersByCustomerIdStateFlow.value = ApiState.Failure(it.message ?: "Error")
+                    Log.d("ApiState", "getCartid:$it ")
+                }
+                .collect {
+                    _getOrdersByCustomerIdStateFlow.value = ApiState.Success(it)
+                    Log.d("ApiState", "getCartid:$it ")
+                }
         }
     }
 }

@@ -34,14 +34,15 @@ class AddressDetailsFragment : Fragment() {
 
     private lateinit var binding: FragmentAddressDetailsBinding
     private lateinit var settingViewModel: SettingViewModel
-    //lateinit var sharedPreferences: SharedPreferences
-    val customerId = 8246104654123
+    lateinit var sharedPreferences: SharedPreferences
+    var customerId:Long = 0
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentAddressDetailsBinding.inflate(inflater, container, false)
-
+        sharedPreferences = requireContext().getSharedPreferences(MyKey.MY_SHARED_PREFERENCES,Context.MODE_PRIVATE)
+        customerId = (sharedPreferences.getString(MyKey.MY_CUSTOMER_ID,"8246104654123")?:"8246104654123").toLong()
         setupViewModel()
         observeViewModel()
 

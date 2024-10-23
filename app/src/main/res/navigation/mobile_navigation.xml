@@ -108,7 +108,7 @@
 
         android:id="@+id/navigation_setting"
         android:name="com.example.mcommerce.ui.setting.view.SettingFragment"
-        android:label="fragment_setting"
+        android:label="Setting"
 
         tools:layout="@layout/fragment_setting">
         <action
@@ -127,18 +127,18 @@
     <fragment
         android:id="@+id/aboutUsFragment"
         android:name="com.example.mcommerce.AboutUsFragment"
-        android:label="fragment_about_us"
+        android:label="About_Us"
         tools:layout="@layout/fragment_about_us" />
     <fragment
         android:id="@+id/contactUsFragment"
         android:name="com.example.mcommerce.ContactUsFragment"
-        android:label="fragment_contact_us"
+        android:label="Contact_Us"
         tools:layout="@layout/fragment_contact_us" />
     <fragment
         android:id="@+id/addressFragment"
         android:name="com.example.mcommerce.ui.setting.view.adress.AddressFragment"
-        android:label="fragment_address"
-        tools:layout="@layout/fragment_address" >
+        android:label="Address"
+        tools:layout="@layout/fragment_address">
         <action
             android:id="@+id/action_addressFragment_to_addressDetailsFragment"
             app:destination="@id/addressDetailsFragment" />
@@ -146,13 +146,13 @@
     <fragment
         android:id="@+id/mapsFragment"
         android:name="com.example.mcommerce.ui.setting.view.adress.MapsFragment"
-        android:label="fragment_maps"
+        android:label="Maps"
         tools:layout="@layout/fragment_maps" />
     <fragment
         android:id="@+id/addressDetailsFragment"
         android:name="com.example.mcommerce.ui.setting.view.adress.AddressDetailsFragment"
-        android:label="fragment_address_details"
-        tools:layout="@layout/fragment_address_details" >
+        android:label="address_details"
+        tools:layout="@layout/fragment_address_details">
         <action
             android:id="@+id/action_addressDetailsFragment_to_mapsFragment"
             app:destination="@id/mapsFragment" />
@@ -160,7 +160,7 @@
     <fragment
         android:id="@+id/cartFragment"
         android:name="com.example.mcommerce.CartFragment"
-        android:label="fragment_cart"
+        android:label="Cart"
 
         tools:layout="@layout/fragment_cart" />
     <fragment
@@ -191,7 +191,7 @@
     <fragment
         android:id="@+id/settingFragment"
         android:name="com.example.mcommerce.PaymentFragment"
-        android:label="fragment_payment"
+        android:label="Payment"
         tools:layout="@layout/fragment_payment" />
 
 

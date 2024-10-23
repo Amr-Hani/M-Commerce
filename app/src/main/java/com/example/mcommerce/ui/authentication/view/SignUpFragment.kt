@@ -111,7 +111,7 @@ class SignUpFragment : Fragment() {
         }
 
         binding.tvGuest.setOnClickListener {
-            sharedPreferences.edit().putString(MyKey.GUEST, "Guest")
+            sharedPreferences.edit().putString(MyKey.GUEST, "GUEST")
                 .apply()
             val intent = Intent(requireActivity(), MainActivity2::class.java)
             startActivity(intent)

@@ -36,13 +36,16 @@ class AddressFragment : Fragment() {
     private lateinit var addressAdapter: AddressAdapter
     private lateinit var settingViewModel: SettingViewModel
     //lateinit var sharedPreferences: SharedPreferences
-    val customerId =8246104654123
-
+    //val customerId =8246104654123
+    var customerId:Long = 8246104654123
+    lateinit var sharedPreferences: SharedPreferences
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentAddressBinding.inflate(inflater, container, false)
+        sharedPreferences = requireContext().getSharedPreferences(MyKey.MY_SHARED_PREFERENCES,Context.MODE_PRIVATE)
+        customerId = (sharedPreferences.getString(MyKey.MY_CUSTOMER_ID,"8246104654123")?:"8246104654123").toLong()
         return binding.root
     }
 

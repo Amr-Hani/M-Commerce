@@ -78,11 +78,13 @@ class CartFragment : Fragment(), PaymentDialogFragment.CurrencySelectionListener
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        sharedPreferences = requireActivity().getSharedPreferences("user_settings", Context.MODE_PRIVATE)
+        sharedPreferences =
+            requireActivity().getSharedPreferences("user_settings", Context.MODE_PRIVATE)
         sharedPreferences2 =
             requireContext().getSharedPreferences(MyKey.MY_SHARED_PREFERENCES, Context.MODE_PRIVATE)
         Log.d("draftOrderID", "draftOrderID before  creation : $draftOrderID")
-        draftOrderID = sharedPreferences2.getString(MyKey.MY_CARD_DRAFT_ID, "1")?.toLongOrNull() ?: 1L
+        draftOrderID =
+            sharedPreferences2.getString(MyKey.MY_CARD_DRAFT_ID, "1")?.toLongOrNull() ?: 1L
         Log.d("draftOrderID", "draftOrderID after  creation : $draftOrderID")
         setupRecyclerView()
         observeDraftOrder()
@@ -111,12 +113,12 @@ class CartFragment : Fragment(), PaymentDialogFragment.CurrencySelectionListener
             Log.d("draftOrderID", "draftOrderID after  use getDraft : $draftOrderID")
             productInfoViewModel.draftOrderStateFlow.collectLatest { state ->
                 when (state) {
-                    is ApiState.Loading -> { }
+                    is ApiState.Loading -> {}
                     is ApiState.Success -> {
                         val mutableList: MutableList<LineItem> = mutableListOf()
 
                         state.data.draft_order.line_items.forEach {
-                            if (it.sku != "null") {
+                            if (it.sku != "null" || it.price == "0.0") {
                                 mutableList.add(it)
                             }
                         }
@@ -127,6 +129,7 @@ class CartFragment : Fragment(), PaymentDialogFragment.CurrencySelectionListener
                         Log.d("draftOrderID", "productListl : $productList")
                         Log.d("draftOrderID", "draftOrderID after  updateSubtotal : $draftOrderID")
                     }
+
                     is ApiState.Failure -> {
 
                     }
@@ -142,10 +145,12 @@ class CartFragment : Fragment(), PaymentDialogFragment.CurrencySelectionListener
                     is ApiState.Loading -> {
 
                     }
+
                     is ApiState.Success -> {
 
                         updateSubtotal()
                     }
+
                     is ApiState.Failure -> {
                         Log.e("CartFragment", "Error fetching rates:")
                     }
@@ -157,7 +162,8 @@ class CartFragment : Fragment(), PaymentDialogFragment.CurrencySelectionListener
     private fun handleCheckout() {
         try {
             val updatedItems = draftOrderRequest.draft_order.line_items.toMutableList()
-            draftOrderRequest.draft_order = draftOrderRequest.draft_order.copy(line_items = updatedItems)
+            draftOrderRequest.draft_order =
+                draftOrderRequest.draft_order.copy(line_items = updatedItems)
 
             favoriteViewModel.updateFavoriteDraftOrder(
                 draftOrderID, UpdateDraftOrderRequest(draftOrderRequest.draft_order)
@@ -189,7 +195,8 @@ class CartFragment : Fragment(), PaymentDialogFragment.CurrencySelectionListener
         val convertedSubtotal = if (currency == "EGP") {
             subtotal
         } else {
-            subtotal / (exchangeRate.takeIf { it != 0.0 } ?: 1.0) // Handle invalid exchange rate gracefully
+            subtotal / (exchangeRate.takeIf { it != 0.0 }
+                ?: 1.0) // Handle invalid exchange rate gracefully
         }
 
         // Update the subtotal text view
@@ -212,10 +219,17 @@ class CartFragment : Fragment(), PaymentDialogFragment.CurrencySelectionListener
 
             // Only update if the list has changed
             if (updatedList.size != draftOrderRequest.draft_order.line_items.size) {
-                draftOrderRequest.draft_order = draftOrderRequest.draft_order.copy(line_items = updatedList)
+                if (updatedList.size == 1) {
+                    updatedList.get(0).sku = "null"
+                }
+                draftOrderRequest.draft_order =
+                    draftOrderRequest.draft_order.copy(line_items = updatedList)
 
                 try {
-                    favoriteViewModel.updateFavoriteDraftOrder(draftOrderID, UpdateDraftOrderRequest(draftOrderRequest.draft_order))
+                    favoriteViewModel.updateFavoriteDraftOrder(
+                        draftOrderID,
+                        UpdateDraftOrderRequest(draftOrderRequest.draft_order)
+                    )
                     cartAdapter.submitList(updatedList)
                     updateSubtotal()
                 } catch (e: Exception) {
@@ -235,23 +249,23 @@ class CartFragment : Fragment(), PaymentDialogFragment.CurrencySelectionListener
 
         when (currency) {
             "cash" -> {
-
                 navigateToCashPayment(totalPrice)
             }
-            "visa" -> {
 
+            "visa" -> {
                 navigateToVisaPayment(totalPrice)
             }
         }
     }
+
     private fun navigateToCashPayment(totalPrice: Double) {
         val bundle = Bundle().apply { putDouble("totalPrice", totalPrice) }
-        findNavController().navigate(R.id.dummyFragment,bundle)
+        findNavController().navigate(R.id.dummyFragment, bundle)
     }
 
     private fun navigateToVisaPayment(totalPrice: Double) {
 
-         val bundle = Bundle().apply { putDouble("totalPrice", totalPrice) }
+        val bundle = Bundle().apply { putDouble("totalPrice", totalPrice) }
         findNavController().navigate(R.id.action_cartFragment_to_paymentFragment, bundle)
     }
 }

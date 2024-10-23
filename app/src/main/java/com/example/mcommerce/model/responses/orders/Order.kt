@@ -3,7 +3,7 @@ package com.example.mcommerce.model.responses.orders
 
 
 data class Order (
-    val orders: OrderElement
+    val orders: List<OrderElement>
 
 )
 

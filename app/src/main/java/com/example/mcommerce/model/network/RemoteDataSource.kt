@@ -8,6 +8,7 @@ import com.example.mcommerce.model.responses.CustomerResponse
 import com.example.mcommerce.model.pojos.UpdateCustomerRequest
 
 import SmartCollectionsItem
+import com.example.mcommerce.PartialOrder2
 import com.example.mcommerce.model.pojos.CustomCollection
 import com.example.mcommerce.model.pojos.DraftOrder
 import com.example.mcommerce.model.pojos.DraftOrderRequest
@@ -25,6 +26,8 @@ import com.example.mcommerce.model.responses.address.AddAddressResponse
 import com.example.mcommerce.model.responses.ProductResponse
 import com.example.mcommerce.model.responses.ReceivedDraftOrder
 import com.example.mcommerce.model.responses.ReceivedOrdersResponse
+import com.example.mcommerce.model.responses.orders.Order
+import com.example.mcommerce.model.responses.orders.OrderElement
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -85,7 +88,7 @@ class RemoteDataSource(private val api: ShopifyApi) {
 
 
 
-    suspend fun confirmOrder(ordersItem: DraftOrderRequest?): Flow<ReceivedOrdersResponse> = flow {
+    suspend fun confirmOrder(ordersItem: Order?): Flow<Order> = flow {
         emit(api.confirmOrder(ordersItem))
     }
 
@@ -199,6 +202,16 @@ class RemoteDataSource(private val api: ShopifyApi) {
     suspend fun getCustomerById(customerId: Long): CustomerResponse {
         return api.getCustomerById(customerId)
     }
+
+
+    suspend fun createOrder(partialOrder2: PartialOrder2): OrderElement {
+        return api.createOrder(partialOrder2)
+    }
+
+    suspend fun getOrdersByCustomerId(customerId: String): Order {
+        return api.getOrdersByCustomerId("customer_id:${customerId}")
+    }
+
 
 }
 

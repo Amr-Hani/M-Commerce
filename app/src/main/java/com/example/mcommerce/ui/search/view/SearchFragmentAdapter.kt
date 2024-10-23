@@ -10,7 +10,10 @@ import com.bumptech.glide.Glide
 import com.example.mcommerce.databinding.SearchViewBinding
 import com.example.mcommerce.model.pojos.Products
 
-class SearchFragmentAdapter(private val onFavoriteClick: OnFavoriteClick<Products> , private val onDetailsClick: OnDetailsClick<Products> ) :
+class SearchFragmentAdapter(
+    private val onFavoriteClick: OnFavoriteClick<Products>,
+    private val onDetailsClick: OnDetailsClick<Products>
+) :
     ListAdapter<Products, SearchFragmentAdapter.SearchFragmentAdapterViewHolder>(
         SearchFragmentDiffUtil()
     ) {
@@ -36,6 +39,7 @@ class SearchFragmentAdapter(private val onFavoriteClick: OnFavoriteClick<Product
             Glide.with(binding.root.context).load(currentProduct.image?.src)
                 .into(holder.binding.ivIconSearch)
         }
+        binding.tvSearchPrice.text = currentProduct.variants.get(0).price
 
         binding.root.setOnClickListener {
             onDetailsClick.onDetailsClick(currentProduct)

@@ -7,6 +7,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import BrandsPOJO
+import com.example.mcommerce.PartialOrder2
 import com.example.mcommerce.model.pojos.CategoryPOJO
 import com.example.mcommerce.model.pojos.DraftOrderRequest
 
@@ -22,6 +23,7 @@ import retrofit2.http.PUT
 import com.example.mcommerce.model.responses.address.AddAddressResponse
 import com.example.mcommerce.model.responses.address.AddressResponse
 import com.example.mcommerce.model.responses.coupons.CouponResponse
+import com.example.mcommerce.model.responses.orders.OrderElement
 import retrofit2.Response
 import retrofit2.http.DELETE
 
@@ -109,7 +111,7 @@ interface ShopifyApi {
     @GET("admin/api/2024-10/draft_orders.json")
     suspend fun getAllDraftOrders() : ReceivedOrdersResponse
 @POST("admin/api/2024-10/orders.json")
-suspend fun confirmOrder(@Body orderResponse: DraftOrderRequest?): ReceivedOrdersResponse
+suspend fun confirmOrder(@Body orderResponse: Order?): Order
 
     @GET("admin/api/2024-10/draft_orders/{draftOrderId}.json")
     suspend fun getDrafrOrderById(
@@ -153,6 +155,12 @@ suspend fun confirmOrder(@Body orderResponse: DraftOrderRequest?): ReceivedOrder
     ): CustomerResponse
 
 
+    @POST("/admin/api/2024-10/orders.json")
+    suspend fun createOrder(@Body partialOrder2: PartialOrder2):OrderElement
 
+    @GET("admin/api/2022-01/orders.json")
+    suspend fun getOrdersByCustomerId(
+        @Query("query") query: String
+    ): Order
 }
 

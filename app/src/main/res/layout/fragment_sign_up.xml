@@ -58,31 +58,30 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/signUp"
-        app:layout_constraintStart_toStartOf="@+id/textView5"
-        app:layout_constraintTop_toBottomOf="@+id/textView5" />
+        app:layout_constraintEnd_toEndOf="@+id/et_confirmPassword"
+        app:layout_constraintStart_toEndOf="@+id/btn_google"
+        app:layout_constraintTop_toBottomOf="@+id/et_confirmPassword" />
 
     <TextView
         android:id="@+id/tv_goToLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:text="@string/go_to_login"
         android:textColor="@color/blue"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/btn_signUp"
-        app:layout_constraintStart_toEndOf="@+id/btn_signUp"
-        app:layout_constraintTop_toTopOf="@+id/btn_signUp"
-        app:layout_constraintVertical_bias="0.482" />
+        app:layout_constraintEnd_toEndOf="@+id/textView5"
+        app:layout_constraintStart_toStartOf="@+id/textView5"
+        app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
     <ImageView
         android:id="@+id/btn_google"
         android:layout_width="120dp"
         android:layout_height="100dp"
         android:src="@drawable/social"
-        app:layout_constraintEnd_toEndOf="@+id/tv_goToLogin"
-        app:layout_constraintHorizontal_bias="0.514"
-        app:layout_constraintStart_toStartOf="@+id/btn_signUp"
-        app:layout_constraintTop_toBottomOf="@+id/btn_signUp" />
+        app:layout_constraintBottom_toBottomOf="@+id/btn_signUp"
+        app:layout_constraintStart_toStartOf="@+id/et_confirmPassword"
+        app:layout_constraintTop_toTopOf="@+id/btn_signUp" />
 
     <TextView
         android:id="@+id/tv_guest"
@@ -114,7 +113,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/message_account"
+        app:layout_constraintEnd_toEndOf="@+id/et_confirmPassword"
         app:layout_constraintStart_toStartOf="@+id/et_confirmPassword"
-        app:layout_constraintTop_toBottomOf="@+id/et_confirmPassword" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_signUp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
